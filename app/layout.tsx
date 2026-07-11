@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Karla } from "next/font/google";
+import { Fraunces, Karla, Oswald } from "next/font/google";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -13,6 +13,14 @@ const karla = Karla({
   subsets: ["latin"],
   weight: ["400", "500", "700"],
   variable: "--font-body",
+  display: "swap",
+});
+
+// display condensada de la PLATAFORMA (landing negro+lima)
+const oswald = Oswald({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-condensada",
   display: "swap",
 });
 
@@ -33,7 +41,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={`${fraunces.variable} ${karla.variable}`}>{children}</body>
+      <body className={`${fraunces.variable} ${karla.variable} ${oswald.variable}`}>{children}</body>
     </html>
   );
 }

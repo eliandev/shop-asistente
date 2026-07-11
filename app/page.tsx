@@ -1,203 +1,260 @@
 import Script from "next/script";
+import {
+  codificarConfig,
+  sanitizarConfig,
+} from "@/lib/config-asistente";
 
 /**
- * Landing de producto: cuenta cómo funciona el asistente y lo presenta como
- * "motor de marca" re-marcable. El chat real vive en /chat y la burbuja
- * flotante de esta misma página ES el widget real (dogfooding).
+ * Landing de la PLATAFORMA (negro + lima, estilo estudio/agencia):
+ * marco con grilla visible, tipografía condensada gigante, etiquetas
+ * [ENTRE CORCHETES], demos numeradas y barra CTA full-width.
+ * El chat vive en /chat y la burbuja flotante de esta página ES el
+ * widget real (dogfooding). ART-ES es la demo con tienda real.
  */
+
+// Demo clickeable de asistente personalizado: María (catálogo ColourPop)
+const MARIA = sanitizarConfig({
+  marca: "Glow Beauty",
+  asistente: "María",
+  rubro: "productos de belleza y skincare",
+  saludo: "¡Hola! Soy María, de Glow Beauty 💄 ¿Buscás algo para tu rutina?",
+  color: "#C2185B",
+  fondo: "#FDF0F4",
+  dominio: "colourpop.com",
+  whatsapp: "",
+  web: "",
+  datos: "",
+});
+const LINK_MARIA = `/chat?c=${codificarConfig(MARIA)}`;
+
 export default function Landing() {
   return (
-    <main className="ld">
-      {/* ── Hero ── */}
-      <section className="ld-hero">
-        <span className="ld-glifo" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="46" height="46">
-            <path
-              fill="currentColor"
-              d="M12 3C6.9 3 2.8 6.6 2.8 11c0 2 .9 3.9 2.4 5.3-.2 1.1-.8 2.6-2 3.7 0 0 2.9-.1 5.1-1.6 1.1.4 2.4.6 3.7.6 5.1 0 9.2-3.6 9.2-8S17.1 3 12 3z"
-            />
-          </svg>
-        </span>
-        <span className="ld-badge">Creá tu asistente de IA · para cualquier tienda</span>
-        <h1>
-          Creá el asistente que responde por tu negocio,
-          <em> con datos reales — nunca inventados</em>
-        </h1>
-        <p className="ld-sub">
-          Una marca de belleza crea a <strong>María</strong>; una de artesanía,
-          a <strong>Silvi</strong>. Tu asistente atiende 24/7 con precios y
-          disponibilidad en vivo de tu tienda Shopify (solo el dominio, sin
-          tokens), tu tono y tus políticas — y se instala con una línea.
-        </p>
-        <div className="ld-ctas">
-          <a className="ld-btn ld-btn-primario" href="/crear">
-            Creá tu asistente gratis →
-          </a>
-          <a className="ld-btn ld-btn-secundario" href="/chat">
-            Ver la demo en vivo (ART-ES)
-          </a>
-        </div>
-        <p className="ld-pista">
-          Psst… la burbuja azul de abajo a la derecha es el widget real. Tocala 👇
-        </p>
-      </section>
+    <main className="ld lx">
+      <div className="lx-marco">
+        {/* ── banda rayada superior ── */}
+        <div className="lx-franja" aria-hidden="true" />
 
-      {/* ── Cómo funciona ── */}
-      <section className="ld-seccion">
-        <h2>Cómo funciona</h2>
-        <div className="ld-pasos">
-          <article className="ld-paso">
-            <span className="ld-num">1</span>
-            <h3>Conectá tu catálogo</h3>
-            <p>
-              Solo el dominio de tu tienda Shopify. Sin tokens ni apps: usa el
-              catálogo público para agentes de IA (UCP). Precios y stock
-              siempre al día, directo de tu tienda.
+        {/* ── nav ── */}
+        <header className="lx-nav">
+          <nav className="lx-menu" aria-label="Navegación principal">
+            <a href="/">Inicio</a>
+            <a href="#producto">El producto</a>
+            <a href="#demos">Demos</a>
+            <a href="#precios">Precios</a>
+          </nav>
+          <div className="lx-logo">SILVI°</div>
+          <a className="lx-btn-nav" href="/crear">↳ Crear asistente</a>
+        </header>
+
+        {/* ── hero ── */}
+        <section className="lx-hero">
+          <div className="lx-hero-izq">
+            <h1>
+              Creá<br />Conectá<br />Vendé
+            </h1>
+          </div>
+          <div className="lx-hero-der">
+            <p className="lx-tagline">
+              Asistentes de IA que responden por tu negocio
+              con datos reales — nunca inventados
             </p>
+            <div className="lx-minis" aria-label="Asistentes de ejemplo">
+              <a className="lx-mini" href="/chat" style={{ "--mini": "#0047AB" } as React.CSSProperties}>
+                <span className="lx-mini-avatar">S</span>
+                <span>
+                  <strong>Silvi</strong>
+                  ART-ES · artesanía
+                </span>
+              </a>
+              <a className="lx-mini" href={LINK_MARIA} style={{ "--mini": "#C2185B" } as React.CSSProperties}>
+                <span className="lx-mini-avatar">M</span>
+                <span>
+                  <strong>María</strong>
+                  Glow Beauty · belleza
+                </span>
+              </a>
+              <a className="lx-mini" href="/crear" style={{ "--mini": "#C9F73A" } as React.CSSProperties}>
+                <span className="lx-mini-avatar">+</span>
+                <span>
+                  <strong>El tuyo</strong>
+                  en 2 minutos
+                </span>
+              </a>
+            </div>
+            <span className="lx-scroll">( deslizá )</span>
+          </div>
+        </section>
+
+        {/* ── el producto ── */}
+        <section className="lx-sobre" id="producto">
+          <span className="lx-etiqueta">[ el producto ]</span>
+          <div className="lx-sobre-fila">
+            <h2>
+              Tu catálogo Shopify en vivo, tu conocimiento y tu marca,
+              atendiendo clientes 24/7 — sin inventar jamás un precio.
+            </h2>
+            <div className="lx-desde">
+              <span>desde</span>
+              <strong>2026</strong>
+            </div>
+          </div>
+          <div className="lx-stats">
+            <div className="lx-stat">
+              <strong>2 min</strong>
+              <span>de idea a asistente publicado, sin código ni cuentas</span>
+            </div>
+            <div className="lx-stat">
+              <strong>1 línea</strong>
+              <span>para instalar el widget en tu tienda desde el Theme Editor</span>
+            </div>
+            <div className="lx-stat">
+              <strong>24/7</strong>
+              <span>respuestas con precios y stock en vivo de tu Shopify, sin tokens</span>
+            </div>
+            <div className="lx-stat lx-stat-acento">
+              <strong>0</strong>
+              <span>datos inventados: si no lo sabe, lo admite y deriva a tu WhatsApp</span>
+            </div>
+          </div>
+        </section>
+
+        {/* ── demos ── */}
+        <section className="lx-demos" id="demos">
+          <span className="lx-etiqueta lx-centro">[ demos en vivo ]</span>
+          <h2 className="lx-demos-titulo">
+            Creados para vender<br />hechos para responder
+          </h2>
+
+          <article className="lx-demo">
+            <div className="lx-demo-info">
+              <span className="lx-demo-num">001.</span>
+              <h3>ART-ES — Silvi &amp; Don José</h3>
+              <p>
+                La demo con tienda real: artesanía salvadoreña hecha a mano.
+                Atiende el artesano correcto según la pieza que mirás.
+              </p>
+              <div className="lx-chips">
+                <span>catálogo vivo</span>
+                <span>2 artesanos</span>
+              </div>
+              <a className="lx-demo-link" href="/chat">↳ Abrir demo</a>
+            </div>
+            <div className="lx-tiles">
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#0047AB,#002a69)" }}>🧶</span>
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#1b5fd0,#0047AB)" }}>👜</span>
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#e8b023,#b4471b)" }}>🧺</span>
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#2e7d32,#14532d)" }}>🪵</span>
+            </div>
           </article>
-          <article className="ld-paso">
-            <span className="ld-num">2</span>
-            <h3>Enseñale tu negocio</h3>
-            <p>
-              Envíos, pagos, políticas y FAQ viven en una base de conocimiento
-              editable. Si algo no está ahí, el asistente lo admite con
-              honestidad y deriva a tu WhatsApp. Cero datos inventados.
-            </p>
+
+          <article className="lx-demo">
+            <div className="lx-demo-info">
+              <span className="lx-demo-num">002.</span>
+              <h3>Glow Beauty — María</h3>
+              <p>
+                Creada en 2 minutos con el creador, conectada al catálogo real
+                de ColourPop. Así se ve TU marca en el motor.
+              </p>
+              <div className="lx-chips">
+                <span>creada en /crear</span>
+                <span>catálogo colourpop</span>
+              </div>
+              <a className="lx-demo-link" href={LINK_MARIA}>↳ Chatear con María</a>
+            </div>
+            <div className="lx-tiles">
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#C2185B,#7c0f3a)" }}>💄</span>
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#f06292,#C2185B)" }}>💅</span>
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#fdb4c9,#f06292)" }}>🌸</span>
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#8e24aa,#4a148c)" }}>✨</span>
+            </div>
           </article>
-          <article className="ld-paso">
-            <span className="ld-num">3</span>
-            <h3>Insertalo donde quieras</h3>
-            <p>
-              Un link público listo para compartir y una burbuja flotante que
-              se pega en tu tienda con una línea, desde el Theme Editor — sin
-              tocar el código del tema.
-            </p>
+
+          <article className="lx-demo">
+            <div className="lx-demo-info">
+              <span className="lx-demo-num">003.</span>
+              <h3>Tu marca — tu asistente</h3>
+              <p>
+                Nombre, personalidad, colores, tu catálogo y tus políticas.
+                El link es tu asistente: compartilo donde quieras, gratis.
+              </p>
+              <div className="lx-chips">
+                <span>tu catálogo</span>
+                <span>tu voz</span>
+              </div>
+              <a className="lx-demo-link" href="/crear">↳ Crearlo ahora</a>
+            </div>
+            <div className="lx-tiles">
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#c9f73a,#5a7a10)" }}>🛍️</span>
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#26c6da,#00838f)" }}>☕</span>
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#ffb300,#e65100)" }}>👟</span>
+              <span className="lx-tile lx-tile-mas">+</span>
+            </div>
           </article>
-        </div>
-      </section>
+        </section>
 
-      {/* ── Features ── */}
-      <section className="ld-seccion ld-alterna">
-        <h2>Lo que lo hace distinto</h2>
-        <div className="ld-grid">
-          <div className="ld-card">
-            <span className="ld-icono">🛍️</span>
-            <h3>Catálogo en vivo, sin tokens</h3>
-            <p>Consulta tu Shopify en tiempo real vía UCP Catalog MCP. Conectar otra tienda = cambiar un dominio.</p>
-          </div>
-          <div className="ld-card">
-            <span className="ld-icono">🧵</span>
-            <h3>Te atiende el artesano correcto</h3>
-            <p>Según el producto que mira el cliente, responde la voz del taller de Silvi o de don José — fijo toda la sesión.</p>
-          </div>
-          <div className="ld-card">
-            <span className="ld-icono">🛡️</span>
-            <h3>Anti-invención de serie</h3>
-            <p>Reglas estrictas y fuentes acotadas: si no lo sabe, lo dice y pasa el WhatsApp. La confianza no se negocia.</p>
-          </div>
-          <div className="ld-card">
-            <span className="ld-icono">🖼️</span>
-            <h3>Tarjetas de producto con foto</h3>
-            <p>Cada pieza mencionada aparece con su foto, precio y enlace directo a comprarla. Del chat al carrito.</p>
-          </div>
-          <div className="ld-card">
-            <span className="ld-icono">⚡</span>
-            <h3>Widget de una línea</h3>
-            <p>Burbuja flotante con carga perezosa (no frena tu tienda), accesible, y con eventos GA4 para medir uso.</p>
-          </div>
-          <div className="ld-card">
-            <span className="ld-icono">🎨</span>
-            <h3>Tu marca, no la nuestra</h3>
-            <p>Paleta, logo, avatares, voz y saludo: todo se personaliza. Nada de "look genérico de IA".</p>
-          </div>
-        </div>
-      </section>
+        {/* ── barra CTA ── */}
+        <a className="lx-barra" href="/crear">↳ Creá tu asistente gratis</a>
 
-      {/* ── Creador ── */}
-      <section className="ld-seccion">
-        <h2>Tu asistente, en 2 minutos y sin código</h2>
-        <p className="ld-sub-seccion">
-          Nombre, colores, personalidad, tu catálogo Shopify y los datos de tu
-          negocio — el creador genera el link de tu asistente y el widget
-          listos para compartir. El link ES tu asistente: sin cuentas, sin
-          base de datos.
-        </p>
-        <div className="ld-ctas ld-ctas-centro">
-          <a className="ld-btn ld-btn-primario" href="/crear">
-            Abrir el creador 🎛️
-          </a>
-          <a className="ld-btn ld-btn-secundario" href="/admin">
-            Ver el panel de gestión (demo)
-          </a>
-        </div>
-      </section>
-
-      {/* ── Precios ── */}
-      <section className="ld-seccion">
-        <h2>Simple: probás gratis, pagás cuando lo querés en tu tienda</h2>
-        <div className="ld-grid ld-precios">
-          <div className="ld-card">
-            <span className="ld-icono">🔗</span>
-            <h3>Link compartible — Gratis</h3>
-            <p>
-              Creá tu asistente y compartí su link donde quieras: redes, bio,
-              WhatsApp. Catálogo en vivo, tarjetas con foto y anti-invención
-              incluidos. Gratis para siempre.
-            </p>
+        {/* ── precios ── */}
+        <section className="lx-precios" id="precios">
+          <span className="lx-palabra" aria-hidden="true">Precios</span>
+          <span className="lx-etiqueta lx-centro">[ simple y honesto ]</span>
+          <div className="lx-precios-grid">
+            <div className="lx-plan">
+              <div className="lx-plan-tabs">
+                <span className="activo">Link gratis</span>
+                <span>Widget Pro</span>
+              </div>
+              <div className="lx-plan-precio">
+                <strong>$0</strong>
+                <span>/ link compartible, para siempre</span>
+              </div>
+              <ul className="lx-plan-lista">
+                <li>✓ Catálogo Shopify en vivo (sin tokens)</li>
+                <li>✓ Tarjetas de producto con foto y precio</li>
+                <li>✓ Anti-invención y derivación a tu WhatsApp</li>
+                <li>✓ Tu marca: colores, nombre y personalidad</li>
+              </ul>
+              <a className="lx-plan-btn" href="/crear">↳ Crear gratis</a>
+            </div>
+            <div className="lx-plan lx-plan-pro">
+              <span className="lx-plan-badge">PRO</span>
+              <h3>El widget, en tu tienda</h3>
+              <p>
+                La burbuja flotante atendiendo dentro de tu propio sitio,
+                activada con tu licencia. Pedila desde el creador y la
+                recibís al instante.
+              </p>
+              <a className="lx-plan-btn lx-plan-btn-borde" href="/crear">
+                ↳ Solicitar activación
+              </a>
+            </div>
           </div>
-          <div className="ld-card ld-card-pro">
-            <span className="ld-icono">⚡</span>
-            <h3>Widget en tu tienda — Pro</h3>
-            <p>
-              La burbuja flotante atendiendo dentro de tu propio sitio, con tu
-              licencia activada. Pedí la activación desde el creador y te la
-              enviamos al instante.
-            </p>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── Snippet ── */}
-      <section className="ld-seccion ld-alterna">
-        <h2>Así de fácil se instala en tu tienda</h2>
-        <p className="ld-sub-seccion">
-          Theme Editor → sección <strong>Custom Liquid</strong> en el footer → pegar y guardar:
-        </p>
-        <pre className="ld-codigo">{`<script
+        {/* ── instalación ── */}
+        <section className="lx-snippet">
+          <span className="lx-etiqueta lx-centro">[ instalación ]</span>
+          <h2 className="lx-demos-titulo lx-snippet-titulo">Una línea. En serio.</h2>
+          <pre className="ld-codigo">{`<script
   src="https://silvi-art-es.vercel.app/widget.js"
   defer
   data-color="#0047AB"
   data-etiqueta="Chateá con el taller"
+  data-licencia="TU-LICENCIA-PRO"
   {% if product %}data-artesano="{{ product.vendor | escape }}"{% endif %}>
 </script>`}</pre>
-      </section>
+        </section>
 
-      {/* ── Cierre ── */}
-      <section className="ld-seccion ld-final">
-        <h2>Miralo funcionando con una tienda real: ART-ES</h2>
-        <p className="ld-sub-seccion">
-          Silvi y don José atienden con el catálogo en vivo de art-es.shop —
-          bolsos tejidos a mano, carteras y cojines bordados de El Salvador.
-          Preguntales lo que quieras.
-        </p>
-        <div className="ld-ctas ld-ctas-centro">
-          <a className="ld-btn ld-btn-primario" href="/chat">
-            Chatear con el taller →
-          </a>
-          <a
-            className="ld-btn ld-btn-secundario"
-            href="https://art-es.shop"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Visitar art-es.shop
-          </a>
-        </div>
-      </section>
-
-      <footer className="ld-pie">
-        Hecho en El Salvador 🇸🇻 · Demo con la tienda real de ART-ES · Reto 1 — Vibecoders League 2.0
-      </footer>
+        <footer className="lx-pie">
+          <span>SILVI° — asistentes de IA para tiendas</span>
+          <span>
+            Hecho en El Salvador 🇸🇻 · Demo con la tienda real de{" "}
+            <a href="https://art-es.shop" target="_blank" rel="noopener noreferrer">ART-ES</a>{" "}
+            · Reto 1 — Vibecoders League 2.0 · <a href="/admin">Panel (demo)</a>
+          </span>
+        </footer>
+      </div>
 
       {/* El widget real, comiendo nuestro propio dogfood */}
       <Script src="/widget.js" strategy="afterInteractive" />

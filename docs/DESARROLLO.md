@@ -295,6 +295,25 @@ en madera).
 tener el taller correcto ("Eseoese by Silvi" / "Artesanías en Nahuizalco") para
 que el widget detecte al artesano en páginas de producto.
 
+### Tarjetas de producto con foto (2026-07-11)
+
+**Pedido del dueño:** cuando el asistente mencione un producto, mostrar una
+foto pequeña del mismo.
+
+**Implementado (verificado en navegador):**
+- `ProductoShopify.imagen`: primera imagen del producto desde el UCP MCP
+  (`media[0].url`, fallback a la de la primera variante) pedida como
+  miniatura al CDN de Shopify (`?width=240`). El respaldo Storefront usa
+  `featuredImage`.
+- El modelo NO recibe las URLs de imagen (ahorro de tokens): el servidor
+  guarda los resultados de la herramienta y, tras la respuesta final,
+  selecciona los productos **realmente mencionados** en el texto (matching
+  por palabras distintivas del título, normalizando acentos) en el orden en
+  que aparecen, máx. 5, y los devuelve como `productos` junto a `reply`.
+- El chat renderiza tarjetas clickeables (foto 52px, nombre, precio) bajo la
+  burbuja, con hover/foco accesibles. Si el matching no encuentra menciones,
+  no se muestra nada — nunca tarjetas de productos no mencionados.
+
 ## Fase 7 — Admin de personalización multi-tienda (planificada)
 
 **Pedido del dueño:** panel admin para personalizar UI, avatar y personalidad

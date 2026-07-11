@@ -4,9 +4,19 @@ import { useEffect, useRef, useState } from "react";
 import { resolverArtesano, type Artesano } from "@/lib/knowledge-base";
 
 type Rol = "user" | "assistant";
+
+interface TarjetaProducto {
+  titulo: string;
+  precio: string;
+  url: string | null;
+  imagen: string | null;
+}
+
 interface Mensaje {
   role: Rol;
   content: string;
+  /** tarjetas de productos mencionados en esta respuesta (con foto) */
+  productos?: TarjetaProducto[];
 }
 
 /** Convierte URLs del texto en enlaces clickeables (wa.me, tienda, productos). */
@@ -72,8 +82,12 @@ export default function Chat() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // el saludo inicial es assistant y es válido como contexto
-        body: JSON.stringify({ messages: nuevos, artesano: artesano.id }),
+        // el saludo inicial es assistant y es válido como contexto;
+        // se envían solo role/content (las tarjetas son de presentación)
+        body: JSON.stringify({
+          messages: nuevos.map(({ role, content }) => ({ role, content })),
+          artesano: artesano.id,
+        }),
       });
 
       const data = await res.json();
@@ -82,7 +96,14 @@ export default function Chat() {
         data.error ||
         "Perdoná, tuve un problema. Probá de nuevo en un momento.";
 
-      setMensajes((prev) => [...prev, { role: "assistant", content: respuesta }]);
+      setMensajes((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: respuesta,
+          productos: Array.isArray(data.productos) ? data.productos : [],
+        },
+      ]);
     } catch {
       setMensajes((prev) => [
         ...prev,
@@ -134,6 +155,35 @@ export default function Chat() {
               <div className="etiqueta">Taller de {artesano.nombre}</div>
             )}
             {m.role === "assistant" ? conEnlaces(m.content) : m.content}
+            {m.role === "assistant" && (m.productos?.length ?? 0) > 0 && (
+              <div className="productos">
+                {m.productos!.map((p) =>
+                  p.url ? (
+                    <a
+                      key={p.url}
+                      className="producto-card"
+                      href={p.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {p.imagen && <img src={p.imagen} alt="" loading="lazy" />}
+                      <span className="producto-info">
+                        <span className="producto-nombre">{p.titulo}</span>
+                        <span className="producto-precio">{p.precio}</span>
+                      </span>
+                    </a>
+                  ) : (
+                    <span key={p.titulo} className="producto-card">
+                      {p.imagen && <img src={p.imagen} alt="" loading="lazy" />}
+                      <span className="producto-info">
+                        <span className="producto-nombre">{p.titulo}</span>
+                        <span className="producto-precio">{p.precio}</span>
+                      </span>
+                    </span>
+                  )
+                )}
+              </div>
+            )}
           </div>
         ))}
 

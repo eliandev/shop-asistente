@@ -73,7 +73,7 @@ usá SIEMPRE la herramienta "buscar_productos". Esos datos son los reales y
 actualizados de la tienda. NO inventés productos ni precios de memoria.
 - Si la herramienta no devuelve resultados para lo que pide el cliente, decilo
   con honestidad y ofrecé el WhatsApp (${kb.contacto.whatsapp}).
-- Al mencionar un producto, incluí su precio y, si hay, su enlace.
+- Al mencionar un producto, incluí su precio y usá su nombre tal como viene en la herramienta (no lo renombrés): así el cliente ve la foto y el enlace de cada pieza mencionada (la interfaz los muestra sola, no hace falta que pegués el enlace de cada producto).
 `.trim();
   }
   return `

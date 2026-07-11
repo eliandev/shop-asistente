@@ -45,7 +45,15 @@ export interface ProductoShopify {
   precioDesde: string;
   disponible: boolean;
   url: string | null;
+  /** miniatura del producto (CDN de Shopify, ya con width para thumbnail) */
+  imagen: string | null;
   variantes: { titulo: string; precio: string; disponible: boolean }[];
+}
+
+/** Pide al CDN de Shopify una versión pequeña de la imagen (thumbnail). */
+function miniatura(url: string | null | undefined, ancho = 240): string | null {
+  if (!url) return null;
+  return url + (url.includes("?") ? "&" : "?") + `width=${ancho}`;
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -112,6 +120,10 @@ async function buscarPorUcp(consulta: string, n: number): Promise<ProductoShopif
       precio: formatearPrecioUcp(v.price ?? { amount: 0, currency: "" }),
       disponible: Boolean(v.availability?.available),
     }));
+    const primeraImagen =
+      (p.media ?? []).find((m: any) => m?.type === "image")?.url ??
+      (p.variants?.[0]?.media ?? []).find((m: any) => m?.type === "image")?.url ??
+      null;
     return {
       titulo: String(p.title ?? ""),
       descripcion: limpiarDescripcion(p.description?.html ?? ""),
@@ -120,6 +132,7 @@ async function buscarPorUcp(consulta: string, n: number): Promise<ProductoShopif
       ),
       disponible: (p.variants ?? []).some((v: any) => v.availability?.available),
       url: p.url ?? null,
+      imagen: miniatura(primeraImagen),
       variantes,
     };
   });
@@ -139,6 +152,7 @@ const QUERY = /* GraphQL */ `
           handle
           onlineStoreUrl
           availableForSale
+          featuredImage { url }
           priceRange {
             minVariantPrice { amount currencyCode }
           }
@@ -196,6 +210,7 @@ async function buscarPorStorefront(
       precioDesde: formatearPrecioStorefront(nodo.priceRange.minVariantPrice),
       disponible: Boolean(nodo.availableForSale),
       url: nodo.onlineStoreUrl ?? null,
+      imagen: miniatura(nodo.featuredImage?.url ?? null),
       variantes: (nodo.variants?.edges ?? []).map((v: any) => ({
         titulo: v.node.title,
         precio: formatearPrecioStorefront(v.node.price),

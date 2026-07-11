@@ -1,7 +1,11 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
 import { getSystemPrompt } from "@/lib/system-prompt";
-import { buscarProductos, shopifyConfigurado } from "@/lib/shopify";
+import {
+  buscarProductos,
+  shopifyConfigurado,
+  type ProductoShopify,
+} from "@/lib/shopify";
 
 export const runtime = "nodejs";
 
@@ -67,7 +71,11 @@ function aTextoPlano(t: string): string {
     .replace(/^\s*\*\s+/gm, "- ");
 }
 
-async function ejecutarHerramienta(nombre: string, input: any): Promise<string> {
+async function ejecutarHerramienta(
+  nombre: string,
+  input: any,
+  encontrados: ProductoShopify[]
+): Promise<string> {
   if (nombre !== "buscar_productos") {
     return "Herramienta desconocida.";
   }
@@ -77,11 +85,78 @@ async function ejecutarHerramienta(nombre: string, input: any): Promise<string> 
     if (productos.length === 0) {
       return "No se encontraron productos para esa búsqueda en la tienda.";
     }
-    return JSON.stringify(productos);
+    encontrados.push(...productos);
+    // al modelo no le mandamos las URLs de imagen (ruido de tokens);
+    // las tarjetas visuales se arman server-side con `encontrados`
+    return JSON.stringify(
+      productos.map(({ imagen, ...resto }) => resto)
+    );
   } catch (e) {
     console.error("Error consultando Shopify:", e);
     return "No fue posible consultar la tienda en este momento. No hay datos de productos disponibles.";
   }
+}
+
+/** Tarjeta de producto que el cliente renderiza bajo la respuesta. */
+interface TarjetaProducto {
+  titulo: string;
+  precio: string;
+  url: string | null;
+  imagen: string | null;
+}
+
+const PALABRAS_COMUNES = new Set([
+  "bolso", "bolsos", "cartera", "carteras", "set", "mano", "estilo",
+  "para", "color", "con", "hecho", "hecha", "tejido", "tejida", "los",
+  "las", "del", "por",
+]);
+
+function normalizar(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+/** Palabras que identifican a un producto (ej. "elena", "rubi", "cojines"). */
+function palabrasDistintivas(titulo: string): string[] {
+  return normalizar(titulo)
+    .split(/[^a-z0-9]+/)
+    .filter((w) => w.length >= 3 && !PALABRAS_COMUNES.has(w));
+}
+
+/**
+ * De todos los productos que devolvió la herramienta, se queda con los que la
+ * respuesta realmente menciona, en el orden en que aparecen en el texto.
+ */
+function productosMencionados(
+  texto: string,
+  encontrados: ProductoShopify[]
+): TarjetaProducto[] {
+  const t = normalizar(texto);
+  const vistos = new Set<string>();
+  return encontrados
+    .map((p) => {
+      const posiciones = palabrasDistintivas(p.titulo)
+        .map((w) => t.indexOf(w))
+        .filter((i) => i >= 0);
+      return { p, pos: posiciones.length ? Math.min(...posiciones) : -1 };
+    })
+    .filter(({ p, pos }) => {
+      if (pos < 0) return false;
+      const clave = p.url ?? p.titulo;
+      if (vistos.has(clave)) return false;
+      vistos.add(clave);
+      return true;
+    })
+    .sort((a, b) => a.pos - b.pos)
+    .slice(0, 5)
+    .map(({ p }) => ({
+      titulo: p.titulo,
+      precio: p.precioDesde,
+      url: p.url,
+      imagen: p.imagen,
+    }));
 }
 
 export async function POST(req: NextRequest) {
@@ -141,6 +216,8 @@ export async function POST(req: NextRequest) {
       ...(usarHerramientas ? { tools: HERRAMIENTAS } : {}),
     });
 
+    const encontrados: ProductoShopify[] = [];
+
     let vueltas = 0;
     while (respuesta.stop_reason === "tool_use" && vueltas < MAX_VUELTAS_HERRAMIENTA) {
       vueltas++;
@@ -150,7 +227,11 @@ export async function POST(req: NextRequest) {
       const resultados: Anthropic.ToolResultBlockParam[] = [];
       for (const bloque of respuesta.content) {
         if (bloque.type === "tool_use") {
-          const contenido = await ejecutarHerramienta(bloque.name, bloque.input);
+          const contenido = await ejecutarHerramienta(
+            bloque.name,
+            bloque.input,
+            encontrados
+          );
           resultados.push({
             type: "tool_result",
             tool_use_id: bloque.id,
@@ -183,6 +264,7 @@ export async function POST(req: NextRequest) {
       reply:
         texto ||
         "Perdoná, no logré generar respuesta. Escribinos por WhatsApp y con gusto te ayudamos.",
+      productos: texto ? productosMencionados(texto, encontrados) : [],
     });
   } catch (err) {
     console.error("Error en /api/chat:", err);

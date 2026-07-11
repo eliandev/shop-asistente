@@ -506,3 +506,5 @@ tokens) para que re-marcar sea tocar la menor cantidad de archivos posible.
 | 2026-07-10 | Marca de producción: **ART-ES** (no se re-marca a la tienda Caterpillar Panamá conectada a la sesión) | Confirmado por el dueño del proyecto |
 | 2026-07-10 | `ANTHROPIC_API_KEY` pendiente de crear | El usuario la generará en console.anthropic.com; el desarrollo que no requiere probar el chat avanza igual |
 | 2026-07-10 | Catálogo en vivo migrado a **UCP Catalog MCP por tienda** (sin token); Storefront API queda solo como respaldo opcional | Propuesta del dueño del proyecto; simplifica la conexión de cualquier tienda y está verificado contra una tienda real |
+
+| 2026-07-11 | Identidad propia de la plataforma: tema negro + lima (#0E0E0F / #C9F73A) en landing, /crear y /admin; logo de ART-ES retirado del hero (queda solo como marca demo); la vista previa del chat en los paneles conserva el tema claro (lienzo del cliente) | Pedido del dueño: separar la marca del producto de la marca demo |

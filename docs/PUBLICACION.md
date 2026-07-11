@@ -45,6 +45,9 @@ https://silvi-assistants.vercel.app/crear)
 Código y bitácora completa del proceso:
 https://github.com/eliandev/shop-asistente
 
+Si te gustó el proyecto, **tu like en este comentario es el voto** 💚
+¡Gracias por el apoyo!
+
 ---
 
 ## 2 · Post para redes (LinkedIn / X)
@@ -70,7 +73,11 @@ código: su nombre, su personalidad, sus colores y su catálogo real.
 🖤💚 Probalo: https://silvi-assistants.vercel.app
 🧶 La tienda real detrás de la historia: https://art-es.shop
 
-Hecho en El Salvador 🇸🇻 para la #VibecodersLeague de @platzi
+Estoy compitiendo en la #VibecodersLeague de @platzi y **el voto es un
+like a mi comentario en la clase** 👉 [LINK-AL-COMENTARIO-EN-PLATZI]
+Cualquier persona puede votar, sin suscripción. ¡Tu apoyo vale oro! 🙌
+
+Hecho en El Salvador 🇸🇻
 
 ---
 
@@ -84,6 +91,28 @@ inventan; si no saben, lo admiten y derivan a tu WhatsApp. Creá el tuyo
 gratis en 2 minutos: https://silvi-assistants.vercel.app
 
 ---
+
+## 4 · Mensaje para WhatsApp / amigos y familia
+
+---
+
+¡Hola! 👋 Estoy compitiendo en un reto de IA de Platzi con un proyecto que
+me emociona mucho: le construí un asistente de inteligencia artificial a
+ART-ES (mi emprendimiento de artesanía salvadoreña 🧶) y lo convertí en una
+plataforma donde cualquier negocio puede crear el suyo gratis.
+
+¿Me ayudás con tu voto? Es solo darle **like a mi comentario** acá (no
+necesitás suscripción, solo cuenta gratis de Platzi):
+👉 [LINK-AL-COMENTARIO-EN-PLATZI]
+
+Y si querés jugar con el asistente: https://silvi-assistants.vercel.app
+¡Gracias! 💚
+
+---
+
+> **Nota:** reemplazá `[LINK-AL-COMENTARIO-EN-PLATZI]` por el link directo a
+> tu comentario en la clase (en Platzi: menú ⋮ del comentario → copiar
+> enlace, o el link de la clase del reto).
 
 ## Recordatorio del reto (para el contexto del jurado)
 

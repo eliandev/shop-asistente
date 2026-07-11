@@ -14,7 +14,7 @@ conocimiento, la voz del asistente y la paleta visual.
 
 | Fase | Nombre | Estado | Depende de |
 |------|--------|--------|------------|
-| 0 | Preparación del entorno | 🟡 En curso | — |
+| 0 | Preparación del entorno | ✅ Completada (2026-07-10) | — |
 | 1 | Marca y datos reales del negocio | ⬜ Pendiente | Confirmación de marca objetivo |
 | 2 | Integración Shopify en vivo | ⬜ Pendiente | Token Storefront API |
 | 3 | Branding UI (assets y paleta) | ⬜ Pendiente | Assets del usuario |
@@ -28,11 +28,11 @@ conocimiento, la voz del asistente y la paleta visual.
 **Objetivo:** dejar el proyecto corriendo en local, con build limpio y control de versiones.
 
 **Checklist**
-- [ ] `npm install` sin errores
-- [ ] `npm run build` pasa sin errores de tipos ni de build
-- [ ] Repo git inicializado con commit inicial
-- [ ] `.env.local` creado a partir de `.env.example` (llaves las pone el usuario, nunca se versionan)
-- [ ] Bitácora de desarrollo creada (este documento)
+- [x] `npm install` sin errores
+- [x] `npm run build` pasa sin errores de tipos ni de build (Next.js 14.2.35; ruta `/` estática, `/api/chat` dinámica)
+- [x] Repo git inicializado con commit inicial (`cfb9ed4`, rama `main`)
+- [x] `.env.local` creado a partir de `.env.example` — ⚠️ falta poner la `ANTHROPIC_API_KEY` real (la pone el usuario, nunca se versiona)
+- [x] Bitácora de desarrollo creada (este documento)
 
 **Hallazgos del análisis inicial**
 - El proyecto llegó sin `node_modules`, sin repo git y con **datos de plantilla**
@@ -52,10 +52,17 @@ conocimiento, la voz del asistente y la paleta visual.
 **Objetivo:** que el asistente responda con información 100% real. Cero datos inventados
 o de plantilla en producción.
 
-**Entradas necesarias (las provee el usuario)**
-- Marca objetivo confirmada (¿se re-marca para la tienda real conectada o se mantiene ART-ES?)
-- Datos reales del negocio: contacto (WhatsApp, redes, web, correo), horarios,
-  zonas y costos de envío, métodos de pago, políticas de cambio/devolución, FAQ.
+**Decisión (2026-07-10):** la marca objetivo confirmada es **ART-ES** (reto
+Vibecoders League 2.0). La tienda caterpillarpa.com conectada a la sesión NO es
+el objetivo de este proyecto y no se usa aquí.
+
+**Entradas necesarias (las provee el usuario) — pendientes**
+- Datos reales del negocio ART-ES: contacto (WhatsApp, Instagram, web, correo),
+  horarios, zonas y costos de envío, métodos de pago, políticas de
+  cambio/devolución, FAQ, y rango de precios real.
+- ¿Existe tienda Shopify propia de ART-ES? (dominio `*.myshopify.com`). Si no
+  existe, la app queda en modo respaldo (productos de ejemplo definidos con
+  datos reales en `knowledge-base.ts`) — funciona igual.
 
 **Trabajo**
 - Reemplazar todos los valores `// ✏️ EDITAR` de `lib/knowledge-base.ts`.
@@ -154,3 +161,5 @@ Vercel → QA sobre el preview → merge a `main` → producción.
 | 2026-07-10 | Trabajo organizado en 6 fases documentadas en esta bitácora | Pedido del dueño del proyecto: desarrollo paso a paso y documentado |
 | 2026-07-10 | Se mantiene el stack actual (Next.js 14, CSS con variables, sin dependencias nuevas) | Convención de AGENTS.md; el proyecto ya está bien estructurado |
 | 2026-07-10 | Rate-limit en memoria se acepta para v1 | Alcance actual; documentado como limitación conocida |
+| 2026-07-10 | Marca de producción: **ART-ES** (no se re-marca a la tienda Caterpillar Panamá conectada a la sesión) | Confirmado por el dueño del proyecto |
+| 2026-07-10 | `ANTHROPIC_API_KEY` pendiente de crear | El usuario la generará en console.anthropic.com; el desarrollo que no requiere probar el chat avanza igual |

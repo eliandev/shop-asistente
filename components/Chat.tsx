@@ -2,6 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { resolverArtesano, type Artesano } from "@/lib/knowledge-base";
+import {
+  decodificarConfig,
+  saludoPorDefecto,
+  type ConfigAsistente,
+} from "@/lib/config-asistente";
 
 type Rol = "user" | "assistant";
 
@@ -36,17 +41,42 @@ function conEnlaces(texto: string): React.ReactNode[] {
   });
 }
 
-const SUGERENCIAS = [
+const SUGERENCIAS_ARTES = [
   "¿Qué venden?",
   "¿Cuánto cuesta el envío?",
   "¿Qué métodos de pago aceptan?",
   "¿Los productos son hechos a mano?",
 ];
 
+const SUGERENCIAS_GENERICAS = [
+  "¿Qué venden?",
+  "¿Cuánto cuesta el envío?",
+  "¿Qué métodos de pago aceptan?",
+  "¿Cómo puedo comprar?",
+];
+
+/** Variables CSS que un asistente personalizado re-marca en toda la página. */
+function aplicarMarca(config: ConfigAsistente | null) {
+  const raiz = document.documentElement.style;
+  if (config) {
+    raiz.setProperty("--marca", config.color);
+    raiz.setProperty("--marca-oscuro", config.color);
+    raiz.setProperty("--marca-profundo", config.color);
+    raiz.setProperty("--fondo", config.fondo);
+  } else {
+    raiz.removeProperty("--marca");
+    raiz.removeProperty("--marca-oscuro");
+    raiz.removeProperty("--marca-profundo");
+    raiz.removeProperty("--fondo");
+  }
+}
+
 export default function Chat() {
-  // El artesano que atiende la sesión: por defecto el del taller principal;
-  // se resuelve tras montar leyendo ?artesano= (evita mismatch de hidratación).
+  // ART-ES: el artesano que atiende la sesión (default del taller principal).
   const [artesano, setArtesano] = useState<Artesano>(() => resolverArtesano());
+  // Asistente personalizado (creado en /crear): config del link (?c=).
+  const [config, setConfig] = useState<ConfigAsistente | null>(null);
+  const [cRaw, setCRaw] = useState<string | null>(null);
   const [mensajes, setMensajes] = useState<Mensaje[]>([
     { role: "assistant", content: resolverArtesano().saludo },
   ]);
@@ -54,12 +84,32 @@ export default function Chat() {
   const [cargando, setCargando] = useState(false);
   const finRef = useRef<HTMLDivElement>(null);
 
+  // Se resuelve tras montar leyendo la URL (evita mismatch de hidratación).
   useEffect(() => {
-    const param = new URLSearchParams(window.location.search).get("artesano");
+    const params = new URLSearchParams(window.location.search);
+    const c = params.get("c");
+    const cfg = decodificarConfig(c);
+    if (cfg && c) {
+      setConfig(cfg);
+      setCRaw(c);
+      aplicarMarca(cfg);
+      setMensajes((prev) =>
+        prev.length <= 1
+          ? [
+              {
+                role: "assistant",
+                content:
+                  cfg.saludo || saludoPorDefecto(cfg.asistente, cfg.marca),
+              },
+            ]
+          : prev
+      );
+      return;
+    }
+    const param = params.get("artesano");
     if (!param) return;
     const elegido = resolverArtesano(param);
     setArtesano(elegido);
-    // si la conversación no empezó, el saludo pasa a ser el del artesano elegido
     setMensajes((prev) =>
       prev.length <= 1 ? [{ role: "assistant", content: elegido.saludo }] : prev
     );
@@ -87,6 +137,7 @@ export default function Chat() {
         body: JSON.stringify({
           messages: nuevos.map(({ role, content }) => ({ role, content })),
           artesano: artesano.id,
+          ...(cRaw ? { c: cRaw } : {}),
         }),
       });
 
@@ -109,8 +160,7 @@ export default function Chat() {
         ...prev,
         {
           role: "assistant",
-          content:
-            "Perdoná, no logré conectar. Probá de nuevo o escribinos por WhatsApp.",
+          content: "Perdoná, no logré conectar. Probá de nuevo en un momento.",
         },
       ]);
     } finally {
@@ -125,18 +175,32 @@ export default function Chat() {
 
   const mostrarSugerencias = mensajes.length <= 1 && !cargando;
 
+  // Textos e identidad según el modo (ART-ES o asistente personalizado)
+  const nombreMarca = config ? config.marca : "ART-ES";
+  const subtitulo = config
+    ? `${config.asistente} · asistente virtual`
+    : `Taller de ${artesano.nombre} · ${artesano.taller}`;
+  const etiqueta = config ? config.asistente : `Taller de ${artesano.nombre}`;
+  const sugerencias = config ? SUGERENCIAS_GENERICAS : SUGERENCIAS_ARTES;
+  const pie = config
+    ? `${config.marca} · asistente virtual`
+    : "Hecho a mano en El Salvador 🇸🇻";
+  const inicial = (config?.asistente || "A").charAt(0).toUpperCase();
+
   return (
-    <section className="tarjeta" aria-label={`Chat con el taller de ${artesano.nombre} de ART-ES`}>
+    <section className="tarjeta" aria-label={`Chat con ${etiqueta} de ${nombreMarca}`}>
       <header className="encabezado">
         <div className="marca-fila">
           <div className="avatar" aria-hidden="true">
-            <img src="/logo.png" alt="" width={38} height={38} />
+            {config ? (
+              <span className="avatar-inicial">{inicial}</span>
+            ) : (
+              <img src="/logo.png" alt="" width={38} height={38} />
+            )}
           </div>
           <div>
-            <div className="marca-nombre">ART-ES</div>
-            <div className="marca-sub">
-              Taller de {artesano.nombre} · {artesano.taller}
-            </div>
+            <div className="marca-nombre">{nombreMarca}</div>
+            <div className="marca-sub">{subtitulo}</div>
             <div className="estado">
               <span className="punto" aria-hidden="true" />
               En línea
@@ -151,9 +215,7 @@ export default function Chat() {
             key={i}
             className={`burbuja ${m.role === "user" ? "de-usuario" : "de-silvi"}`}
           >
-            {m.role === "assistant" && (
-              <div className="etiqueta">Taller de {artesano.nombre}</div>
-            )}
+            {m.role === "assistant" && <div className="etiqueta">{etiqueta}</div>}
             {m.role === "assistant" ? conEnlaces(m.content) : m.content}
             {m.role === "assistant" && (m.productos?.length ?? 0) > 0 && (
               <div className="productos">
@@ -189,18 +251,24 @@ export default function Chat() {
 
         {cargando && (
           <div className="fila-silvi">
-            <img
-              className="avatar-silvi"
-              src={artesano.avatar}
-              alt=""
-              width={36}
-              height={36}
-            />
+            {config ? (
+              <span className="avatar-silvi avatar-inicial-chica" aria-hidden="true">
+                {inicial}
+              </span>
+            ) : (
+              <img
+                className="avatar-silvi"
+                src={artesano.avatar}
+                alt=""
+                width={36}
+                height={36}
+              />
+            )}
             <div
               className="burbuja de-silvi"
-              aria-label={`El taller de ${artesano.nombre} está escribiendo`}
+              aria-label={`${etiqueta} está escribiendo`}
             >
-              <div className="etiqueta">Taller de {artesano.nombre}</div>
+              <div className="etiqueta">{etiqueta}</div>
               <div className="escribiendo">
                 <span />
                 <span />
@@ -214,7 +282,7 @@ export default function Chat() {
 
       {mostrarSugerencias && (
         <div className="sugerencias">
-          {SUGERENCIAS.map((s) => (
+          {sugerencias.map((s) => (
             <button key={s} className="chip" onClick={() => enviar(s)}>
               {s}
             </button>
@@ -241,7 +309,7 @@ export default function Chat() {
         </button>
       </form>
 
-      <div className="pie">Hecho a mano en El Salvador 🇸🇻</div>
+      <div className="pie">{pie}</div>
     </section>
   );
 }

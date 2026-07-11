@@ -116,6 +116,28 @@ body {
   display: block;
 }
 
+/* inicial del asistente cuando la marca no tiene logo cargado */
+.avatar-inicial {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--marca);
+}
+.avatar-inicial-chica {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--marca-suave);
+  background: var(--superficie);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--marca);
+  flex: 0 0 auto;
+}
+
 .marca-nombre {
   font-family: var(--font-display);
   font-weight: 700;
@@ -722,4 +744,47 @@ a.producto-card:focus-visible {
   box-shadow: 0 18px 44px -22px rgba(0, 0, 0, 0.45);
 }
 .adm-tarjeta .mensajes { min-height: 260px; }
+
+/* ── /crear: caja de resultado (link + widget) ── */
+.crd-resultado {
+  margin-top: 18px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: 16px;
+  padding: 20px;
+}
+.crd-resultado h2 {
+  font-family: var(--font-display);
+  color: var(--marca-profundo);
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+.crd-falta { font-size: 14px; color: #7a5a00; }
+.crd-copia { display: flex; gap: 8px; align-items: stretch; }
+.crd-copia input,
+.crd-copia textarea {
+  flex: 1;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 12.5px;
+  padding: 9px 11px;
+  border: 1px solid var(--linea);
+  border-radius: 10px;
+  background: var(--superficie-tinte);
+  color: var(--tinta);
+  min-width: 0;
+}
+.crd-copia button {
+  flex: 0 0 auto;
+  padding: 0 16px;
+  border: none;
+  border-radius: 10px;
+  background: var(--marca);
+  color: var(--superficie);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+.crd-copia button:hover { background: var(--marca-oscuro); }
+.crd-probar { display: block; text-align: center; margin: 6px 0 16px; }
 

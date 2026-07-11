@@ -37,6 +37,8 @@
   var posicion = (script.dataset && script.dataset.posicion) === "izquierda" ? "left" : "right";
   var etiqueta = (script.dataset && script.dataset.etiqueta) || "Abrir chat de asistencia";
   var artesano = (script.dataset && script.dataset.artesano) || "";
+  // config de asistente personalizado (generada en /crear)
+  var configAsistente = (script.dataset && script.dataset.config) || "";
 
   function evento(nombre) {
     if (Array.isArray(window.dataLayer)) {
@@ -91,8 +93,10 @@
     if (abierto && !panel.src) {
       // carga perezosa: solo al primer clic. El chat vive en /chat
       // (la raíz del sitio es la landing del producto).
-      panel.src =
-        origen + "/chat" + (artesano ? "?artesano=" + encodeURIComponent(artesano) : "");
+      var params = [];
+      if (configAsistente) params.push("c=" + configAsistente);
+      else if (artesano) params.push("artesano=" + encodeURIComponent(artesano));
+      panel.src = origen + "/chat" + (params.length ? "?" + params.join("&") : "");
     }
     panel.classList.toggle("abierto", abierto);
     btn.innerHTML = abierto ? iconoCerrar : iconoChat;

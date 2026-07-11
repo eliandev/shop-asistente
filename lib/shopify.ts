@@ -34,9 +34,12 @@ const PERFIL_AGENTE =
   process.env.UCP_AGENT_PROFILE ||
   "https://shopify.dev/ucp/agent-profiles/2026-04-08/valid-with-capabilities.json";
 
-/** ¿Está el catálogo en vivo configurado? (solo hace falta el dominio) */
-export function shopifyConfigurado(): boolean {
-  return Boolean(DOMINIO);
+/**
+ * ¿Está el catálogo en vivo configurado? Con el dominio del entorno (tienda
+ * por defecto) o con uno provisto por petición (asistentes personalizados).
+ */
+export function shopifyConfigurado(dominio?: string | null): boolean {
+  return Boolean(dominio || DOMINIO);
 }
 
 export interface ProductoShopify {
@@ -74,13 +77,17 @@ function limpiarDescripcion(html: string, max = 300): string {
   return texto.length > max ? `${texto.slice(0, max - 1)}…` : texto;
 }
 
-async function buscarPorUcp(consulta: string, n: number): Promise<ProductoShopify[]> {
+async function buscarPorUcp(
+  consulta: string,
+  n: number,
+  dominio: string
+): Promise<ProductoShopify[]> {
   // Sin `query`, el endpoint devuelve el catálogo general (browse) — útil para
   // "¿qué venden?". Con `query`, hace búsqueda semántica estricta.
   const catalogo: Record<string, unknown> = { pagination: { limit: n } };
   if (consulta.trim()) catalogo.query = consulta.trim();
 
-  const res = await fetch(`https://${DOMINIO}/api/ucp/mcp`, {
+  const res = await fetch(`https://${dominio}/api/ucp/mcp`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -226,22 +233,26 @@ async function buscarPorStorefront(
 
 /**
  * Busca productos en la tienda. `consulta` vacía devuelve varios productos
- * generales. Usa UCP Catalog MCP (sin token); si falla y hay token de
- * Storefront, reintenta por GraphQL. Lanza error si ninguna fuente responde
- * (el llamador lo maneja).
+ * generales. `dominio` permite consultar la tienda de un asistente
+ * personalizado; sin él, usa la tienda del entorno. Usa UCP Catalog MCP
+ * (sin token); si falla en la tienda del entorno y hay token de Storefront,
+ * reintenta por GraphQL. Lanza error si ninguna fuente responde.
  */
 export async function buscarProductos(
   consulta: string,
-  n = 5
+  n = 5,
+  dominio?: string | null
 ): Promise<ProductoShopify[]> {
-  if (!shopifyConfigurado()) {
+  const dom = dominio || DOMINIO;
+  if (!dom) {
     throw new Error("Shopify no está configurado.");
   }
 
   try {
-    return await buscarPorUcp(consulta, n);
+    return await buscarPorUcp(consulta, n, dom);
   } catch (errorUcp) {
-    if (!TOKEN) throw errorUcp;
+    // el token de Storefront solo corresponde a la tienda del entorno
+    if (!TOKEN || dom !== DOMINIO) throw errorUcp;
     console.warn("UCP MCP falló; usando respaldo Storefront API:", errorUcp);
     return buscarPorStorefront(consulta, n);
   }

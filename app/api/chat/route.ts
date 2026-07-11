@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
-import { getSystemPrompt } from "@/lib/system-prompt";
+import { getSystemPrompt, getSystemPromptGenerico } from "@/lib/system-prompt";
+import { decodificarConfig } from "@/lib/config-asistente";
 import {
   buscarProductos,
   shopifyConfigurado,
@@ -74,14 +75,15 @@ function aTextoPlano(t: string): string {
 async function ejecutarHerramienta(
   nombre: string,
   input: any,
-  encontrados: ProductoShopify[]
+  encontrados: ProductoShopify[],
+  dominio?: string | null
 ): Promise<string> {
   if (nombre !== "buscar_productos") {
     return "Herramienta desconocida.";
   }
   try {
     const consulta = typeof input?.consulta === "string" ? input.consulta : "";
-    const productos = await buscarProductos(consulta.slice(0, 120));
+    const productos = await buscarProductos(consulta.slice(0, 120), 5, dominio);
     if (productos.length === 0) {
       return "No se encontraron productos para esa búsqueda en la tienda.";
     }
@@ -180,6 +182,9 @@ export async function POST(req: NextRequest) {
     const historial: Mensaje[] = Array.isArray(body?.messages) ? body.messages : [];
     const artesano =
       typeof body?.artesano === "string" ? body.artesano.slice(0, 60) : null;
+    // Asistente personalizado (creado en /crear): la config viaja en `c`
+    // y el servidor la decodifica y sanitiza. Si no hay, es el chat de ART-ES.
+    const config = decodificarConfig(body?.c);
 
     const limpios = historial
       .filter(
@@ -199,8 +204,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const system = getSystemPrompt(artesano);
-    const usarHerramientas = shopifyConfigurado();
+    const system = config
+      ? getSystemPromptGenerico(config)
+      : getSystemPrompt(artesano);
+    const dominio = config ? config.dominio || null : null;
+    // con config, solo hay herramientas si esa marca conectó su catálogo
+    const usarHerramientas = config
+      ? Boolean(config.dominio)
+      : shopifyConfigurado();
 
     const mensajes: Anthropic.MessageParam[] = limpios.map((m) => ({
       role: m.role,
@@ -230,7 +241,8 @@ export async function POST(req: NextRequest) {
           const contenido = await ejecutarHerramienta(
             bloque.name,
             bloque.input,
-            encontrados
+            encontrados,
+            dominio
           );
           resultados.push({
             type: "tool_result",

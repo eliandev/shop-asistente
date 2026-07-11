@@ -11,22 +11,23 @@ export default function Landing() {
       {/* ── Hero ── */}
       <section className="ld-hero">
         <img className="ld-logo" src="/logo.png" alt="Logo de ART-ES" width={72} height={72} />
-        <span className="ld-badge">Motor de marca · IA para tiendas Shopify</span>
+        <span className="ld-badge">Creá tu asistente de IA · para cualquier tienda</span>
         <h1>
-          Un asistente que responde por tu negocio,
+          Creá el asistente que responde por tu negocio,
           <em> con datos reales — nunca inventados</em>
         </h1>
         <p className="ld-sub">
-          Silvi atiende a tus clientes 24/7 con precios y disponibilidad en vivo
-          de tu tienda, tu tono y tus políticas. Se instala con una sola línea
-          y se re-marca para cualquier tienda en minutos.
+          Una marca de belleza crea a <strong>María</strong>; una de artesanía,
+          a <strong>Silvi</strong>. Tu asistente atiende 24/7 con precios y
+          disponibilidad en vivo de tu tienda Shopify (solo el dominio, sin
+          tokens), tu tono y tus políticas — y se instala con una línea.
         </p>
         <div className="ld-ctas">
-          <a className="ld-btn ld-btn-primario" href="/chat">
-            Probalo en vivo →
+          <a className="ld-btn ld-btn-primario" href="/crear">
+            Creá tu asistente gratis →
           </a>
-          <a className="ld-btn ld-btn-secundario" href="/admin">
-            Ver cómo se personaliza
+          <a className="ld-btn ld-btn-secundario" href="/chat">
+            Ver la demo en vivo (ART-ES)
           </a>
         </div>
         <p className="ld-pista">
@@ -105,16 +106,21 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Dashboard demo ── */}
+      {/* ── Creador ── */}
       <section className="ld-seccion">
-        <h2>Personalizalo desde el dashboard</h2>
+        <h2>Tu asistente, en 2 minutos y sin código</h2>
         <p className="ld-sub-seccion">
-          Colores, avatar, nombre del asistente, saludo y la tienda conectada —
-          todo desde un panel, sin tocar código. Miralo en acción:
+          Nombre, colores, personalidad, tu catálogo Shopify y los datos de tu
+          negocio — el creador genera el link de tu asistente y el widget
+          listos para compartir. El link ES tu asistente: sin cuentas, sin
+          base de datos.
         </p>
         <div className="ld-ctas ld-ctas-centro">
-          <a className="ld-btn ld-btn-primario" href="/admin">
-            Abrir demo del panel 🎛️
+          <a className="ld-btn ld-btn-primario" href="/crear">
+            Abrir el creador 🎛️
+          </a>
+          <a className="ld-btn ld-btn-secundario" href="/admin">
+            Ver el panel de gestión (demo)
           </a>
         </div>
       </section>
@@ -136,10 +142,11 @@ export default function Landing() {
 
       {/* ── Cierre ── */}
       <section className="ld-seccion ld-final">
-        <h2>Probalo con el catálogo real de ART-ES</h2>
+        <h2>Miralo funcionando con una tienda real: ART-ES</h2>
         <p className="ld-sub-seccion">
-          Bolsos tejidos a mano, carteras y cojines bordados de El Salvador —
-          preguntale lo que quieras.
+          Silvi y don José atienden con el catálogo en vivo de art-es.shop —
+          bolsos tejidos a mano, carteras y cojines bordados de El Salvador.
+          Preguntales lo que quieras.
         </p>
         <div className="ld-ctas ld-ctas-centro">
           <a className="ld-btn ld-btn-primario" href="/chat">

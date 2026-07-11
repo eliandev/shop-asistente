@@ -24,6 +24,7 @@ conocimiento, la voz del asistente y la paleta visual.
 | 6.5 | Artesanos por sesión (Silvi / Don José) | ✅ Completada (2026-07-11) | — |
 | 7 | Admin de personalización multi-tienda | ⬜ Planificada | Fase 5 + decisiones de almacenamiento |
 | 8 | Landing de producto + dashboard demo | ✅ Completada (2026-07-11) | — |
+| 9 | Creador de asistentes generalizado | ✅ Completada (2026-07-11) | — |
 
 ---
 
@@ -396,6 +397,47 @@ dashboard (demo, solo para mostrarlo).
   (variables CSS client-side, reutiliza los estilos reales del chat). Sin
   persistencia ni auth; botón "Guardar" deshabilitado con nota "Fase 7".
   Badge visible: "DEMO · vista previa sin guardar".
+
+## Fase 9 — Creador de asistentes generalizado (2026-07-11)
+
+**Pedido del dueño:** generalizar todo — que cualquier marca cree su asistente
+(ej. "María" para una marca de belleza). ART-ES queda como demo con tienda real.
+
+**Arquitectura elegida: "el link es el asistente" (sin base de datos, v1):**
+- `lib/config-asistente.ts`: la config (marca, asistente, rubro, saludo,
+  colores, dominio Shopify, contacto, datos del negocio) viaja codificada en
+  `?c=` del link y en `data-config` del widget. El servidor la decodifica y
+  **sanitiza** (topes de longitud por campo, hex validado, dominio validado,
+  caracteres peligrosos fuera).
+- **Seguridad del prompt:** `getSystemPromptGenerico()` es una plantilla fija
+  del servidor con las reglas anti-invención intactas; la config solo aporta
+  identidad y datos, y la regla 5 refuerza no cambiar de rol. El rate-limit
+  por IP protege el costo (el creador es público).
+- `buscarProductos()` acepta dominio por petición → **cualquier tienda
+  Shopify del mundo** vía UCP (verificado con colourpop.com y
+  kyliecosmetics.com). El respaldo Storefront con token queda solo para la
+  tienda del entorno.
+- `/crear`: wizard de 4 pasos (identidad, colores con presets, catálogo,
+  datos) con vista previa en vivo y resultado: link compartible + snippet
+  del widget con botones de copiar.
+- `Chat.tsx`: con `?c=` re-marca toda la página (variables CSS), muestra la
+  inicial del asistente como avatar, saludo/etiquetas/pie personalizados, y
+  envía la config al API. Sin `?c=`, todo sigue igual para ART-ES
+  (artesanos incluidos).
+- Landing reorientada: CTA principal "Creá tu asistente gratis" → /crear;
+  ART-ES presentada como "miralo funcionando con una tienda real".
+
+**QA (local, end-to-end):** "María de Glow Beauty" conectada a colourpop.com
+respondió labiales REALES con precios y 5 tarjetas con foto; citó la política
+de devoluciones personalizada (15 días sin abrir) correctamente; admitió no
+saber sobre asesorías a domicilio y derivó al WhatsApp configurado; al no
+encontrar rubores, lo dijo con honestidad. UI re-marcada a rosa completa.
+
+**Límites conocidos (documentados a propósito):**
+- El creador es público y usa la API key del proyecto → el costo lo cubre el
+  rate-limit por IP; para un SaaS real: cuentas + llaves/límites por tenant.
+- El link largo es la "persistencia" v1; la Fase 7 (KV + slugs cortos +
+  gestión) es la evolución natural.
 
 ## Backlog v2 — Motor de marca / multi-tienda
 

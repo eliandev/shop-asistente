@@ -1,0 +1,301 @@
+:root {
+  /* Paleta añil salvadoreña — el índigo cultivado en El Salvador es la firma */
+  --anil-900: #15223c;
+  --anil-700: #23386c;
+  --anil-500: #3a57a0;
+  --anil-300: #8399c8;
+  --crudo: #ece3d0; /* algodón sin teñir, cálido — no el cream genérico */
+  --crudo-claro: #f6f0e2;
+  --achiote: #c5872b; /* acento mostaza/achiote, usado con moderación */
+  --tinta: #201b13;
+  --blanco-hueso: #fbf8f0;
+  --linea: #d8cdb6;
+
+  --font-display: var(--font-display), Georgia, serif;
+  --font-body: var(--font-body), system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--tinta);
+  /* fondo crudo con un tinte añil muy sutil arriba, como una tela recién teñida */
+  background-color: var(--crudo);
+  background-image: radial-gradient(
+    120% 60% at 50% -10%,
+    rgba(35, 56, 108, 0.14),
+    transparent 60%
+  );
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Estructura ---------- */
+.pantalla {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.tarjeta {
+  width: 100%;
+  max-width: 540px;
+  height: min(760px, calc(100vh - 40px));
+  display: flex;
+  flex-direction: column;
+  background: var(--blanco-hueso);
+  border: 1px solid var(--linea);
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px -30px rgba(21, 34, 60, 0.5);
+}
+
+/* ---------- Encabezado (la "firma": inmersión en añil) ---------- */
+.encabezado {
+  position: relative;
+  padding: 22px 24px 20px;
+  color: var(--crudo-claro);
+  background: linear-gradient(160deg, var(--anil-700), var(--anil-900) 85%);
+}
+
+.encabezado::after {
+  /* borde inferior irregular, como el corte de un teñido de añil */
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 10px;
+  background: var(--blanco-hueso);
+  clip-path: polygon(
+    0 60%, 6% 40%, 13% 65%, 21% 35%, 29% 60%, 38% 30%, 47% 62%,
+    56% 34%, 65% 60%, 74% 32%, 83% 60%, 92% 38%, 100% 62%, 100% 100%, 0 100%
+  );
+}
+
+.marca-fila {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--crudo-claro);
+  color: var(--anil-900);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 20px;
+  border: 2px solid var(--anil-300);
+}
+
+.marca-nombre {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: 0.5px;
+  line-height: 1;
+}
+
+.marca-sub {
+  font-size: 13px;
+  opacity: 0.85;
+  margin-top: 3px;
+}
+
+.estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  font-size: 12px;
+  opacity: 0.85;
+}
+.punto {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #7fd6a0;
+  box-shadow: 0 0 0 3px rgba(127, 214, 160, 0.25);
+}
+
+/* ---------- Mensajes ---------- */
+.mensajes {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px 20px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.burbuja {
+  max-width: 82%;
+  padding: 11px 14px;
+  font-size: 15px;
+  line-height: 1.45;
+  border-radius: 16px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.de-silvi {
+  align-self: flex-start;
+  background: var(--crudo-claro);
+  border: 1px solid var(--linea);
+  border-left: 3px solid var(--anil-500);
+  border-top-left-radius: 5px;
+  color: var(--tinta);
+}
+
+.de-usuario {
+  align-self: flex-end;
+  background: var(--anil-700);
+  color: var(--crudo-claro);
+  border-top-right-radius: 5px;
+}
+
+.etiqueta {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--anil-500);
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+
+/* indicador "escribiendo" */
+.escribiendo {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+.escribiendo span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--anil-300);
+  animation: rebote 1s infinite ease-in-out;
+}
+.escribiendo span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.escribiendo span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes rebote {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30% { transform: translateY(-5px); opacity: 1; }
+}
+
+/* ---------- Sugerencias ---------- */
+.sugerencias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 4px 20px 12px;
+}
+.chip {
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 8px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--anil-300);
+  background: transparent;
+  color: var(--anil-700);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.chip:hover {
+  background: var(--anil-700);
+  color: var(--crudo-claro);
+}
+.chip:focus-visible {
+  outline: 2px solid var(--achiote);
+  outline-offset: 2px;
+}
+
+/* ---------- Entrada ---------- */
+.entrada {
+  display: flex;
+  gap: 10px;
+  padding: 14px 16px 16px;
+  border-top: 1px solid var(--linea);
+  background: var(--blanco-hueso);
+}
+.entrada input {
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 12px 14px;
+  border: 1px solid var(--linea);
+  border-radius: 12px;
+  background: var(--crudo-claro);
+  color: var(--tinta);
+}
+.entrada input:focus {
+  outline: 2px solid var(--anil-500);
+  outline-offset: 0;
+  border-color: transparent;
+}
+.enviar {
+  flex: 0 0 auto;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 15px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 12px;
+  background: var(--anil-700);
+  color: var(--crudo-claro);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.enviar:hover:not(:disabled) {
+  background: var(--anil-900);
+}
+.enviar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.enviar:focus-visible {
+  outline: 2px solid var(--achiote);
+  outline-offset: 2px;
+}
+
+.pie {
+  text-align: center;
+  font-size: 11px;
+  color: var(--anil-500);
+  padding: 0 16px 12px;
+}
+
+@media (max-width: 560px) {
+  .pantalla { padding: 0; }
+  .tarjeta {
+    height: 100vh;
+    max-width: 100%;
+    border-radius: 0;
+    border: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .escribiendo span { animation: none; }
+}

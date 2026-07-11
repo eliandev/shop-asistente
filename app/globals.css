@@ -750,6 +750,176 @@ a.producto-card:focus-visible {
 }
 .adm-tarjeta .mensajes { min-height: 260px; }
 
+/* ============================================================
+   TEMA PLATAFORMA — landing (/), /crear y /admin
+   Identidad propia del producto: NEGRO + LIMA eléctrico.
+   El chat (y la vista previa dentro del panel) conserva la
+   paleta de cada marca: el panel oscuro es el "estudio",
+   la tarjeta clara es el lienzo del cliente.
+   ============================================================ */
+.ld,
+.adm {
+  --marca: #c9f73a;            /* lima eléctrico: acento de la plataforma */
+  --marca-oscuro: #b8e62e;
+  --marca-profundo: #f7f6f0;   /* titulares sobre negro */
+  --marca-suave: rgba(201, 247, 58, 0.45);
+  --fondo: #0e0e0f;            /* negro */
+  --superficie: #17181a;
+  --superficie-tinte: #1f2023;
+  --tinta: #f2f1ec;
+  --linea: #2a2b2e;
+  --acento-amarillo: #c9f73a;
+  background: var(--fondo);
+  color: var(--tinta);
+  min-height: 100vh;
+}
+
+/* tipografía sobre negro */
+.ld h1, .ld h2, .ld h3,
+.adm-encabezado h1, .adm-controles h2,
+.crd-resultado h2, .crd-pro-encabezado h3 {
+  color: #f7f6f0;
+}
+.ld-sub, .ld-sub-seccion, .ld-paso p, .ld-card p,
+.crd-pro-texto, .adm-campo span {
+  color: #a8a79d;
+}
+.ld-hero h1 em { color: var(--marca); }
+
+/* glifo del producto (reemplaza al logo de la marca demo) */
+.ld-glifo {
+  display: inline-block;
+  color: var(--marca);
+  margin-bottom: 14px;
+}
+
+/* botones */
+.ld .ld-btn-primario, .adm .ld-btn-primario {
+  background: var(--marca);
+  color: #0e0e0f;
+  box-shadow: 0 12px 30px -14px rgba(201, 247, 58, 0.55);
+}
+.ld .ld-btn-primario:hover, .adm .ld-btn-primario:hover {
+  background: var(--marca-oscuro);
+}
+.ld .ld-btn-secundario, .adm .ld-btn-secundario {
+  background: transparent;
+  color: var(--tinta);
+  border-color: #3a3b3f;
+}
+.ld .ld-btn-secundario:hover, .adm .ld-btn-secundario:hover {
+  border-color: var(--marca);
+  color: var(--marca);
+}
+.ld .ld-btn:focus-visible, .adm .ld-btn:focus-visible {
+  outline-color: var(--marca);
+}
+
+/* piezas de la landing */
+.ld-badge {
+  color: var(--marca);
+  background: rgba(201, 247, 58, 0.08);
+  border-color: rgba(201, 247, 58, 0.35);
+}
+.ld-pista { color: var(--marca); opacity: 1; }
+.ld-num { background: var(--marca); color: #0e0e0f; }
+.ld-paso, .ld-card {
+  background: var(--superficie);
+  border-color: var(--linea);
+}
+.ld-alterna {
+  background: #131416;
+  border-color: #232427;
+}
+.ld-card-pro {
+  border-color: rgba(201, 247, 58, 0.55);
+  background: rgba(201, 247, 58, 0.05);
+}
+.ld-codigo {
+  background: #141518;
+  border: 1px solid var(--linea);
+  color: #e6ffa8;
+}
+.ld-pie {
+  background: #0b0b0c;
+  border-color: #202124;
+  color: #8f8f86;
+}
+
+/* panel (/crear y /admin) */
+.adm-volver { color: var(--marca); }
+.adm-demo-badge {
+  color: var(--marca);
+  background: rgba(201, 247, 58, 0.1);
+  border-color: rgba(201, 247, 58, 0.4);
+}
+.adm-controles, .crd-resultado {
+  background: var(--superficie);
+  border-color: var(--linea);
+}
+.adm-campo input[type="text"],
+.adm-campo input:not([type]),
+.adm-campo textarea,
+.crd-copia input,
+.crd-copia textarea {
+  background: #101113;
+  border-color: #2e2f33;
+  color: var(--tinta);
+}
+.adm-campo input:focus, .adm-campo textarea:focus {
+  outline-color: var(--marca);
+}
+.adm-campo input[type="color"] {
+  background: #101113;
+  border-color: #2e2f33;
+}
+.adm-preset {
+  border-color: var(--superficie);
+  box-shadow: 0 0 0 1px #3a3b3f;
+}
+.adm-artesano {
+  background: #1f2023;
+  border-color: #2e2f33;
+  color: #e8e7de;
+}
+.adm-artesano.activo {
+  border-color: var(--marca);
+  background: rgba(201, 247, 58, 0.08);
+  color: var(--marca);
+}
+.adm-nota { color: var(--marca); }
+.adm-guardar {
+  background: var(--marca);
+  color: #0e0e0f;
+}
+.crd-falta { color: #e5c15a; }
+.crd-copia button {
+  background: var(--marca);
+  color: #0e0e0f;
+}
+.crd-copia button:hover { background: var(--marca-oscuro); }
+.crd-pro {
+  border-color: rgba(201, 247, 58, 0.5);
+  background: rgba(201, 247, 58, 0.04);
+}
+.crd-pro-badge {
+  color: #0e0e0f;
+  background: var(--marca);
+}
+.crd-pro-nota { color: #9a998f; }
+
+/* La VISTA PREVIA del chat dentro del panel vuelve al tema claro:
+   es el lienzo donde se ve la marca del cliente (los colores de
+   marca/fondo llegan inline desde el estado del formulario). */
+.adm-preview {
+  border-color: var(--linea);
+  --superficie: #ffffff;
+  --superficie-tinte: #faf6ec;
+  --tinta: #1e1e1e;
+  --linea: #e4dbc9;
+  --marca-suave: #9db4dd;
+}
+
 /* ── /crear: caja de resultado (link + widget) ── */
 .crd-resultado {
   margin-top: 18px;

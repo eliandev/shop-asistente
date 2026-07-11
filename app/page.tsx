@@ -10,7 +10,14 @@ export default function Landing() {
     <main className="ld">
       {/* ── Hero ── */}
       <section className="ld-hero">
-        <img className="ld-logo" src="/logo.png" alt="Logo de ART-ES" width={72} height={72} />
+        <span className="ld-glifo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="46" height="46">
+            <path
+              fill="currentColor"
+              d="M12 3C6.9 3 2.8 6.6 2.8 11c0 2 .9 3.9 2.4 5.3-.2 1.1-.8 2.6-2 3.7 0 0 2.9-.1 5.1-1.6 1.1.4 2.4.6 3.7.6 5.1 0 9.2-3.6 9.2-8S17.1 3 12 3z"
+            />
+          </svg>
+        </span>
         <span className="ld-badge">Creá tu asistente de IA · para cualquier tienda</span>
         <h1>
           Creá el asistente que responde por tu negocio,
@@ -189,7 +196,7 @@ export default function Landing() {
       </section>
 
       <footer className="ld-pie">
-        Hecho a mano en El Salvador 🇸🇻 · ART-ES · Reto 1 — Vibecoders League 2.0
+        Hecho en El Salvador 🇸🇻 · Demo con la tienda real de ART-ES · Reto 1 — Vibecoders League 2.0
       </footer>
 
       {/* El widget real, comiendo nuestro propio dogfood */}

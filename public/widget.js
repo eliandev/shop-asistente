@@ -12,8 +12,9 @@
  *    <script src="https://TU-APP.vercel.app/widget.js" defer
  *            data-color="#0047AB"          — color del botón
  *            data-posicion="derecha"       — "derecha" (default) o "izquierda"
- *            data-etiqueta="¿Te ayudo?">   — tooltip accesible del botón
- *    </script>
+ *            data-etiqueta="¿Te ayudo?"    — tooltip accesible del botón
+ *            data-artesano="nahuizalco">   — quién atiende (vendor/alias); en
+ *    </script>                               Shopify: {{ product.vendor }}
  *
  *  Eventos: empuja eventos a window.dataLayer (GA4) si existe:
  *    silvi_widget_abierto / silvi_widget_cerrado
@@ -35,6 +36,7 @@
   var color = (script.dataset && script.dataset.color) || "#0047AB";
   var posicion = (script.dataset && script.dataset.posicion) === "izquierda" ? "left" : "right";
   var etiqueta = (script.dataset && script.dataset.etiqueta) || "Abrir chat de asistencia";
+  var artesano = (script.dataset && script.dataset.artesano) || "";
 
   function evento(nombre) {
     if (Array.isArray(window.dataLayer)) {
@@ -87,7 +89,9 @@
   btn.addEventListener("click", function () {
     abierto = !abierto;
     if (abierto && !panel.src) {
-      panel.src = origen + "/"; // carga perezosa: solo al primer clic
+      // carga perezosa: solo al primer clic
+      panel.src =
+        origen + "/" + (artesano ? "?artesano=" + encodeURIComponent(artesano) : "");
     }
     panel.classList.toggle("abierto", abierto);
     btn.innerHTML = abierto ? iconoCerrar : iconoChat;

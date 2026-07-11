@@ -16,15 +16,26 @@ La forma segura y editable desde el **Theme Editor** (no requiere tocar código 
 4. Pegá esto en el campo de código:
 
 ```liquid
-{% comment %} Widget del asistente Silvi (ART-ES) {% endcomment %}
+{% comment %}
+  Widget del asistente de ART-ES.
+  En páginas de producto, el chat lo atiende el taller del artesano que hizo
+  la pieza (usa el vendor del producto); en el resto de páginas, el default.
+{% endcomment %}
 <script
   src="https://TU-APP.vercel.app/widget.js"
   defer
   data-color="#0047AB"
   data-posicion="derecha"
-  data-etiqueta="Chateá con Silvi">
+  data-etiqueta="Chateá con el taller"
+  {% if product %}data-artesano="{{ product.vendor | escape }}"{% endif %}>
 </script>
 ```
+
+> **Nota:** para que la detección funcione, el campo **Vendor** de cada producto
+> en Shopify debe ser el taller/artesano (ej. "Eseoese by Silvi", "Artesanías en
+> Nahuizalco"). Los alias reconocidos se definen en `lib/knowledge-base.ts`
+> (campo `alias` de cada artesano); si el vendor no coincide con ninguno,
+> atiende el artesano por defecto — nunca se rompe.
 
 5. Reemplazá `TU-APP.vercel.app` por el dominio real del despliegue y guardá.
 

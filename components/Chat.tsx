@@ -1,15 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { resolverArtesano, type Artesano } from "@/lib/knowledge-base";
 
 type Rol = "user" | "assistant";
 interface Mensaje {
   role: Rol;
   content: string;
 }
-
-const SALUDO =
-  "¡Hola! Soy Silvi, de ART-ES 🌿 Te ayudo con nuestras piezas artesanales salvadoreñas: precios, envíos, pagos y más. ¿Qué buscás?";
 
 /** Convierte URLs del texto en enlaces clickeables (wa.me, tienda, productos). */
 const URL_REGEX = /(https?:\/\/[^\s)]+|(?:www\.|wa\.me\/)[^\s)]+)/g;
@@ -36,12 +34,26 @@ const SUGERENCIAS = [
 ];
 
 export default function Chat() {
+  // El artesano que atiende la sesión: por defecto el del taller principal;
+  // se resuelve tras montar leyendo ?artesano= (evita mismatch de hidratación).
+  const [artesano, setArtesano] = useState<Artesano>(() => resolverArtesano());
   const [mensajes, setMensajes] = useState<Mensaje[]>([
-    { role: "assistant", content: SALUDO },
+    { role: "assistant", content: resolverArtesano().saludo },
   ]);
   const [texto, setTexto] = useState("");
   const [cargando, setCargando] = useState(false);
   const finRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const param = new URLSearchParams(window.location.search).get("artesano");
+    if (!param) return;
+    const elegido = resolverArtesano(param);
+    setArtesano(elegido);
+    // si la conversación no empezó, el saludo pasa a ser el del artesano elegido
+    setMensajes((prev) =>
+      prev.length <= 1 ? [{ role: "assistant", content: elegido.saludo }] : prev
+    );
+  }, []);
 
   useEffect(() => {
     finRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -60,9 +72,8 @@ export default function Chat() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // enviamos solo los turnos user/assistant (sin el saludo inicial no hace falta filtrar,
-        // el saludo es assistant y es válido como contexto)
-        body: JSON.stringify({ messages: nuevos }),
+        // el saludo inicial es assistant y es válido como contexto
+        body: JSON.stringify({ messages: nuevos, artesano: artesano.id }),
       });
 
       const data = await res.json();
@@ -94,7 +105,7 @@ export default function Chat() {
   const mostrarSugerencias = mensajes.length <= 1 && !cargando;
 
   return (
-    <section className="tarjeta" aria-label="Chat con Silvi de ART-ES">
+    <section className="tarjeta" aria-label={`Chat con el taller de ${artesano.nombre} de ART-ES`}>
       <header className="encabezado">
         <div className="marca-fila">
           <div className="avatar" aria-hidden="true">
@@ -102,7 +113,9 @@ export default function Chat() {
           </div>
           <div>
             <div className="marca-nombre">ART-ES</div>
-            <div className="marca-sub">Silvi · asistente artesanal</div>
+            <div className="marca-sub">
+              Taller de {artesano.nombre} · {artesano.taller}
+            </div>
             <div className="estado">
               <span className="punto" aria-hidden="true" />
               En línea
@@ -117,7 +130,9 @@ export default function Chat() {
             key={i}
             className={`burbuja ${m.role === "user" ? "de-usuario" : "de-silvi"}`}
           >
-            {m.role === "assistant" && <div className="etiqueta">Silvi</div>}
+            {m.role === "assistant" && (
+              <div className="etiqueta">Taller de {artesano.nombre}</div>
+            )}
             {m.role === "assistant" ? conEnlaces(m.content) : m.content}
           </div>
         ))}
@@ -126,13 +141,16 @@ export default function Chat() {
           <div className="fila-silvi">
             <img
               className="avatar-silvi"
-              src="/avatar-silvi.png"
+              src={artesano.avatar}
               alt=""
               width={36}
               height={36}
             />
-            <div className="burbuja de-silvi" aria-label="Silvi está escribiendo">
-              <div className="etiqueta">Silvi</div>
+            <div
+              className="burbuja de-silvi"
+              aria-label={`El taller de ${artesano.nombre} está escribiendo`}
+            >
+              <div className="etiqueta">Taller de {artesano.nombre}</div>
               <div className="escribiendo">
                 <span />
                 <span />

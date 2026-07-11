@@ -103,6 +103,8 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const historial: Mensaje[] = Array.isArray(body?.messages) ? body.messages : [];
+    const artesano =
+      typeof body?.artesano === "string" ? body.artesano.slice(0, 60) : null;
 
     const limpios = historial
       .filter(
@@ -122,7 +124,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const system = getSystemPrompt();
+    const system = getSystemPrompt(artesano);
     const usarHerramientas = shopifyConfigurado();
 
     const mensajes: Anthropic.MessageParam[] = limpios.map((m) => ({

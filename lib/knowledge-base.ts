@@ -30,7 +30,27 @@ export interface Producto {
   materiales: string;
 }
 
+/**
+ * Artesanos del taller. El chat "lo atiende" uno según la página desde la que
+ * se abre (o el default). El asistente habla como LA VOZ DEL TALLER de ese
+ * artesano — cuenta su historia y técnica — sin hacerse pasar por la persona
+ * física (autenticidad ante todo).
+ */
+export interface Artesano {
+  id: string;
+  nombre: string; // cómo se muestra en el chat (encabezado y burbujas)
+  taller: string;
+  especialidad: string;
+  bio: string;
+  avatar: string; // ruta en /public
+  saludo: string;
+  /** alias para mapear vendor/tags de Shopify → artesano (en minúsculas) */
+  alias: string[];
+}
+
 export interface KnowledgeBase {
+  artesanos: Artesano[];
+  artesanoPorDefecto: string;
   negocio: {
     nombre: string;
     queEs: string;
@@ -79,6 +99,45 @@ export interface KnowledgeBase {
 }
 
 export const knowledgeBase: KnowledgeBase = {
+  // Artesanos del taller — quién "atiende" el chat según la pieza que veas
+  artesanos: [
+    {
+      id: "silvi",
+      nombre: "Silvi",
+      taller: "Eseoese by Silvi",
+      especialidad:
+        "Bolsos tejidos a mano y de crochet, y carteras artesanales (San Salvador).",
+      bio:
+        "Silvi es la artesana detrás de Eseoese by Silvi, en San Salvador. Teje a mano cada bolso y cartera en algodón, trapillo y cordón, con diseños propios de inspiración femenina.",
+      avatar: "/avatar-silvi.png",
+      saludo:
+        "¡Hola! Te atiende el taller de Silvi 🧶 Acá tejemos a mano cada bolso y cartera de ART-ES. Preguntame por precios, envíos, pagos o lo que necesités.",
+      alias: ["silvi", "eseoese", "eseoese-by-silvi", "eseoese by silvi"],
+    },
+    {
+      id: "jose",
+      nombre: "Don José",
+      taller: "Artesanías en Nahuizalco",
+      especialidad:
+        "Bolsos de mecate, cojines bordados y arte en madera (Nahuizalco, Sonsonate).",
+      bio:
+        "Don José es artesano de Nahuizalco, cuna de la artesanía en fibras naturales de El Salvador. Trabaja el mecate y la fibra natural para bolsos, borda cojines y talla arte en madera con técnicas tradicionales.",
+      avatar: "/avatar-jose.png",
+      saludo:
+        "¡Hola! Te atiende el taller de don José, en Nahuizalco 🧺 Acá hacemos los bolsos de mecate, cojines bordados y arte en madera de ART-ES. ¿Qué buscás?",
+      alias: [
+        "jose",
+        "don-jose",
+        "don jose",
+        "nahuizalco",
+        "artesanias-en-nahuizalco",
+        "artesanías en nahuizalco",
+        "artesanias en nahuizalco",
+      ],
+    },
+  ],
+  artesanoPorDefecto: "silvi",
+
   // Identidad del negocio
   negocio: {
     nombre: "ART-ES",
@@ -200,6 +259,11 @@ export const knowledgeBase: KnowledgeBase = {
   // Preguntas frecuentes
   preguntasFrecuentes: [
     {
+      pregunta: "¿Quiénes hacen las piezas?",
+      respuesta:
+        "Artesanos salvadoreños reales: Silvi (Eseoese by Silvi, San Salvador) teje los bolsos y carteras, y don José (Nahuizalco) hace los bolsos de mecate, los cojines bordados y el arte en madera.",
+    },
+    {
       pregunta: "¿Los productos son realmente hechos a mano?",
       respuesta:
         "Sí, cada pieza es hecha a mano por artesanos salvadoreños, como el taller Eseoese by Silvi en San Salvador y Artesanías en Nahuizalco. Por eso cada una es única.",
@@ -226,3 +290,20 @@ export const knowledgeBase: KnowledgeBase = {
     },
   ],
 };
+
+/**
+ * Resuelve un artesano por id o alias (acepta el vendor/tag que manda el
+ * widget desde Shopify). Si no hay match, devuelve el artesano por defecto.
+ */
+export function resolverArtesano(idOAlias?: string | null): Artesano {
+  const porDefecto =
+    knowledgeBase.artesanos.find((a) => a.id === knowledgeBase.artesanoPorDefecto) ??
+    knowledgeBase.artesanos[0];
+  if (!idOAlias) return porDefecto;
+  const clave = idOAlias.trim().toLowerCase();
+  return (
+    knowledgeBase.artesanos.find(
+      (a) => a.id === clave || a.alias.includes(clave)
+    ) ?? porDefecto
+  );
+}

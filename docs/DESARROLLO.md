@@ -21,6 +21,7 @@ conocimiento, la voz del asistente y la paleta visual.
 | 4 | Calidad y endurecimiento (QA) | 🟡 En curso (QA funcional inicial pasado) | — |
 | 5 | Despliegue a producción (Vercel) | ⬜ Pendiente | Fase 4 + decisión GitHub/Vercel |
 | 6 | Widget flotante embebible | ✅ Completada (2026-07-11) — URL de prod pendiente | — |
+| 6.5 | Artesanos por sesión (Silvi / Don José) | ✅ Completada (2026-07-11) | — |
 | 7 | Admin de personalización multi-tienda | ⬜ Planificada | Fase 5 + decisiones de almacenamiento |
 
 ---
@@ -260,6 +261,39 @@ burbuja flotante insertable en la tienda Shopify vía script.
   de "escribiendo".
 
 **Pendiente:** reemplazar `TU-APP.vercel.app` por la URL real tras la Fase 5.
+
+## Fase 6.5 — Artesanos por sesión (2026-07-11)
+
+**Pedido del dueño:** que atienda un artesano distinto según lo que el cliente
+está viendo, fijo por sesión para no complicarlo. Los artesanos son personas
+REALES: Silvi (Eseoese by Silvi, San Salvador — bolsos tejidos/crochet y
+carteras) y don José (Nahuizalco — bolsos de mecate, cojines bordados y arte
+en madera).
+
+**Diseño implementado ("voz del taller"):**
+- Roster `artesanos` en `knowledge-base.ts` (id, taller, especialidad, bio,
+  avatar, saludo, alias) + `resolverArtesano()` que mapea vendor/alias → artesano.
+- Selección al abrir el chat vía `?artesano=` (el widget la pasa con
+  `data-artesano`, en Shopify `{{ product.vendor }}`); si no hay match,
+  atiende el default (Silvi). Fija toda la sesión.
+- **Framing de autenticidad:** el asistente es "la voz del taller de X" — habla
+  en nombre del taller, cuenta la historia del artesano, pero si le preguntan
+  directamente NO afirma ser la persona física: aclara que es el asistente del
+  taller y ofrece el WhatsApp para hablar con el artesano real.
+- Si una pieza es de otro taller, la presenta dando crédito ("esa la hace
+  Silvi, nuestra compañera...") sin cambiar de persona a mitad de chat.
+- UI dinámica: subtítulo del encabezado, etiqueta de burbujas, saludo y avatar
+  del indicador de escritura cambian según el artesano.
+
+**Verificado en navegador (2026-07-11):**
+- `/` → atiende Taller de Silvi (default). `/?artesano=nahuizalco` → Don José.
+- Pregunta cruzada al taller de José por el bolso de crochet: dio crédito a
+  Silvi correctamente Y aclaró con calidez que es el asistente del taller (no
+  don José en persona), ofreciendo el WhatsApp. Comportamiento exacto al diseño.
+
+**Requisito operativo en Shopify:** el campo **Vendor** de cada producto debe
+tener el taller correcto ("Eseoese by Silvi" / "Artesanías en Nahuizalco") para
+que el widget detecte al artesano en páginas de producto.
 
 ## Fase 7 — Admin de personalización multi-tienda (planificada)
 

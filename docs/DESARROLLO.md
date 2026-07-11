@@ -16,7 +16,7 @@ conocimiento, la voz del asistente y la paleta visual.
 |------|--------|--------|------------|
 | 0 | Preparación del entorno | ✅ Completada (2026-07-10) | — |
 | 1 | Marca y datos reales del negocio | ⬜ Pendiente | Confirmación de marca objetivo |
-| 2 | Integración Shopify en vivo | 🟡 En curso (cliente UCP listo; falta dominio ART-ES) | Dominio de la tienda |
+| 2 | Integración Shopify en vivo | ✅ Completada (2026-07-10) — pendiente solo el test end-to-end con API key | — |
 | 3 | Branding UI (assets y paleta) | ⬜ Pendiente | Assets del usuario |
 | 4 | Calidad y endurecimiento (QA) | ⬜ Pendiente | Fases 1–3 |
 | 5 | Despliegue a producción (Vercel) | ⬜ Pendiente | Fase 4 |
@@ -108,12 +108,19 @@ Docs: https://shopify.dev/docs/agents/catalog/storefront-catalog
   shopify.dev; para producción se recomienda publicar perfil propio).
 
 **Trabajo restante**
-- [ ] Configurar `SHOPIFY_STORE_DOMAIN` con la tienda real de ART-ES (pendiente:
-      confirmar si existe y cuál es su dominio).
-- [ ] Probar `buscar_productos` end-to-end con el chat (requiere API key).
+- [x] Configurar `SHOPIFY_STORE_DOMAIN` con la tienda real de ART-ES:
+      **art-es.shop** (dominio principal; también responden www.art-es.shop,
+      hxvw1e-vn.myshopify.com y artes-sv.myshopify.com). Configurado en `.env.local`.
+- [x] Probar el cliente UCP contra el catálogo real de ART-ES: 10 productos
+      en vivo (bolsos tejidos $12–$35, cartera $45, set de cojines $17),
+      disponibilidad correcta (detecta 1 agotado).
+- [x] Ajuste por hallazgo: la búsqueda UCP es semántica pero estricta
+      (consulta vacía con `query` presente devolvía 0). Ahora una consulta
+      vacía OMITE `query` → el endpoint devuelve el catálogo general (browse),
+      ideal para "¿qué venden?". Descripción de la herramienta actualizada
+      para que el modelo reintente con browse si un término no da resultados.
 - [x] Verificar degradación elegante: sin dominio, la app usa productos de ejemplo.
-- [x] Probar el cliente UCP contra una tienda real (test técnico con tienda ajena
-      de solo lectura; se reemplaza por la tienda ART-ES cuando exista el dominio).
+- [ ] Probar `buscar_productos` end-to-end con el chat (bloqueado por API key).
 
 ---
 
@@ -178,6 +185,35 @@ Vercel → QA sobre el preview → merge a `main` → producción.
 - [ ] URL pública verificada en móvil y escritorio
 
 ---
+
+## Backlog v2 — Motor de marca / multi-tienda
+
+**Visión (del dueño del proyecto):** que cualquier otra tienda Shopify pueda
+conectarse fácilmente — ese es el "plus" diferencial del proyecto.
+
+**Lo que ya lo habilita hoy (v1):** conectar el catálogo de cualquier tienda es
+solo cambiar `SHOPIFY_STORE_DOMAIN` (sin tokens, gracias al UCP Catalog MCP).
+El modelo v1 es **1 despliegue = 1 marca**: se clona el repo y se personaliza.
+
+**Puntos de personalización actuales (a consolidar):**
+1. `SHOPIFY_STORE_DOMAIN` — catálogo en vivo (env var, ya resuelto).
+2. `lib/knowledge-base.ts` — datos del negocio (envíos, pagos, políticas, contacto).
+3. `lib/system-prompt.ts` — nombre y voz del asistente (voseo, registro, país).
+4. `app/globals.css` + `components/Chat.tsx` — paleta, tipografías, copy visual.
+
+**Mejora planificada dentro de v1 (Fase 3):** al aplicar el branding, consolidar
+la identidad de marca (nombre del asistente, saludo, sugerencias, colores como
+tokens) para que re-marcar sea tocar la menor cantidad de archivos posible.
+
+**Ideas v2 (post-reto, no bloquean producción):**
+- **Multi-tenant real:** un solo despliegue que sirva varias marcas, resolviendo
+  la configuración por dominio/subdominio (ej. `asistente.marca1.com` →
+  config de marca 1). Requiere mover knowledge-base a datos por tenant.
+- **Auto-branding desde Shopify:** Shopify expone la identidad de marca de la
+  tienda (logo, colores, slogan — `shop.brand` en Storefront API); se podría
+  pre-poblar la paleta y el avatar automáticamente al conectar una tienda.
+- **Onboarding asistido:** un formulario/wizard que genere `knowledge-base.ts`
+  para el dueño de la nueva tienda en lugar de editar código.
 
 ## Registro de decisiones
 

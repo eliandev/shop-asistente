@@ -41,8 +41,10 @@ const HERRAMIENTAS: Anthropic.Tool[] = [
         consulta: {
           type: "string",
           description:
-            "Término de búsqueda (ej: 'bolso', 'añil', 'taza de barro'). " +
-            "Para mostrar productos generales, usar una cadena vacía o un término amplio.",
+            "Término de búsqueda (ej: 'bolso', 'cartera', 'cojines'). " +
+            "Usar cadena vacía \"\" para ver el catálogo general (ideal para '¿qué venden?'). " +
+            "La búsqueda es estricta: si un término específico no devuelve nada, " +
+            "reintentá con cadena vacía y ofrecé lo que sí hay.",
         },
       },
       required: ["consulta"],

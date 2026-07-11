@@ -67,6 +67,11 @@ function limpiarDescripcion(html: string, max = 300): string {
 }
 
 async function buscarPorUcp(consulta: string, n: number): Promise<ProductoShopify[]> {
+  // Sin `query`, el endpoint devuelve el catálogo general (browse) — útil para
+  // "¿qué venden?". Con `query`, hace búsqueda semántica estricta.
+  const catalogo: Record<string, unknown> = { pagination: { limit: n } };
+  if (consulta.trim()) catalogo.query = consulta.trim();
+
   const res = await fetch(`https://${DOMINIO}/api/ucp/mcp`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -78,10 +83,7 @@ async function buscarPorUcp(consulta: string, n: number): Promise<ProductoShopif
         name: "search_catalog",
         arguments: {
           meta: { "ucp-agent": { profile: PERFIL_AGENTE } },
-          catalog: {
-            query: consulta || "productos",
-            pagination: { limit: n },
-          },
+          catalog: catalogo,
         },
       },
     }),

@@ -64,8 +64,13 @@ export default function CrearAsistente() {
   const snippetWidget = `<script src="${origen}/widget.js" defer
   data-color="${config.color}"
   data-etiqueta="Chateá con ${config.asistente || "tu asistente"}"
+  data-licencia="TU-LICENCIA-PRO"
   data-config="${c}">
 </script>`;
+  const mensajeActivacion = encodeURIComponent(
+    `Hola! Quiero activar el widget Pro de mi asistente "${config.asistente || "?"}" para ${config.marca || "mi marca"}${config.dominio ? ` (tienda: ${config.dominio})` : ""}.`
+  );
+  const linkActivacion = `https://wa.me/50372100755?text=${mensajeActivacion}`;
 
   async function copiar(texto: string, cual: "link" | "widget") {
     try {
@@ -297,15 +302,37 @@ export default function CrearAsistente() {
                 >
                   Abrir mi asistente →
                 </a>
-                <label className="adm-campo">
-                  <span>Widget para tu web o tienda Shopify (Custom Liquid en el footer)</span>
+                <div className="crd-pro">
+                  <div className="crd-pro-encabezado">
+                    <span className="crd-pro-badge">PRO</span>
+                    <h3>Widget para tu web o tienda Shopify</h3>
+                  </div>
+                  <p className="crd-pro-texto">
+                    El link de arriba es <strong>gratis para siempre</strong>.
+                    Para atender a tus clientes <strong>dentro de tu propio
+                    sitio</strong> con la burbuja flotante, activá el plan Pro:
+                    te enviamos tu licencia y pegás este código (sección
+                    Custom Liquid del Theme Editor):
+                  </p>
                   <div className="crd-copia">
-                    <textarea readOnly rows={5} value={snippetWidget} onFocus={(e) => e.target.select()} />
+                    <textarea readOnly rows={6} value={snippetWidget} onFocus={(e) => e.target.select()} />
                     <button type="button" onClick={() => copiar(snippetWidget, "widget")}>
                       {copiado === "widget" ? "¡Copiado!" : "Copiar"}
                     </button>
                   </div>
-                </label>
+                  <p className="crd-pro-nota">
+                    Sin licencia, el widget muestra una vista previa con aviso
+                    de activación (tu link gratis sigue funcionando siempre).
+                  </p>
+                  <a
+                    className="ld-btn ld-btn-primario crd-probar"
+                    href={linkActivacion}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Activar el widget Pro 💬
+                  </a>
+                </div>
               </>
             )}
           </section>

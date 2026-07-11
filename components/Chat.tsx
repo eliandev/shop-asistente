@@ -77,6 +77,10 @@ export default function Chat() {
   // Asistente personalizado (creado en /crear): config del link (?c=).
   const [config, setConfig] = useState<ConfigAsistente | null>(null);
   const [cRaw, setCRaw] = useState<string | null>(null);
+  // Plan Pro: si el chat corre embebido (widget en otro sitio) manda la
+  // licencia; el servidor decide si está activado.
+  const [embebido, setEmbebido] = useState(false);
+  const [lic, setLic] = useState<string | null>(null);
   const [mensajes, setMensajes] = useState<Mensaje[]>([
     { role: "assistant", content: resolverArtesano().saludo },
   ]);
@@ -87,6 +91,12 @@ export default function Chat() {
   // Se resuelve tras montar leyendo la URL (evita mismatch de hidratación).
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    try {
+      setEmbebido(window.self !== window.top);
+    } catch {
+      setEmbebido(true); // acceso bloqueado entre orígenes = seguro embebido
+    }
+    setLic(params.get("lic"));
     const c = params.get("c");
     const cfg = decodificarConfig(c);
     if (cfg && c) {
@@ -137,7 +147,7 @@ export default function Chat() {
         body: JSON.stringify({
           messages: nuevos.map(({ role, content }) => ({ role, content })),
           artesano: artesano.id,
-          ...(cRaw ? { c: cRaw } : {}),
+          ...(cRaw ? { c: cRaw, embebido, ...(lic ? { lic } : {}) } : {}),
         }),
       });
 

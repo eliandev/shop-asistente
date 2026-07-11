@@ -25,6 +25,7 @@ conocimiento, la voz del asistente y la paleta visual.
 | 7 | Admin de personalización multi-tienda | ⬜ Planificada | Fase 5 + decisiones de almacenamiento |
 | 8 | Landing de producto + dashboard demo | ✅ Completada (2026-07-11) | — |
 | 9 | Creador de asistentes generalizado | ✅ Completada (2026-07-11) | — |
+| 10 | Monetización: widget Pro con licencias | ✅ Completada (2026-07-11) | — |
 
 ---
 
@@ -438,6 +439,33 @@ encontrar rubores, lo dijo con honestidad. UI re-marcada a rosa completa.
   rate-limit por IP; para un SaaS real: cuentas + llaves/límites por tenant.
 - El link largo es la "persistencia" v1; la Fase 7 (KV + slugs cortos +
   gestión) es la evolución natural.
+
+## Fase 10 — Monetización: widget Pro con licencias firmadas (2026-07-11)
+
+**Pedido del dueño:** el link compartible puede ser el preview, pero el
+widget embebido no se regala — "pagar para obtenerlo".
+
+**Modelo implementado (freemium, sin base de datos):**
+- **Gratis:** el link del asistente (`/chat?c=`) — el gancho del producto.
+- **Pro:** el widget embebido. Licencia = HMAC-SHA256 con `LICENCIA_SECRET`
+  atada a marca+dominio (`lib/licencias.ts`). El chat detecta modo embebido
+  (iframe cross-origin) y sin licencia válida el servidor responde un mensaje
+  de activación **sin llamar al modelo** (costo cero). El widget de ART-ES
+  (sin config) no requiere licencia.
+- `/crear`: bloque "PRO" con snippet (placeholder `TU-LICENCIA-PRO`) y CTA
+  "Activar el widget Pro" → WhatsApp del dueño con marca+dominio prellenados.
+- Landing: sección de precios Gratis vs Pro.
+- Emisión: `node scripts/generar-licencia.mjs "Marca" dominio` (guía completa
+  en docs/LICENCIAS.md). Secreto configurado en .env.local y Vercel
+  (production + preview) — mismo secreto: las licencias sirven en ambos.
+
+**QA (local y producción):** (A) embebido sin licencia → bloquea con aviso,
+`proRequerido:true`, 0 tokens; (B) embebido con licencia válida → responde
+con catálogo; (C) link directo → gratis y funcional.
+
+**Nota honesta:** es un candado de negocio, no antifraude — un técnico podría
+esquivarlo; el objetivo es que el camino honesto sea pagar. La evolución
+(cuentas, facturación, KV) es la Fase 7.
 
 ## Backlog v2 — Motor de marca / multi-tienda
 

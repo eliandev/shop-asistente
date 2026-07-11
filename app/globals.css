@@ -567,6 +567,11 @@ a.producto-card:focus-visible {
 .ld-icono { font-size: 26px; display: block; margin-bottom: 10px; }
 .ld-card h3 { font-size: 17px; margin-bottom: 6px; }
 .ld-card p { font-size: 14.5px; line-height: 1.5; color: #4a4438; }
+.ld-precios { max-width: 760px; margin-left: auto; margin-right: auto; }
+.ld-card-pro {
+  border: 1.5px solid var(--acento-amarillo);
+  background: rgba(232, 176, 35, 0.07);
+}
 .ld-codigo {
   background: var(--marca-profundo);
   color: #dbe7ff;
@@ -787,4 +792,35 @@ a.producto-card:focus-visible {
 }
 .crd-copia button:hover { background: var(--marca-oscuro); }
 .crd-probar { display: block; text-align: center; margin: 6px 0 16px; }
+
+/* ── /crear: bloque Plan Pro (widget) ── */
+.crd-pro {
+  margin-top: 6px;
+  border: 1.5px solid var(--acento-amarillo);
+  border-radius: 14px;
+  padding: 16px;
+  background: rgba(232, 176, 35, 0.06);
+}
+.crd-pro-encabezado {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.crd-pro-encabezado h3 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--marca-profundo);
+}
+.crd-pro-badge {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #7a5a00;
+  background: var(--acento-amarillo);
+  border-radius: 6px;
+  padding: 3px 8px;
+}
+.crd-pro-texto { font-size: 14px; line-height: 1.5; color: #4a4438; margin-bottom: 10px; }
+.crd-pro-nota { font-size: 12.5px; color: #7a6a4a; margin: 8px 0 12px; }
 

@@ -125,6 +125,31 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ── Precios ── */}
+      <section className="ld-seccion">
+        <h2>Simple: probás gratis, pagás cuando lo querés en tu tienda</h2>
+        <div className="ld-grid ld-precios">
+          <div className="ld-card">
+            <span className="ld-icono">🔗</span>
+            <h3>Link compartible — Gratis</h3>
+            <p>
+              Creá tu asistente y compartí su link donde quieras: redes, bio,
+              WhatsApp. Catálogo en vivo, tarjetas con foto y anti-invención
+              incluidos. Gratis para siempre.
+            </p>
+          </div>
+          <div className="ld-card ld-card-pro">
+            <span className="ld-icono">⚡</span>
+            <h3>Widget en tu tienda — Pro</h3>
+            <p>
+              La burbuja flotante atendiendo dentro de tu propio sitio, con tu
+              licencia activada. Pedí la activación desde el creador y te la
+              enviamos al instante.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* ── Snippet ── */}
       <section className="ld-seccion ld-alterna">
         <h2>Así de fácil se instala en tu tienda</h2>

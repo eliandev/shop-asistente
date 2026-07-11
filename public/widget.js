@@ -39,6 +39,8 @@
   var artesano = (script.dataset && script.dataset.artesano) || "";
   // config de asistente personalizado (generada en /crear)
   var configAsistente = (script.dataset && script.dataset.config) || "";
+  // licencia del plan Pro (requerida para asistentes personalizados embebidos)
+  var licencia = (script.dataset && script.dataset.licencia) || "";
 
   function evento(nombre) {
     if (Array.isArray(window.dataLayer)) {
@@ -94,8 +96,12 @@
       // carga perezosa: solo al primer clic. El chat vive en /chat
       // (la raíz del sitio es la landing del producto).
       var params = [];
-      if (configAsistente) params.push("c=" + configAsistente);
-      else if (artesano) params.push("artesano=" + encodeURIComponent(artesano));
+      if (configAsistente) {
+        params.push("c=" + configAsistente);
+        if (licencia) params.push("lic=" + encodeURIComponent(licencia));
+      } else if (artesano) {
+        params.push("artesano=" + encodeURIComponent(artesano));
+      }
       panel.src = origen + "/chat" + (params.length ? "?" + params.join("&") : "");
     }
     panel.classList.toggle("abierto", abierto);

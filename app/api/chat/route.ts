@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
 import { getSystemPrompt, getSystemPromptGenerico } from "@/lib/system-prompt";
 import { decodificarConfig } from "@/lib/config-asistente";
+import { licenciaValida, mensajeSinLicencia } from "@/lib/licencias";
 import {
   buscarProductos,
   shopifyConfigurado,
@@ -185,6 +186,19 @@ export async function POST(req: NextRequest) {
     // Asistente personalizado (creado en /crear): la config viaja en `c`
     // y el servidor la decodifica y sanitiza. Si no hay, es el chat de ART-ES.
     const config = decodificarConfig(body?.c);
+
+    // ── Plan Pro: el widget embebido en sitios de terceros requiere licencia.
+    // El link directo (/chat?c=...) es gratis. Sin licencia válida se responde
+    // un mensaje de activación SIN llamar al modelo (costo cero).
+    const embebido = body?.embebido === true;
+    if (config && embebido && !licenciaValida(body?.lic, config)) {
+      const origen = req.nextUrl?.origin || "https://silvi-art-es.vercel.app";
+      return NextResponse.json({
+        reply: mensajeSinLicencia(config.marca, origen),
+        productos: [],
+        proRequerido: true,
+      });
+    }
 
     const limpios = historial
       .filter(

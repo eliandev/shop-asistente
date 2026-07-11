@@ -16,7 +16,7 @@ conocimiento, la voz del asistente y la paleta visual.
 |------|--------|--------|------------|
 | 0 | Preparación del entorno | ✅ Completada (2026-07-10) | — |
 | 1 | Marca y datos reales del negocio | ⬜ Pendiente | Confirmación de marca objetivo |
-| 2 | Integración Shopify en vivo | ⬜ Pendiente | Token Storefront API |
+| 2 | Integración Shopify en vivo | 🟡 En curso (cliente UCP listo; falta dominio ART-ES) | Dominio de la tienda |
 | 3 | Branding UI (assets y paleta) | ⬜ Pendiente | Assets del usuario |
 | 4 | Calidad y endurecimiento (QA) | ⬜ Pendiente | Fases 1–3 |
 | 5 | Despliegue a producción (Vercel) | ⬜ Pendiente | Fase 4 |
@@ -79,16 +79,41 @@ el objetivo de este proyecto y no se usa aquí.
 
 **Objetivo:** que productos, precios y disponibilidad salgan del catálogo real.
 
-**Trabajo**
-- Crear app privada en Shopify Admin → Storefront API token (SOLO lectura:
-  `unauthenticated_read_product_listings`). La Admin API queda prohibida en esta app.
-- Configurar `SHOPIFY_STORE_DOMAIN` y `SHOPIFY_STOREFRONT_TOKEN` en `.env.local`
-  (local) y luego en Vercel (producción).
-- Probar `buscar_productos` con búsquedas reales del catálogo.
-- Verificar degradación elegante: sin credenciales, la app usa productos de ejemplo.
+**Cambio de enfoque (2026-07-10, propuesto por el dueño del proyecto):** se migró
+de la Storefront API (GraphQL + token) al **UCP Catalog MCP por tienda**
+(`https://{dominio}/api/ucp/mcp`, herramienta `search_catalog`).
+Docs: https://shopify.dev/docs/agents/catalog/storefront-catalog
 
-**Nota de seguridad:** el token de Storefront es público y de solo lectura; aún así
-vive solo en variables de entorno del servidor, nunca en código versionado.
+**Por qué**
+- **Sin token:** solo se necesita el dominio de la tienda. Ya no hay que crear
+  una app en el Admin ni generar el Storefront token → configurar cualquier
+  tienda toma segundos (clave para el concepto de "motor de marca").
+- Endpoint público de **solo lectura**, diseñado por Shopify específicamente
+  para agentes de IA. Funciona con el dominio público (ej. `mitienda.com`),
+  no solo con el `*.myshopify.com`.
+- **Verificado empíricamente** contra una tienda Shopify Plus real: devuelve
+  título, descripción (HTML), precio (en unidades menores: 13999 = $139.99),
+  disponibilidad por variante y URL del producto.
+- Se descartó el **Global Catalog** (catalog.shopify.com): ese busca entre
+  TODAS las tiendas de Shopify; nuestro caso es una sola tienda.
+
+**Diseño**
+- `lib/shopify.ts` mantiene la misma interfaz (`buscarProductos`,
+  `shopifyConfigurado`, `ProductoShopify`) → `route.ts` y el prompt no cambian.
+- `shopifyConfigurado()` ahora solo exige `SHOPIFY_STORE_DOMAIN`.
+- La Storefront API (GraphQL) queda como **respaldo automático** si el UCP MCP
+  falla Y hay `SHOPIFY_STOREFRONT_TOKEN` configurado. Opcional.
+- Identificación del agente: header `meta.ucp-agent.profile` con perfil UCP;
+  configurable vía `UCP_AGENT_PROFILE` (default: perfil de ejemplo de
+  shopify.dev; para producción se recomienda publicar perfil propio).
+
+**Trabajo restante**
+- [ ] Configurar `SHOPIFY_STORE_DOMAIN` con la tienda real de ART-ES (pendiente:
+      confirmar si existe y cuál es su dominio).
+- [ ] Probar `buscar_productos` end-to-end con el chat (requiere API key).
+- [x] Verificar degradación elegante: sin dominio, la app usa productos de ejemplo.
+- [x] Probar el cliente UCP contra una tienda real (test técnico con tienda ajena
+      de solo lectura; se reemplaza por la tienda ART-ES cuando exista el dominio).
 
 ---
 
@@ -163,3 +188,4 @@ Vercel → QA sobre el preview → merge a `main` → producción.
 | 2026-07-10 | Rate-limit en memoria se acepta para v1 | Alcance actual; documentado como limitación conocida |
 | 2026-07-10 | Marca de producción: **ART-ES** (no se re-marca a la tienda Caterpillar Panamá conectada a la sesión) | Confirmado por el dueño del proyecto |
 | 2026-07-10 | `ANTHROPIC_API_KEY` pendiente de crear | El usuario la generará en console.anthropic.com; el desarrollo que no requiere probar el chat avanza igual |
+| 2026-07-10 | Catálogo en vivo migrado a **UCP Catalog MCP por tienda** (sin token); Storefront API queda solo como respaldo opcional | Propuesta del dueño del proyecto; simplifica la conexión de cualquier tienda y está verificado contra una tienda real |

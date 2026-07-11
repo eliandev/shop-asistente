@@ -1,13 +1,23 @@
 /**
  * ============================================================================
- *  CLIENTE SHOPIFY — Storefront API (solo lectura, datos públicos)
+ *  CLIENTE SHOPIFY — Catálogo por tienda vía UCP Catalog MCP (solo lectura)
  * ============================================================================
  *  Silvi usa esto para consultar productos, precios y disponibilidad EN VIVO.
- *  Necesita dos variables de entorno (ver .env.example):
- *    - SHOPIFY_STORE_DOMAIN     ej: artes.myshopify.com
- *    - SHOPIFY_STOREFRONT_TOKEN token público de Storefront API
- *  Opcional:
- *    - SHOPIFY_API_VERSION      por defecto 2026-04 (estable)
+ *
+ *  Fuente principal: UCP Catalog MCP de la tienda
+ *    POST https://{dominio}/api/ucp/mcp  (herramienta "search_catalog")
+ *    - NO requiere token de la tienda: solo el dominio público.
+ *    - Docs: https://shopify.dev/docs/agents/catalog/storefront-catalog
+ *
+ *  Respaldo opcional: Storefront API (GraphQL) si UCP falla y hay token.
+ *
+ *  Variables de entorno (ver .env.example):
+ *    - SHOPIFY_STORE_DOMAIN     requerida para catálogo en vivo.
+ *                               Sirve el dominio público (mitienda.com) o el
+ *                               interno (mitienda.myshopify.com).
+ *    - UCP_AGENT_PROFILE        opcional; URL del perfil UCP del agente.
+ *    - SHOPIFY_STOREFRONT_TOKEN opcional; activa el respaldo por Storefront API.
+ *    - SHOPIFY_API_VERSION      opcional; versión del respaldo (default 2026-04).
  * ============================================================================
  */
 
@@ -15,9 +25,18 @@ const DOMINIO = process.env.SHOPIFY_STORE_DOMAIN;
 const TOKEN = process.env.SHOPIFY_STOREFRONT_TOKEN;
 const VERSION = process.env.SHOPIFY_API_VERSION || "2026-04";
 
-/** ¿Están las credenciales de Shopify configuradas? */
+/**
+ * Perfil UCP que identifica a este agente ante la tienda. Para producción se
+ * recomienda publicar un perfil propio (puede ser un JSON estático servido por
+ * esta misma app) y ponerlo en UCP_AGENT_PROFILE.
+ */
+const PERFIL_AGENTE =
+  process.env.UCP_AGENT_PROFILE ||
+  "https://shopify.dev/ucp/agent-profiles/2026-04-08/valid-with-capabilities.json";
+
+/** ¿Está el catálogo en vivo configurado? (solo hace falta el dominio) */
 export function shopifyConfigurado(): boolean {
-  return Boolean(DOMINIO && TOKEN);
+  return Boolean(DOMINIO);
 }
 
 export interface ProductoShopify {
@@ -28,6 +47,85 @@ export interface ProductoShopify {
   url: string | null;
   variantes: { titulo: string; precio: string; disponible: boolean }[];
 }
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * Fuente principal: UCP Catalog MCP
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+/** Precio UCP: viene en unidades menores (13999 = 139.99). */
+function formatearPrecioUcp(p: { amount: number; currency: string }): string {
+  return `${(p.amount / 100).toFixed(2)} ${p.currency}`;
+}
+
+/** Quita etiquetas HTML y recorta la descripción para el prompt. */
+function limpiarDescripcion(html: string, max = 300): string {
+  const texto = html
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return texto.length > max ? `${texto.slice(0, max - 1)}…` : texto;
+}
+
+async function buscarPorUcp(consulta: string, n: number): Promise<ProductoShopify[]> {
+  const res = await fetch(`https://${DOMINIO}/api/ucp/mcp`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      method: "tools/call",
+      id: 1,
+      params: {
+        name: "search_catalog",
+        arguments: {
+          meta: { "ucp-agent": { profile: PERFIL_AGENTE } },
+          catalog: {
+            query: consulta || "productos",
+            pagination: { limit: n },
+          },
+        },
+      },
+    }),
+    cache: "no-store", // precios y stock siempre frescos
+  });
+
+  if (!res.ok) {
+    throw new Error(`UCP MCP respondió ${res.status}`);
+  }
+
+  const json = await res.json();
+  if (json.error) {
+    throw new Error(`Error UCP MCP: ${JSON.stringify(json.error)}`);
+  }
+
+  // El contenido puede venir como structuredContent o como texto JSON.
+  const inner =
+    json?.result?.structuredContent ??
+    JSON.parse(json?.result?.content?.[0]?.text ?? "{}");
+
+  const productos: any[] = inner?.products ?? [];
+
+  return productos.map((p: any): ProductoShopify => {
+    const variantes = (p.variants ?? []).slice(0, 5).map((v: any) => ({
+      titulo: String(v.title ?? ""),
+      precio: formatearPrecioUcp(v.price ?? { amount: 0, currency: "" }),
+      disponible: Boolean(v.availability?.available),
+    }));
+    return {
+      titulo: String(p.title ?? ""),
+      descripcion: limpiarDescripcion(p.description?.html ?? ""),
+      precioDesde: formatearPrecioUcp(
+        p.price_range?.min ?? { amount: 0, currency: "" }
+      ),
+      disponible: (p.variants ?? []).some((v: any) => v.availability?.available),
+      url: p.url ?? null,
+      variantes,
+    };
+  });
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * Respaldo: Storefront API (GraphQL) — solo si hay token configurado
+ * ──────────────────────────────────────────────────────────────────────────── */
 
 const QUERY = /* GraphQL */ `
   query BuscarProductos($q: String!, $n: Int!) {
@@ -57,24 +155,16 @@ const QUERY = /* GraphQL */ `
   }
 `;
 
-function formatearPrecio(p: { amount: string; currencyCode: string }): string {
+function formatearPrecioStorefront(p: { amount: string; currencyCode: string }): string {
   const monto = Number(p.amount);
   const valor = Number.isFinite(monto) ? monto.toFixed(2) : p.amount;
   return `${valor} ${p.currencyCode}`;
 }
 
-/**
- * Busca productos en la tienda Shopify. `consulta` vacía devuelve varios
- * productos generales. Lanza error si la API falla (el llamador lo maneja).
- */
-export async function buscarProductos(
+async function buscarPorStorefront(
   consulta: string,
-  n = 5
+  n: number
 ): Promise<ProductoShopify[]> {
-  if (!shopifyConfigurado()) {
-    throw new Error("Shopify no está configurado.");
-  }
-
   const res = await fetch(`https://${DOMINIO}/api/${VERSION}/graphql.json`, {
     method: "POST",
     headers: {
@@ -82,7 +172,7 @@ export async function buscarProductos(
       "X-Shopify-Storefront-Access-Token": TOKEN as string,
     },
     body: JSON.stringify({ query: QUERY, variables: { q: consulta, n } }),
-    cache: "no-store", // precios y stock siempre frescos
+    cache: "no-store",
   });
 
   if (!res.ok) {
@@ -101,14 +191,41 @@ export async function buscarProductos(
     return {
       titulo: nodo.title,
       descripcion: (nodo.description || "").trim(),
-      precioDesde: formatearPrecio(nodo.priceRange.minVariantPrice),
+      precioDesde: formatearPrecioStorefront(nodo.priceRange.minVariantPrice),
       disponible: Boolean(nodo.availableForSale),
       url: nodo.onlineStoreUrl ?? null,
       variantes: (nodo.variants?.edges ?? []).map((v: any) => ({
         titulo: v.node.title,
-        precio: formatearPrecio(v.node.price),
+        precio: formatearPrecioStorefront(v.node.price),
         disponible: Boolean(v.node.availableForSale),
       })),
     };
   });
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * API pública del módulo
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * Busca productos en la tienda. `consulta` vacía devuelve varios productos
+ * generales. Usa UCP Catalog MCP (sin token); si falla y hay token de
+ * Storefront, reintenta por GraphQL. Lanza error si ninguna fuente responde
+ * (el llamador lo maneja).
+ */
+export async function buscarProductos(
+  consulta: string,
+  n = 5
+): Promise<ProductoShopify[]> {
+  if (!shopifyConfigurado()) {
+    throw new Error("Shopify no está configurado.");
+  }
+
+  try {
+    return await buscarPorUcp(consulta, n);
+  } catch (errorUcp) {
+    if (!TOKEN) throw errorUcp;
+    console.warn("UCP MCP falló; usando respaldo Storefront API:", errorUcp);
+    return buscarPorStorefront(consulta, n);
+  }
 }

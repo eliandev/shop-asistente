@@ -17,22 +17,24 @@ Políticas, envíos, horarios y contacto viven en **`lib/knowledge-base.ts`**. C
 los reales (buscá los comentarios `// ✏️ EDITAR`) y el asistente se actualiza solo.
 
 ## Conexión con Shopify (productos y precios en vivo)
-Si conectás Shopify, Silvi consulta tu catálogo **en tiempo real** con la Storefront API (solo lectura),
-en vez de usar los productos de ejemplo. Los precios y la disponibilidad siempre estarán al día.
+Si conectás Shopify, Silvi consulta tu catálogo **en tiempo real** en vez de usar los
+productos de ejemplo. Los precios y la disponibilidad siempre estarán al día.
 
-**Cómo obtener el token de Storefront API:**
-1. En tu Shopify Admin: **Settings → Apps and sales channels → Develop apps**.
-2. **Create an app** (dale un nombre, ej. "Silvi Asistente").
-3. En **Configuration → Storefront API**, activá los permisos de lectura de productos
-   (ej. `unauthenticated_read_product_listings`).
-4. **Install app** y copiá el **Storefront API access token**.
-5. Poné en tus variables de entorno:
-   - `SHOPIFY_STORE_DOMAIN` = `tu-tienda.myshopify.com`
-   - `SHOPIFY_STOREFRONT_TOKEN` = el token que copiaste
+**Configuración (¡sin token!):** solo poné en tus variables de entorno:
+- `SHOPIFY_STORE_DOMAIN` = el dominio de tu tienda (sirve el público, ej. `mitienda.com`,
+  o el interno `mitienda.myshopify.com`).
 
-El token de Storefront es público y de solo lectura, así que es seguro usarlo en producción.
-Cómo funciona: cuando alguien pregunta por productos/precios, el modelo llama a la herramienta
-`buscar_productos`, que consulta tu tienda vía GraphQL y devuelve datos reales para responder.
+Usa el **UCP Catalog MCP** de la tienda (`https://tu-dominio/api/ucp/mcp`), un endpoint
+público de **solo lectura** que Shopify expone para agentes de IA — no requiere crear
+apps ni tokens. Docs: https://shopify.dev/docs/agents/catalog/storefront-catalog
+
+Cómo funciona: cuando alguien pregunta por productos/precios, el modelo llama a la
+herramienta `buscar_productos`, que consulta el catálogo en vivo y devuelve datos reales
+(título, descripción, precio, disponibilidad y enlace) para responder.
+
+**Opcional (respaldo):** si además configurás `SHOPIFY_STOREFRONT_TOKEN`, la app usa la
+Storefront API (GraphQL) como respaldo automático cuando el UCP MCP no responde.
+El token de Storefront es público y de solo lectura, seguro para producción.
 
 ## Correr en local
 ```bash
@@ -48,7 +50,7 @@ Abrí http://localhost:3000
 3. En **Environment Variables** agregá:
    - `ANTHROPIC_API_KEY` = tu llave real
    - *(opcional)* `ANTHROPIC_MODEL` = `claude-sonnet-5` para mayor calidad
-   - *(opcional, para catálogo en vivo)* `SHOPIFY_STORE_DOMAIN` y `SHOPIFY_STOREFRONT_TOKEN`
+   - *(opcional, para catálogo en vivo)* `SHOPIFY_STORE_DOMAIN` (sin token; ver sección de Shopify)
 4. **Deploy**. Vercel te da una URL pública `https://tu-proyecto.vercel.app` → ese es tu link para el reto.
 
 ## Tu llave de API

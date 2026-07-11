@@ -35,7 +35,7 @@ components/
 lib/
   knowledge-base.ts   # ÚNICA fuente de verdad del negocio (datos fijos)
   system-prompt.ts    # tono + reglas + serialización de la base al prompt
-  shopify.ts          # cliente Storefront API (GraphQL, solo lectura)
+  shopify.ts          # cliente de catálogo: UCP Catalog MCP (principal, sin token) + Storefront API (respaldo opcional)
 PRD.md                # requerimientos de producto
 ```
 
@@ -62,10 +62,10 @@ El bucle de herramientas está en `route.ts` y se limita a `MAX_VUELTAS_HERRAMIE
 1. **Anti-invención es un requisito duro.** El asistente solo responde con datos de Shopify (productos/precios) o de `knowledge-base.ts` (todo lo demás). Cualquier cambio que permita responder de memoria o inventar es un bug. Mantener temperatura baja y las reglas del prompt.
 2. **`lib/knowledge-base.ts` es la única fuente de verdad del negocio.** No hardcodear datos de negocio (precios, horarios, contacto) en componentes, prompt ni rutas. Todo entra por ese archivo.
 3. **Secretos solo en el servidor.** `ANTHROPIC_API_KEY` y `SHOPIFY_STOREFRONT_TOKEN` nunca se exponen al cliente ni se ponen en código versionado. Nada de llaves en componentes `"use client"`.
-4. **Solo Storefront API (lectura pública).** Prohibido usar la Admin API o tokens privados de Shopify en esta app pública. No agregar operaciones de escritura (crear/editar productos, órdenes, clientes).
+4. **Solo APIs públicas de solo lectura para el catálogo.** Fuente principal: UCP Catalog MCP de la tienda (`https://{dominio}/api/ucp/mcp`, sin token); respaldo opcional: Storefront API con token público de lectura. Prohibido usar la Admin API o tokens privados de Shopify en esta app pública. No agregar operaciones de escritura (crear/editar productos, órdenes, clientes) ni de checkout/carrito.
 5. **Nada de almacenamiento del navegador** (`localStorage`/`sessionStorage`) para estado del chat: usar estado de React en memoria.
 6. **No debilitar los límites de costo** (rate-limit por IP, tope de tokens, tope de historial) sin una razón explícita.
-7. **Fijar la versión de la API de Shopify** vía `SHOPIFY_API_VERSION` (default `2026-04`). No usar `unstable` ni release candidates en producción.
+7. **Fijar versiones de API de Shopify.** El respaldo Storefront usa `SHOPIFY_API_VERSION` (default `2026-04`); no usar `unstable` ni release candidates en producción. El cliente UCP tolera ambas formas de respuesta del MCP (`structuredContent` o `content[0].text`).
 8. **No subir datos de plantilla como reales.** Los valores de ejemplo en `knowledge-base.ts` deben reemplazarse antes de publicar; no inventar datos "para completar".
 
 ## Variables de entorno
@@ -74,11 +74,12 @@ El bucle de herramientas está en `route.ts` y se limita a `MAX_VUELTAS_HERRAMIE
 |---|---|---|
 | `ANTHROPIC_API_KEY` | Sí | Llamadas al modelo (solo servidor) |
 | `ANTHROPIC_MODEL` | No | Default `claude-haiku-4-5-20251001`; alternativa `claude-sonnet-5` |
-| `SHOPIFY_STORE_DOMAIN` | No | `tu-tienda.myshopify.com` — activa catálogo en vivo |
-| `SHOPIFY_STOREFRONT_TOKEN` | No | Token público de Storefront API (solo lectura) |
-| `SHOPIFY_API_VERSION` | No | Default `2026-04` |
+| `SHOPIFY_STORE_DOMAIN` | No | Dominio de la tienda (público o `*.myshopify.com`) — activa catálogo en vivo vía UCP MCP, sin token |
+| `UCP_AGENT_PROFILE` | No | URL del perfil UCP del agente; default: perfil de ejemplo de shopify.dev |
+| `SHOPIFY_STOREFRONT_TOKEN` | No | Token público de Storefront API — solo como respaldo si UCP falla |
+| `SHOPIFY_API_VERSION` | No | Versión del respaldo Storefront; default `2026-04` |
 
-Si faltan las dos variables de Shopify, la app cae automáticamente a los productos de ejemplo.
+Si falta `SHOPIFY_STORE_DOMAIN`, la app cae automáticamente a los productos de ejemplo.
 
 ## Definición de "hecho"
 

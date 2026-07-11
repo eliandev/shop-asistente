@@ -192,7 +192,7 @@ export async function POST(req: NextRequest) {
     // un mensaje de activación SIN llamar al modelo (costo cero).
     const embebido = body?.embebido === true;
     if (config && embebido && !licenciaValida(body?.lic, config)) {
-      const origen = req.nextUrl?.origin || "https://silvi-art-es.vercel.app";
+      const origen = req.nextUrl?.origin || "https://silvi-assistants.vercel.app";
       return NextResponse.json({
         reply: mensajeSinLicencia(config.marca, origen),
         productos: [],

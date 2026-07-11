@@ -58,7 +58,7 @@ export default function CrearAsistente() {
   const origen =
     typeof window !== "undefined"
       ? window.location.origin
-      : "https://silvi-art-es.vercel.app";
+      : "https://silvi-assistants.vercel.app";
   const c = codificarConfig(config);
   const linkChat = `${origen}/chat?c=${c}`;
   const snippetWidget = `<script src="${origen}/widget.js" defer

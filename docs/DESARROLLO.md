@@ -19,7 +19,7 @@ conocimiento, la voz del asistente y la paleta visual.
 | 2 | Integración Shopify en vivo | ✅ Completada (2026-07-10) — pendiente solo el test end-to-end con API key | — |
 | 3 | Branding UI (assets y paleta) | ✅ Completada (2026-07-10) | — |
 | 4 | Calidad y endurecimiento (QA) | ✅ Completada (2026-07-11) — QA local + producción | — |
-| 5 | Despliegue a producción (Vercel) | ✅ Completada (2026-07-11) — https://silvi-art-es.vercel.app | — |
+| 5 | Despliegue a producción (Vercel) | ✅ Completada (2026-07-11) — https://silvi-assistants.vercel.app | — |
 | 6 | Widget flotante embebible | ✅ Completada (2026-07-11) — URL de prod pendiente | — |
 | 6.5 | Artesanos por sesión (Silvi / Don José) | ✅ Completada (2026-07-11) | — |
 | 7 | Admin de personalización multi-tienda | ⬜ Planificada | Fase 5 + decisiones de almacenamiento |
@@ -361,7 +361,7 @@ y catálogo, o también knowledge base editable?).
 **Cierre (2026-07-11):**
 - [x] El dueño quitó la Vercel Authentication de producción y agregó
       `ANTHROPIC_API_KEY`.
-- [x] Redeploy final → alias limpio asignado: **https://silvi-art-es.vercel.app**
+- [x] Redeploy final → alias limpio asignado: **https://silvi-assistants.vercel.app**
 
 **QA en producción (2026-07-11) — todo ✅:**
 | Prueba | Resultado |

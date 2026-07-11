@@ -237,7 +237,7 @@ export default function Landing() {
           <span className="lx-etiqueta lx-centro">[ instalación ]</span>
           <h2 className="lx-demos-titulo lx-snippet-titulo">Una línea. En serio.</h2>
           <pre className="ld-codigo">{`<script
-  src="https://silvi-art-es.vercel.app/widget.js"
+  src="https://silvi-assistants.vercel.app/widget.js"
   defer
   data-color="#0047AB"
   data-etiqueta="Chateá con el taller"

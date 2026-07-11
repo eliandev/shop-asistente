@@ -1,19 +1,25 @@
 /**
  * ============================================================================
- *  BASE DE CONOCIMIENTO — ART-ES
+ *  BASE DE CONOCIMIENTO — ART-ES (art-es.shop)
  * ============================================================================
  *
- *  👉 ESTE ES EL ÚNICO ARCHIVO QUE NECESITÁS EDITAR.
+ *  👉 ESTE ES EL ÚNICO ARCHIVO QUE NECESITÁS EDITAR para cambiar datos del negocio.
  *
  *  Todo lo que Silvi (el asistente) sabe sale de aquí. Si un dato NO está en
- *  este archivo, Silvi tiene instrucciones de admitir que no lo sabe y pasar
- *  el contacto de WhatsApp — nunca de inventar.
+ *  este archivo (ni en el catálogo en vivo de Shopify), Silvi tiene
+ *  instrucciones de admitir que no lo sabe y pasar el contacto de WhatsApp —
+ *  nunca de inventar.
  *
- *  ⚠️  LOS DATOS DE ABAJO SON UNA PLANTILLA DE EJEMPLO.
- *      Reemplazá cada valor por la información REAL de tu negocio antes de
- *      publicar. El reto pide "mínimo 10 datos concretos": aquí hay 14+.
+ *  ✅ Datos reales cargados el 2026-07-10 (provistos por el dueño del negocio
+ *     + catálogo en vivo de art-es.shop).
  *
- *  Buscá los comentarios  // ✏️ EDITAR  para saber qué cambiar.
+ *  ⚠️ PENDIENTES DE CONFIRMAR (no incluidos o marcados abajo):
+ *     - Método de envío en $0.00 detectado en la config: revisar si es promo
+ *       real antes de anunciarlo aquí.
+ *     - Sellos exactos de tarjetas aceptadas (verificar Admin → Pagos).
+ *     - Dirección física: NO se publica en el asistente por privacidad (parece
+ *       dirección residencial); si querés que Silvi la comparta, descomentá
+ *       el campo `direccion` en `contacto`.
  * ============================================================================
  */
 
@@ -22,7 +28,6 @@ export interface Producto {
   descripcion: string;
   precio: string;
   materiales: string;
-  tiempoProduccion: string;
 }
 
 export interface KnowledgeBase {
@@ -39,153 +44,185 @@ export interface KnowledgeBase {
   };
   horarios: {
     atencion: string;
-    respuestaChat: string;
+    sucursal: string;
     zonaHoraria: string;
   };
   envios: {
-    elSalvador: string;
-    centroamerica: string;
-    costos: string;
-    empaque: string;
+    cobertura: string;
+    costo: string;
+    procesamiento: string;
   };
   pagos: {
+    moneda: string;
     metodos: string[];
-    contraEntrega: string;
-    whatsapp: string;
+    ayudaWhatsapp: string;
   };
   politicas: {
     cambiosDevoluciones: string;
-    garantiaAutenticidad: string;
+    reembolsos: string;
+    excepciones: string;
+    garantia: string;
     productoHechoAMano: string;
   };
   comoComprar: string;
   contacto: {
     whatsapp: string;
+    whatsappLink: string;
     instagram: string;
+    facebook: string;
+    tiktok: string;
     web: string;
     correo: string;
+    direccion?: string;
   };
   preguntasFrecuentes: { pregunta: string; respuesta: string }[];
 }
 
 export const knowledgeBase: KnowledgeBase = {
-  // 1–4. Identidad del negocio  // ✏️ EDITAR
+  // Identidad del negocio
   negocio: {
     nombre: "ART-ES",
     queEs:
-      "Tienda en línea de artesanía salvadoreña hecha a mano. Trabajamos directamente con artesanos y artesanas de El Salvador para llevar sus piezas al mundo.",
+      "Tienda en línea de artesanía salvadoreña hecha a mano: bolsos tejidos y de crochet, carteras y cojines bordados, elaborados por manos artesanas de El Salvador.",
     propuestaUnica:
-      "Cada pieza es 100% artesanal, hecha a mano por artesanos salvadoreños reales. No vendemos producción industrial ni réplicas: vendemos trabajo auténtico, con historia y con nombre.",
+      "Cada pieza es hecha a mano por artesanos salvadoreños, como el taller Eseoese by Silvi en San Salvador y Artesanías en Nahuizalco. No vendemos producción industrial: cada pieza es única, con detalle y esencia artesanal.",
     origen:
-      "ART-ES nace en El Salvador para dar visibilidad y un canal de venta digno a los artesanos locales, rescatando técnicas tradicionales como el teñido con añil, el barro y el tejido de fibras naturales.",
+      "ART-ES nace en El Salvador para dar visibilidad y un canal de venta digital al trabajo artesanal salvadoreño.",
   },
 
-  // 5–7. Productos con precios concretos  // ✏️ EDITAR (precios, nombres, materiales)
+  // Productos de RESPALDO (solo se usan si el catálogo en vivo de Shopify no
+  // está disponible). Tomados del catálogo real de art-es.shop el 2026-07-10.
   productos: [
     {
-      nombre: "Bolso tejido de tule",
+      nombre: "Bolso de mano estilo Elena",
       descripcion:
-        "Bolso artesanal tejido a mano con fibra de tule, ideal para el día a día.",
-      precio: "$28.00 USD",
-      materiales: "Fibra natural de tule teñida con tintes naturales.",
-      tiempoProduccion: "Disponible en stock / 5 días si es por encargo.",
-    },
-    {
-      nombre: "Camisa teñida con añil",
-      descripcion:
-        "Camisa de algodón teñida a mano con añil salvadoreño con técnica de amarrado (shibori).",
+        "Bolso tejido a mano en algodón, de diseño delicado y formato compacto; para el día a día u ocasiones especiales.",
       precio: "$35.00 USD",
-      materiales: "Algodón 100% y añil natural cultivado en El Salvador.",
-      tiempoProduccion: "Por encargo, 7 días hábiles.",
+      materiales: "Tejido artesanal en algodón.",
     },
     {
-      nombre: "Set de tazas de barro",
-      descripcion: "Juego de 2 tazas de barro cocido, moldeadas a mano.",
-      precio: "$22.00 USD",
-      materiales: "Barro local cocido en horno tradicional.",
-      tiempoProduccion: "Disponible en stock.",
+      nombre: "Bolso de mano estilo Aracely",
+      descripcion:
+        "Bolso artesanal compacto en tono gris, fácil de llevar y combinar. Elaborado por Eseoese by Silvi en San Salvador.",
+      precio: "$20.00 USD",
+      materiales: "Trapillo de algodón.",
+    },
+    {
+      nombre: "Bolso de mano crochet",
+      descripcion:
+        "Bolso tejido en crochet en vibrante tono rojo, resistente y ligero.",
+      precio: "$12.00 USD",
+      materiales: "Hilo sintético de alta calidad.",
+    },
+    {
+      nombre: "Cartera Estilo Rubí",
+      descripcion:
+        "Cartera artesanal de diseño llamativo y femenino en tonos fucsia y natural, tejida a mano y estructurada.",
+      precio: "$45.00 USD",
+      materiales: "Tejido a mano en tonos fucsia y natural.",
+    },
+    {
+      nombre: "Set de cojines bordados hecho a mano",
+      descripcion:
+        "Set de 2 cojines decorativos bordados (34×34 cm y 20×20 cm), creados por manos expertas de Artesanías en Nahuizalco.",
+      precio: "$17.00 USD",
+      materiales: "Bordado artesanal de Nahuizalco.",
     },
   ],
 
-  // 8. Precios generales  // ✏️ EDITAR
+  // Precios generales (del catálogo real)
   precios: {
     rangoGeneral:
-      "Nuestros productos van desde $15 hasta $60 USD según la pieza y el trabajo artesanal.",
+      "Nuestras piezas van desde $12 hasta $45 USD según el diseño y el trabajo artesanal.",
     envioIncluido: false,
   },
 
-  // 9. Horarios  // ✏️ EDITAR
+  // Horarios
   horarios: {
     atencion:
-      "Lunes a viernes de 9:00 a.m. a 6:00 p.m. y sábados de 9:00 a.m. a 1:00 p.m.",
-    respuestaChat:
-      "Por WhatsApp respondemos dentro del horario de atención; fuera de horario contestamos al siguiente día hábil.",
+      "Atendemos por WhatsApp y redes sociales de lunes a domingo, de 8:00 a.m. a 10:00 p.m.",
+    sucursal:
+      "Por el momento no contamos con sucursal física: somos una tienda 100% en línea.",
     zonaHoraria: "Hora de El Salvador (GMT-6).",
   },
 
-  // 10–11. Envíos  // ✏️ EDITAR (tiempos y costos reales)
+  // Envíos
   envios: {
-    elSalvador:
-      "Envíos a todo El Salvador en 2 a 4 días hábiles a través de courier local.",
-    centroamerica:
-      "Enviamos a Guatemala, Honduras, Nicaragua, Costa Rica y Panamá en 7 a 12 días hábiles.",
-    costos:
-      "El Salvador: $3.50 dentro de San Salvador y $5.00 al resto del país. Centroamérica: se cotiza según país y peso al confirmar el pedido.",
-    empaque:
-      "Empacamos cada pieza a mano con materiales reciclados y una tarjeta con la historia del artesano.",
+    cobertura:
+      "Por ahora enviamos únicamente dentro de El Salvador, a todo el país.",
+    costo:
+      "Envío estándar a domicilio: $3.50 USD (puede variar según la zona).",
+    procesamiento:
+      "Preparamos tu pedido en 1 a 3 días hábiles antes del envío.",
   },
 
-  // 12. Pagos  // ✏️ EDITAR
+  // Pagos
   pagos: {
+    moneda: "USD (dólares)",
     metodos: [
-      "Tarjeta de crédito o débito (a través de la tienda en línea)",
-      "Transferencia bancaria",
-      "Pago contra entrega (solo dentro de El Salvador)",
+      "Pago en línea en el checkout de la tienda (tarjeta de crédito o débito)",
+      "Billeteras digitales: Apple Pay, Google Pay y Shop Pay",
     ],
-    contraEntrega:
-      "El pago contra entrega está disponible únicamente dentro de El Salvador y se coordina por WhatsApp.",
-    whatsapp:
-      "La forma más rápida de cerrar una compra es por WhatsApp: te ayudamos a elegir, confirmamos disponibilidad y coordinamos el pago.",
+    ayudaWhatsapp:
+      "Si tenés alguna duda al momento de pagar, escribinos por WhatsApp y te acompañamos en el proceso.",
   },
 
-  // 13. Políticas  // ✏️ EDITAR
+  // Políticas
   politicas: {
     cambiosDevoluciones:
-      "Aceptamos cambios dentro de los primeros 7 días si la pieza llega con algún defecto de fabricación. Al ser productos hechos a mano, pequeñas variaciones de color o textura no se consideran defectos.",
-    garantiaAutenticidad:
-      "Garantizamos que cada pieza es hecha a mano por artesanos salvadoreños. No usamos producción industrial.",
+      "Aceptamos devoluciones dentro de los 30 días desde que recibís tu pedido, siempre que el producto esté sin usar, con sus etiquetas y empaque original, y presentés el recibo o comprobante de compra. Para un cambio, se procesa la devolución y luego se realiza la compra del artículo deseado.",
+    reembolsos:
+      "Una vez aprobada la devolución, el reembolso se hace al método de pago original en un plazo de hasta 10 días hábiles.",
+    excepciones:
+      "No aplican devoluciones en: productos perecederos, artículos personalizados, productos de cuidado personal, artículos en oferta y tarjetas de regalo.",
+    garantia: "Garantía de 15 días en todas tus compras.",
     productoHechoAMano:
-      "Por ser artesanal, cada pieza es única: puede tener leves diferencias respecto a la foto. Eso es parte de su valor, no un defecto.",
+      "Por ser piezas artesanales hechas a mano, cada una es única: puede tener leves variaciones de color o textura respecto a la foto. Eso es parte de su valor, no un defecto.",
   },
 
-  // 14. Cómo comprar  // ✏️ EDITAR
+  // Cómo comprar
   comoComprar:
-    "Podés comprar directamente en nuestra tienda en línea agregando al carrito y pagando con tarjeta, o escribirnos por WhatsApp para que te acompañemos en todo el proceso y coordinar pago contra entrega o transferencia.",
+    "Podés comprar directamente en nuestra tienda en línea (art-es.shop) agregando al carrito y pagando en el checkout, o escribirnos por WhatsApp y con gusto te acompañamos en todo el proceso.",
 
-  // Contacto  // ✏️ EDITAR — PONÉ TUS DATOS REALES
+  // Contacto (datos reales)
   contacto: {
-    whatsapp: "+503 0000-0000",
-    instagram: "@artes.sv",
-    web: "https://artes.example.com",
-    correo: "hola@artes.example.com",
+    whatsapp: "+503 7210 0755",
+    whatsappLink: "https://wa.me/50372100755",
+    instagram: "@artes.shop.sv (instagram.com/artes.shop.sv)",
+    facebook: "facebook.com/artes.shop.sv",
+    tiktok: "@artes.shop",
+    web: "https://art-es.shop",
+    correo: "artessv2024@gmail.com",
+    // direccion:
+    //   "Nuevo Lourdes Pte, Senda Cortez Blanco, Pol II, Casa 10, Colón, La Libertad, El Salvador, CP 01512 (sin atención presencial)",
   },
 
-  // FAQ extra  // ✏️ EDITAR / AGREGAR las que quieras
+  // Preguntas frecuentes
   preguntasFrecuentes: [
     {
       pregunta: "¿Los productos son realmente hechos a mano?",
       respuesta:
-        "Sí, cada pieza es hecha a mano por artesanos salvadoreños. Por eso cada una es única.",
+        "Sí, cada pieza es hecha a mano por artesanos salvadoreños, como el taller Eseoese by Silvi en San Salvador y Artesanías en Nahuizalco. Por eso cada una es única.",
     },
     {
-      pregunta: "¿Hacen piezas personalizadas o por encargo?",
+      pregunta: "¿Hacen envíos fuera de El Salvador?",
       respuesta:
-        "Sí, varias piezas se hacen por encargo. Escribinos por WhatsApp para contarnos qué buscás y darte tiempos.",
+        "Por ahora solo enviamos dentro de El Salvador. Si estás fuera del país, escribinos por WhatsApp y vemos cómo ayudarte.",
     },
     {
-      pregunta: "¿Puedo comprar al por mayor?",
+      pregunta: "¿Cuánto tarda en llegar mi pedido?",
       respuesta:
-        "Sí, manejamos precios especiales por mayoreo. Coordinalo directamente por WhatsApp.",
+        "Preparamos tu pedido en 1 a 3 días hábiles y luego sale el envío a domicilio a cualquier punto de El Salvador.",
+    },
+    {
+      pregunta: "¿Tienen tienda física?",
+      respuesta:
+        "Por el momento no: somos una tienda 100% en línea. Nos encontrás en art-es.shop y en redes como @artes.shop.sv.",
+    },
+    {
+      pregunta: "¿Puedo devolver o cambiar un producto?",
+      respuesta:
+        "Sí: tenés 30 días desde que lo recibís, siempre que esté sin usar, con etiquetas y empaque original y tu comprobante. Escribinos por WhatsApp para iniciar el proceso.",
     },
   ],
 };

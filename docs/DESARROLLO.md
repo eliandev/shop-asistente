@@ -15,7 +15,7 @@ conocimiento, la voz del asistente y la paleta visual.
 | Fase | Nombre | Estado | Depende de |
 |------|--------|--------|------------|
 | 0 | Preparación del entorno | ✅ Completada (2026-07-10) | — |
-| 1 | Marca y datos reales del negocio | ⬜ Pendiente | Confirmación de marca objetivo |
+| 1 | Marca y datos reales del negocio | ✅ Completada (2026-07-10) — 4 confirmaciones menores abiertas | — |
 | 2 | Integración Shopify en vivo | ✅ Completada (2026-07-10) — pendiente solo el test end-to-end con API key | — |
 | 3 | Branding UI (assets y paleta) | ⬜ Pendiente | Assets del usuario |
 | 4 | Calidad y endurecimiento (QA) | ⬜ Pendiente | Fases 1–3 |
@@ -53,16 +53,41 @@ conocimiento, la voz del asistente y la paleta visual.
 o de plantilla en producción.
 
 **Decisión (2026-07-10):** la marca objetivo confirmada es **ART-ES** (reto
-Vibecoders League 2.0). La tienda caterpillarpa.com conectada a la sesión NO es
-el objetivo de este proyecto y no se usa aquí.
+Vibecoders League 2.0). Es un **emprendimiento real del dueño del proyecto**,
+con tienda Shopify funcionando en **art-es.shop**. La tienda caterpillarpa.com
+conectada a la sesión NO es parte de este proyecto.
 
-**Entradas necesarias (las provee el usuario) — pendientes**
-- Datos reales del negocio ART-ES: contacto (WhatsApp, Instagram, web, correo),
-  horarios, zonas y costos de envío, métodos de pago, políticas de
-  cambio/devolución, FAQ, y rango de precios real.
-- ¿Existe tienda Shopify propia de ART-ES? (dominio `*.myshopify.com`). Si no
-  existe, la app queda en modo respaldo (productos de ejemplo definidos con
-  datos reales en `knowledge-base.ts`) — funciona igual.
+**Datos reales cargados (2026-07-10)** en `lib/knowledge-base.ts`:
+- Contacto: WhatsApp +503 7210 0755 (wa.me/50372100755), IG @artes.shop.sv,
+  FB artes.shop.sv, TikTok @artes.shop, correo artessv2024@gmail.com, web art-es.shop.
+- Horarios: L–D 8:00–22:00 por WhatsApp y redes; sin sucursal física.
+- Envíos: solo El Salvador; estándar $3.50 a domicilio (varía por zona);
+  procesamiento 1–3 días hábiles.
+- Pagos: USD; checkout en línea (tarjeta) + Apple Pay / Google Pay / Shop Pay.
+- Políticas: devoluciones 30 días (sin uso, etiquetas, empaque, comprobante);
+  reembolso al método original ≤10 días hábiles; excepciones estándar;
+  garantía de 15 días.
+- Productos de respaldo: reemplazados por 5 productos REALES del catálogo vivo
+  (bolsos Elena/Aracely/crochet, Cartera Rubí, set de cojines de Nahuizalco).
+- Identidad enriquecida con datos verificables del catálogo: talleres
+  "Eseoese by Silvi" (San Salvador) y "Artesanías en Nahuizalco".
+
+**Decisiones editoriales (revisables):**
+- La **dirección física NO se publica** en el asistente (parece residencial);
+  quedó comentada en `knowledge-base.ts` por si se quiere activar.
+- El correo admin/reembolsos (geordymemdoza@gmail.com) se mantiene FUERA del
+  asistente público; el canal visible es artessv2024@gmail.com.
+- El derecho de desistimiento UE (14 días) se omitió: solo se envía a El Salvador.
+
+**Pendientes de confirmar por el dueño (no bloquean):**
+- [ ] Método de envío en $0.00 detectado en la config de Shopify: ¿es promo
+      real (envío gratis condicional) o error de configuración? No se anuncia
+      hasta confirmar.
+- [ ] Sellos exactos de tarjetas aceptadas (Admin → Configuración → Pagos).
+- [ ] Relación entre "garantía de 15 días" (banner del sitio) y la política de
+      devolución de 30 días: hoy Silvi comunica ambas tal cual.
+- [ ] Texto de identidad de marca (queEs/propuesta/origen): redactado a partir
+      del catálogo real; validar que refleje la historia que quieren contar.
 
 **Trabajo**
 - Reemplazar todos los valores `// ✏️ EDITAR` de `lib/knowledge-base.ts`.

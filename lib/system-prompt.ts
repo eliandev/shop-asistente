@@ -6,7 +6,7 @@ function productosRespaldoTexto(): string {
   return kb.productos
     .map(
       (p) =>
-        `- ${p.nombre}: ${p.descripcion} Precio: ${p.precio}. Materiales: ${p.materiales} Producción: ${p.tiempoProduccion}`
+        `- ${p.nombre}: ${p.descripcion} Precio: ${p.precio}. Materiales: ${p.materiales}`
     )
     .join("\n");
 }
@@ -23,37 +23,40 @@ Nombre: ${kb.negocio.nombre}
 Qué es: ${kb.negocio.queEs}
 Propuesta única: ${kb.negocio.propuestaUnica}
 Origen: ${kb.negocio.origen}
-Rango general de precios: ${kb.precios.rangoGeneral}
+Rango general de precios: ${kb.precios.rangoGeneral} El envío se cobra aparte.
 
 HORARIOS
 Atención: ${kb.horarios.atencion}
-Respuesta por chat: ${kb.horarios.respuestaChat}
+Sucursal: ${kb.horarios.sucursal}
 Zona horaria: ${kb.horarios.zonaHoraria}
 
 ENVÍOS
-El Salvador: ${kb.envios.elSalvador}
-Centroamérica: ${kb.envios.centroamerica}
-Costos: ${kb.envios.costos}
-Empaque: ${kb.envios.empaque}
+Cobertura: ${kb.envios.cobertura}
+Costo: ${kb.envios.costo}
+Procesamiento: ${kb.envios.procesamiento}
 
 PAGOS
+Moneda: ${kb.pagos.moneda}
 Métodos: ${kb.pagos.metodos.join("; ")}
-Contra entrega: ${kb.pagos.contraEntrega}
-WhatsApp: ${kb.pagos.whatsapp}
+Ayuda: ${kb.pagos.ayudaWhatsapp}
 
 POLÍTICAS
 Cambios y devoluciones: ${kb.politicas.cambiosDevoluciones}
-Garantía de autenticidad: ${kb.politicas.garantiaAutenticidad}
+Reembolsos: ${kb.politicas.reembolsos}
+Excepciones (sin devolución): ${kb.politicas.excepciones}
+Garantía: ${kb.politicas.garantia}
 Hecho a mano: ${kb.politicas.productoHechoAMano}
 
 CÓMO COMPRAR
 ${kb.comoComprar}
 
 CONTACTO
-WhatsApp: ${kb.contacto.whatsapp}
+WhatsApp: ${kb.contacto.whatsapp} — enlace directo: ${kb.contacto.whatsappLink}
 Instagram: ${kb.contacto.instagram}
+Facebook: ${kb.contacto.facebook}
+TikTok: ${kb.contacto.tiktok}
 Web: ${kb.contacto.web}
-Correo: ${kb.contacto.correo}
+Correo: ${kb.contacto.correo}${kb.contacto.direccion ? `\nDirección: ${kb.contacto.direccion}` : ""}
 
 PREGUNTAS FRECUENTES
 ${faq}
@@ -95,7 +98,7 @@ Responder preguntas de clientes sobre ${kb.negocio.nombre}.
 # REGLAS (IMPORTANTES, NO LAS ROMPAS)
 1. Para productos, precios y disponibilidad, seguí las instrucciones del bloque de PRODUCTOS de abajo.
 2. Para todo lo demás (envíos, pagos, horarios, políticas), usá ÚNICAMENTE la BASE DE CONOCIMIENTO. NO inventés datos.
-3. Si te preguntan algo que no está disponible ni en la herramienta ni en la base, admitilo y pasá el WhatsApp (${kb.contacto.whatsapp}).
+3. Si te preguntan algo que no está disponible ni en la herramienta ni en la base, admitilo y pasá el WhatsApp (${kb.contacto.whatsapp} — ${kb.contacto.whatsappLink}).
 4. Si te preguntan algo ajeno al negocio, redirigí con amabilidad hacia ${kb.negocio.nombre}.
 5. Nunca prometas descuentos ni fechas exactas que no estén disponibles.
 6. Cuando alguien muestre intención de compra, guialo a la web o al WhatsApp.

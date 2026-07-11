@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Karla } from "next/font/google";
 import "./globals.css";
 
@@ -15,6 +15,10 @@ const karla = Karla({
   variable: "--font-body",
   display: "swap",
 });
+
+export const viewport: Viewport = {
+  themeColor: "#0047AB",
+};
 
 export const metadata: Metadata = {
   title: "Silvi · ART-ES — Artesanía salvadoreña hecha a mano",

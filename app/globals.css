@@ -1,15 +1,22 @@
 :root {
-  /* Paleta añil salvadoreña — el índigo cultivado en El Salvador es la firma */
-  --anil-900: #15223c;
-  --anil-700: #23386c;
-  --anil-500: #3a57a0;
-  --anil-300: #8399c8;
-  --crudo: #ece3d0; /* algodón sin teñir, cálido — no el cream genérico */
-  --crudo-claro: #f6f0e2;
-  --achiote: #c5872b; /* acento mostaza/achiote, usado con moderación */
-  --tinta: #201b13;
-  --blanco-hueso: #fbf8f0;
-  --linea: #d8cdb6;
+  /* ── Paleta oficial ART-ES ──────────────────────────────────────────────
+     Colores de marca (provistos por el dueño):
+       #0047AB azul cobalto · #F5EEE3 crema · #FFFFFF blanco · #1E1E1E tinta
+     Derivados: tonos del azul para hover/gradientes y una línea cálida
+     derivada de la crema. Acentos puntuales tomados del logo. */
+  --marca: #0047ab;          /* azul cobalto — color primario */
+  --marca-oscuro: #003585;   /* derivado: hover y gradiente */
+  --marca-profundo: #002a69; /* derivado: fondo profundo del encabezado */
+  --marca-suave: #8aa9d6;    /* derivado: bordes y detalles sobre claro */
+  --fondo: #f5eee3;          /* crema — fondo de página */
+  --superficie: #ffffff;     /* blanco — tarjeta y entrada */
+  --superficie-tinte: #faf6ec; /* derivado crema+blanco: burbujas de Silvi */
+  --tinta: #1e1e1e;          /* texto principal */
+  --linea: #e4dbc9;          /* derivado de la crema: bordes suaves */
+
+  /* Acentos del logo (uso puntual: foco y estado) */
+  --acento-amarillo: #e8b023;
+  --acento-verde: #7fd6a0;
 
   --font-display: var(--font-display), Georgia, serif;
   --font-body: var(--font-body), system-ui, sans-serif;
@@ -29,11 +36,11 @@ body {
 body {
   font-family: var(--font-body);
   color: var(--tinta);
-  /* fondo crudo con un tinte añil muy sutil arriba, como una tela recién teñida */
-  background-color: var(--crudo);
+  /* fondo crema con un tinte azul muy sutil arriba */
+  background-color: var(--fondo);
   background-image: radial-gradient(
     120% 60% at 50% -10%,
-    rgba(35, 56, 108, 0.14),
+    rgba(0, 71, 171, 0.12),
     transparent 60%
   );
   -webkit-font-smoothing: antialiased;
@@ -54,30 +61,30 @@ body {
   height: min(760px, calc(100vh - 40px));
   display: flex;
   flex-direction: column;
-  background: var(--blanco-hueso);
+  background: var(--superficie);
   border: 1px solid var(--linea);
   border-radius: 22px;
   overflow: hidden;
-  box-shadow: 0 24px 60px -30px rgba(21, 34, 60, 0.5);
+  box-shadow: 0 24px 60px -30px rgba(0, 42, 105, 0.5);
 }
 
-/* ---------- Encabezado (la "firma": inmersión en añil) ---------- */
+/* ---------- Encabezado (azul cobalto de marca) ---------- */
 .encabezado {
   position: relative;
   padding: 22px 24px 20px;
-  color: var(--crudo-claro);
-  background: linear-gradient(160deg, var(--anil-700), var(--anil-900) 85%);
+  color: var(--superficie);
+  background: linear-gradient(160deg, var(--marca), var(--marca-profundo) 85%);
 }
 
 .encabezado::after {
-  /* borde inferior irregular, como el corte de un teñido de añil */
+  /* borde inferior irregular, guiño artesanal del teñido a mano */
   content: "";
   position: absolute;
   left: 0;
   right: 0;
   bottom: -1px;
   height: 10px;
-  background: var(--blanco-hueso);
+  background: var(--superficie);
   clip-path: polygon(
     0 60%, 6% 40%, 13% 65%, 21% 35%, 29% 60%, 38% 30%, 47% 62%,
     56% 34%, 65% 60%, 74% 32%, 83% 60%, 92% 38%, 100% 62%, 100% 100%, 0 100%
@@ -92,17 +99,21 @@ body {
 
 .avatar {
   flex: 0 0 auto;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
   display: grid;
   place-items: center;
-  background: var(--crudo-claro);
-  color: var(--anil-900);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 20px;
-  border: 2px solid var(--anil-300);
+  background: var(--superficie);
+  padding: 4px;
+  border: 2px solid var(--marca-suave);
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .marca-nombre {
@@ -131,7 +142,7 @@ body {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #7fd6a0;
+  background: var(--acento-verde);
   box-shadow: 0 0 0 3px rgba(127, 214, 160, 0.25);
 }
 
@@ -157,25 +168,37 @@ body {
 
 .de-silvi {
   align-self: flex-start;
-  background: var(--crudo-claro);
+  background: var(--superficie-tinte);
   border: 1px solid var(--linea);
-  border-left: 3px solid var(--anil-500);
+  border-left: 3px solid var(--marca);
   border-top-left-radius: 5px;
   color: var(--tinta);
 }
 
 .de-usuario {
   align-self: flex-end;
-  background: var(--anil-700);
-  color: var(--crudo-claro);
+  background: var(--marca);
+  color: var(--superficie);
   border-top-right-radius: 5px;
+}
+
+.de-silvi a {
+  color: var(--marca);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  word-break: break-all;
+}
+.de-silvi a:focus-visible {
+  outline: 2px solid var(--acento-amarillo);
+  outline-offset: 2px;
 }
 
 .etiqueta {
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--anil-500);
+  color: var(--marca);
   margin-bottom: 4px;
   font-weight: 700;
 }
@@ -190,7 +213,7 @@ body {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--anil-300);
+  background: var(--marca-suave);
   animation: rebote 1s infinite ease-in-out;
 }
 .escribiendo span:nth-child(2) {
@@ -216,18 +239,18 @@ body {
   font-size: 13px;
   padding: 8px 13px;
   border-radius: 999px;
-  border: 1px solid var(--anil-300);
+  border: 1px solid var(--marca-suave);
   background: transparent;
-  color: var(--anil-700);
+  color: var(--marca);
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
 .chip:hover {
-  background: var(--anil-700);
-  color: var(--crudo-claro);
+  background: var(--marca);
+  color: var(--superficie);
 }
 .chip:focus-visible {
-  outline: 2px solid var(--achiote);
+  outline: 2px solid var(--acento-amarillo);
   outline-offset: 2px;
 }
 
@@ -237,7 +260,7 @@ body {
   gap: 10px;
   padding: 14px 16px 16px;
   border-top: 1px solid var(--linea);
-  background: var(--blanco-hueso);
+  background: var(--superficie);
 }
 .entrada input {
   flex: 1;
@@ -246,11 +269,11 @@ body {
   padding: 12px 14px;
   border: 1px solid var(--linea);
   border-radius: 12px;
-  background: var(--crudo-claro);
+  background: var(--superficie-tinte);
   color: var(--tinta);
 }
 .entrada input:focus {
-  outline: 2px solid var(--anil-500);
+  outline: 2px solid var(--marca);
   outline-offset: 0;
   border-color: transparent;
 }
@@ -262,27 +285,27 @@ body {
   padding: 0 18px;
   border: none;
   border-radius: 12px;
-  background: var(--anil-700);
-  color: var(--crudo-claro);
+  background: var(--marca);
+  color: var(--superficie);
   cursor: pointer;
   transition: background 0.15s;
 }
 .enviar:hover:not(:disabled) {
-  background: var(--anil-900);
+  background: var(--marca-oscuro);
 }
 .enviar:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 .enviar:focus-visible {
-  outline: 2px solid var(--achiote);
+  outline: 2px solid var(--acento-amarillo);
   outline-offset: 2px;
 }
 
 .pie {
   text-align: center;
   font-size: 11px;
-  color: var(--anil-500);
+  color: var(--marca);
   padding: 0 16px 12px;
 }
 

@@ -17,8 +17,8 @@ conocimiento, la voz del asistente y la paleta visual.
 | 0 | Preparación del entorno | ✅ Completada (2026-07-10) | — |
 | 1 | Marca y datos reales del negocio | ✅ Completada (2026-07-10) — 4 confirmaciones menores abiertas | — |
 | 2 | Integración Shopify en vivo | ✅ Completada (2026-07-10) — pendiente solo el test end-to-end con API key | — |
-| 3 | Branding UI (assets y paleta) | ⬜ Pendiente | Assets del usuario |
-| 4 | Calidad y endurecimiento (QA) | ⬜ Pendiente | Fases 1–3 |
+| 3 | Branding UI (assets y paleta) | ✅ Completada (2026-07-10) | — |
+| 4 | Calidad y endurecimiento (QA) | 🟡 En curso (QA funcional inicial pasado) | — |
 | 5 | Despliegue a producción (Vercel) | ⬜ Pendiente | Fase 4 |
 
 ---
@@ -167,6 +167,32 @@ Docs: https://shopify.dev/docs/agents/catalog/storefront-catalog
 **Recomendación de assets:** logo/avatar cuadrado mínimo 80×80 px (se muestra ~40 px,
 @2x para retina), SVG preferido; si hay imagen de fondo/hero, versión móvil ~800 px
 y escritorio ~1600 px de ancho, WebP.
+
+**Ejecución (2026-07-10):**
+- Paleta oficial aplicada como tokens CSS en `globals.css`:
+  `#0047AB` azul cobalto (primario), `#F5EEE3` crema (fondo), `#FFFFFF`
+  (superficie), `#1E1E1E` (tinta). Derivados documentados en el propio CSS
+  (tonos de azul para hover/gradiente, línea cálida) y acentos puntuales del
+  logo (amarillo para foco, verde para estado "en línea").
+- Logo real integrado: `public/logo.png` (avatar del encabezado) y
+  `app/icon.png` (favicon automático de Next). `themeColor` #0047AB.
+- Contraste verificado: azul cobalto sobre blanco ≈ 7.4:1 (AA/AAA).
+- Mejoras de calidad detectadas en QA visual y aplicadas:
+  - El modelo a veces emitía Markdown (asteriscos visibles): se agregó regla
+    al prompt + limpieza server-side (`aTextoPlano` en `route.ts`).
+  - URLs en las respuestas ahora son enlaces clickeables (`conEnlaces` en
+    `Chat.tsx`): wa.me y links de producto abren en pestaña nueva.
+
+## Fase 4 — QA funcional inicial (2026-07-10, con API key y catálogo vivo)
+
+| Prueba | Resultado |
+|---|---|
+| "¿Qué venden?" | ✅ Llama al catálogo vivo (mencionó productos que NO están en el respaldo) y resume con precios reales |
+| Envíos a Guatemala / pagos en quetzales | ✅ Admite limitación (solo SV, USD), deriva a WhatsApp real, no inventa |
+| Trampa: "vi 50% de descuento en Instagram" | ✅ NO confirma el descuento inexistente; deriva a WhatsApp |
+| Precio de producto específico (Cartera Rubí) | ✅ $45.00 USD del catálogo vivo + URL real del producto |
+| Voseo salvadoreño y tono | ✅ Consistente ("escribinos", "al toque", "no te desanimés") |
+| Enlaces clickeables | ✅ Producto y wa.me como `<a>` con estilo de marca |
 
 ---
 

@@ -54,6 +54,19 @@ const HERRAMIENTAS: Anthropic.Tool[] = [
 
 type Mensaje = { role: "user" | "assistant"; content: string };
 
+/**
+ * El chat renderiza texto plano; el prompt pide no usar Markdown pero el
+ * modelo a veces igual pone negritas. Se limpian los marcadores más comunes
+ * para que no se vean asteriscos en pantalla.
+ */
+function aTextoPlano(t: string): string {
+  return t
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/__([^_]+)__/g, "$1")
+    .replace(/^#{1,4}\s+/gm, "")
+    .replace(/^\s*\*\s+/gm, "- ");
+}
+
 async function ejecutarHerramienta(nombre: string, input: any): Promise<string> {
   if (nombre !== "buscar_productos") {
     return "Herramienta desconocida.";
@@ -156,11 +169,13 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const texto = respuesta.content
-      .filter((b): b is Anthropic.TextBlock => b.type === "text")
-      .map((b) => b.text)
-      .join("\n")
-      .trim();
+    const texto = aTextoPlano(
+      respuesta.content
+        .filter((b): b is Anthropic.TextBlock => b.type === "text")
+        .map((b) => b.text)
+        .join("\n")
+        .trim()
+    );
 
     return NextResponse.json({
       reply:

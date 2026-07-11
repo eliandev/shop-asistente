@@ -11,6 +11,23 @@ interface Mensaje {
 const SALUDO =
   "¡Hola! Soy Silvi, de ART-ES 🌿 Te ayudo con nuestras piezas artesanales salvadoreñas: precios, envíos, pagos y más. ¿Qué buscás?";
 
+/** Convierte URLs del texto en enlaces clickeables (wa.me, tienda, productos). */
+const URL_REGEX = /(https?:\/\/[^\s)]+|(?:www\.|wa\.me\/)[^\s)]+)/g;
+
+function conEnlaces(texto: string): React.ReactNode[] {
+  return texto.split(URL_REGEX).map((parte, i) => {
+    if (i % 2 === 1) {
+      const href = parte.startsWith("http") ? parte : `https://${parte}`;
+      return (
+        <a key={i} href={href} target="_blank" rel="noopener noreferrer">
+          {parte}
+        </a>
+      );
+    }
+    return parte;
+  });
+}
+
 const SUGERENCIAS = [
   "¿Qué venden?",
   "¿Cuánto cuesta el envío?",
@@ -81,7 +98,7 @@ export default function Chat() {
       <header className="encabezado">
         <div className="marca-fila">
           <div className="avatar" aria-hidden="true">
-            A
+            <img src="/logo.png" alt="" width={38} height={38} />
           </div>
           <div>
             <div className="marca-nombre">ART-ES</div>
@@ -101,7 +118,7 @@ export default function Chat() {
             className={`burbuja ${m.role === "user" ? "de-usuario" : "de-silvi"}`}
           >
             {m.role === "assistant" && <div className="etiqueta">Silvi</div>}
-            {m.content}
+            {m.role === "assistant" ? conEnlaces(m.content) : m.content}
           </div>
         ))}
 

@@ -389,3 +389,337 @@ a.producto-card:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .escribiendo span { animation: none; }
 }
+
+/* ============================================================
+   LANDING (/) — vende el asistente como producto
+   ============================================================ */
+.ld {
+  min-height: 100%;
+}
+.ld h1, .ld h2, .ld h3 {
+  font-family: var(--font-display);
+  color: var(--marca-profundo);
+}
+.ld-hero {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 72px 24px 56px;
+  text-align: center;
+}
+.ld-logo {
+  border-radius: 16px;
+  margin-bottom: 18px;
+}
+.ld-badge {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--marca);
+  background: rgba(0, 71, 171, 0.08);
+  border: 1px solid var(--marca-suave);
+  border-radius: 999px;
+  padding: 6px 14px;
+  margin-bottom: 18px;
+}
+.ld-hero h1 {
+  font-size: clamp(30px, 5vw, 48px);
+  line-height: 1.12;
+  margin-bottom: 16px;
+}
+.ld-hero h1 em {
+  font-style: normal;
+  color: var(--marca);
+}
+.ld-sub {
+  font-size: 18px;
+  line-height: 1.55;
+  max-width: 640px;
+  margin: 0 auto 26px;
+  color: #4a4438;
+}
+.ld-ctas {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.ld-ctas-centro { margin-top: 8px; }
+.ld-btn {
+  display: inline-block;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 13px 26px;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: transform 0.12s, box-shadow 0.12s, background 0.12s;
+}
+.ld-btn-primario {
+  background: var(--marca);
+  color: var(--superficie);
+  box-shadow: 0 10px 24px -12px rgba(0, 71, 171, 0.7);
+}
+.ld-btn-primario:hover {
+  background: var(--marca-oscuro);
+  transform: translateY(-1px);
+}
+.ld-btn-secundario {
+  background: var(--superficie);
+  color: var(--marca);
+  border: 1.5px solid var(--marca-suave);
+}
+.ld-btn-secundario:hover { border-color: var(--marca); }
+.ld-btn:focus-visible {
+  outline: 3px solid var(--acento-amarillo);
+  outline-offset: 2px;
+}
+.ld-pista {
+  margin-top: 22px;
+  font-size: 14px;
+  color: var(--marca);
+  opacity: 0.85;
+}
+.ld-seccion {
+  padding: 56px 24px;
+  max-width: 1020px;
+  margin: 0 auto;
+}
+.ld-seccion h2 {
+  text-align: center;
+  font-size: clamp(24px, 3.4vw, 34px);
+  margin-bottom: 12px;
+}
+.ld-sub-seccion {
+  text-align: center;
+  max-width: 620px;
+  margin: 0 auto 24px;
+  color: #4a4438;
+  line-height: 1.55;
+}
+.ld-alterna {
+  max-width: none;
+  background: var(--superficie);
+  border-top: 1px solid var(--linea);
+  border-bottom: 1px solid var(--linea);
+}
+.ld-alterna > * { max-width: 1020px; margin-left: auto; margin-right: auto; }
+.ld-pasos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+  margin-top: 28px;
+}
+.ld-paso {
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: 16px;
+  padding: 22px;
+}
+.ld-num {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--marca);
+  color: var(--superficie);
+  font-weight: 700;
+  font-family: var(--font-display);
+  margin-bottom: 12px;
+}
+.ld-paso h3 { font-size: 19px; margin-bottom: 8px; }
+.ld-paso p { font-size: 15px; line-height: 1.55; color: #4a4438; }
+.ld-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 28px;
+}
+.ld-card {
+  background: var(--fondo);
+  border: 1px solid var(--linea);
+  border-radius: 16px;
+  padding: 20px;
+}
+.ld-icono { font-size: 26px; display: block; margin-bottom: 10px; }
+.ld-card h3 { font-size: 17px; margin-bottom: 6px; }
+.ld-card p { font-size: 14.5px; line-height: 1.5; color: #4a4438; }
+.ld-codigo {
+  background: var(--marca-profundo);
+  color: #dbe7ff;
+  font-size: 13.5px;
+  line-height: 1.6;
+  border-radius: 14px;
+  padding: 20px 22px;
+  overflow-x: auto;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.ld-final { text-align: center; padding-bottom: 72px; }
+.ld-pie {
+  text-align: center;
+  font-size: 13px;
+  color: var(--marca);
+  padding: 26px 16px 90px; /* deja aire para la burbuja del widget */
+  border-top: 1px solid var(--linea);
+  background: var(--superficie);
+}
+
+/* ============================================================
+   ADMIN DEMO (/admin) — panel de personalización de muestra
+   ============================================================ */
+.adm { min-height: 100%; padding-bottom: 48px; }
+.adm-encabezado {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 28px 24px 8px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.adm-encabezado h1 {
+  font-family: var(--font-display);
+  color: var(--marca-profundo);
+  font-size: 26px;
+}
+.adm-volver {
+  font-size: 14px;
+  color: var(--marca);
+  text-decoration: none;
+  font-weight: 600;
+}
+.adm-volver:hover { text-decoration: underline; }
+.adm-demo-badge {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #7a5a00;
+  background: rgba(232, 176, 35, 0.18);
+  border: 1px solid var(--acento-amarillo);
+  border-radius: 999px;
+  padding: 4px 12px;
+}
+.adm-cuerpo {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 18px 24px;
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 22px;
+}
+@media (max-width: 860px) {
+  .adm-cuerpo { grid-template-columns: 1fr; }
+}
+.adm-controles {
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: 16px;
+  padding: 20px;
+  align-self: start;
+}
+.adm-controles h2 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  color: var(--marca-profundo);
+  margin: 14px 0 10px;
+}
+.adm-controles h2:first-child { margin-top: 0; }
+.adm-campo { display: block; margin-bottom: 12px; }
+.adm-campo span {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #4a4438;
+}
+.adm-campo input[type="text"],
+.adm-campo input:not([type]),
+.adm-campo textarea {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  padding: 9px 11px;
+  border: 1px solid var(--linea);
+  border-radius: 10px;
+  background: var(--superficie-tinte);
+  color: var(--tinta);
+}
+.adm-campo input:focus, .adm-campo textarea:focus {
+  outline: 2px solid var(--marca);
+  border-color: transparent;
+}
+.adm-campo input[type="color"] {
+  width: 52px;
+  height: 36px;
+  padding: 2px;
+  border: 1px solid var(--linea);
+  border-radius: 8px;
+  background: var(--superficie);
+  cursor: pointer;
+}
+.adm-fila { display: flex; gap: 16px; }
+.adm-presets { display: flex; gap: 8px; margin-bottom: 6px; }
+.adm-preset {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--superficie);
+  box-shadow: 0 0 0 1px var(--linea);
+  cursor: pointer;
+}
+.adm-preset:focus-visible { outline: 2px solid var(--acento-amarillo); outline-offset: 2px; }
+.adm-artesanos { display: flex; gap: 10px; flex-wrap: wrap; }
+.adm-artesano {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px 7px 7px;
+  border-radius: 999px;
+  border: 1.5px solid var(--linea);
+  background: var(--superficie);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tinta);
+  cursor: pointer;
+}
+.adm-artesano img { border-radius: 50%; }
+.adm-artesano.activo {
+  border-color: var(--marca);
+  background: rgba(0, 71, 171, 0.06);
+  color: var(--marca);
+}
+.adm-nota { font-size: 13px; color: #2e7d32; margin: 2px 0 10px; }
+.adm-guardar {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: var(--marca);
+  color: var(--superficie);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 15px;
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.adm-preview {
+  border: 1px solid var(--linea);
+  border-radius: 20px;
+  padding: 26px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.adm-tarjeta {
+  height: auto;
+  min-height: 480px;
+  max-width: 430px;
+  box-shadow: 0 18px 44px -22px rgba(0, 0, 0, 0.45);
+}
+.adm-tarjeta .mensajes { min-height: 260px; }
+

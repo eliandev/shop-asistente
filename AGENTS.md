@@ -27,14 +27,16 @@ npm run lint         # linter de Next
 ```
 app/
   layout.tsx          # fuentes (next/font) + metadata
-  page.tsx            # monta el chat
-  globals.css         # estilos + paleta añil (tokens CSS)
+  page.tsx            # LANDING de producto (narrativa + CTAs + widget real)
+  chat/page.tsx       # monta el chat (el widget y el link público apuntan aquí)
+  admin/page.tsx      # DEMO del panel de personalización (client-side, sin persistencia)
+  globals.css         # estilos + paleta de marca (tokens CSS) + landing + admin
   api/chat/route.ts   # backend: validación, rate-limit, prompt, BUCLE DE HERRAMIENTAS
 components/
   Chat.tsx            # UI del chat (cliente): estado, envío, sugerencias, "escribiendo"
 lib/
-  knowledge-base.ts   # ÚNICA fuente de verdad del negocio (datos fijos)
-  system-prompt.ts    # tono + reglas + serialización de la base al prompt
+  knowledge-base.ts   # ÚNICA fuente de verdad del negocio (datos fijos + artesanos)
+  system-prompt.ts    # tono + reglas + persona del artesano + serialización
   shopify.ts          # cliente de catálogo: UCP Catalog MCP (principal, sin token) + Storefront API (respaldo opcional)
 PRD.md                # requerimientos de producto
 ```

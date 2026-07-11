@@ -42,7 +42,8 @@ npm install
 cp .env.example .env.local   # y poné tu ANTHROPIC_API_KEY real
 npm run dev
 ```
-Abrí http://localhost:3000
+Abrí http://localhost:3000 — la raíz es la **landing** del producto; el chat vive
+en **/chat** y la demo del panel de personalización en **/admin**.
 
 ## Desplegar en Vercel (link público para votar)
 1. Subí el proyecto a un repo de GitHub.

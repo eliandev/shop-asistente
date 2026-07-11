@@ -23,6 +23,7 @@ conocimiento, la voz del asistente y la paleta visual.
 | 6 | Widget flotante embebible | ✅ Completada (2026-07-11) — URL de prod pendiente | — |
 | 6.5 | Artesanos por sesión (Silvi / Don José) | ✅ Completada (2026-07-11) | — |
 | 7 | Admin de personalización multi-tienda | ⬜ Planificada | Fase 5 + decisiones de almacenamiento |
+| 8 | Landing de producto + dashboard demo | ✅ Completada (2026-07-11) | — |
 
 ---
 
@@ -372,6 +373,29 @@ y catálogo, o también knowledge base editable?).
 **Pendiente operativo del dueño (no bloquea):** insertar el widget en
 art-es.shop (guía en docs/WIDGET.md) y revisar el campo Vendor de los
 productos para la detección de artesano.
+
+## Fase 8 — Landing de producto + dashboard demo (2026-07-11)
+
+**Pedido del dueño:** que el index cuente la narrativa del chat como si se
+vendiera como producto, y muestre que se personaliza "súper fácil" desde un
+dashboard (demo, solo para mostrarlo).
+
+**Implementado (verificado local y en producción):**
+- **`/` → Landing:** hero con propuesta ("responde por tu negocio con datos
+  reales — nunca inventados"), 3 pasos de cómo funciona (dominio sin token →
+  base de conocimiento → widget de una línea), grid de 6 diferenciales,
+  sección del dashboard con CTA a /admin, snippet de instalación real y
+  cierre con CTA al chat. **La burbuja flotante de la landing es el widget
+  real** (dogfooding).
+- **`/chat`:** el chat completo (movido desde la raíz). El widget ahora abre
+  `origen + /chat` — como widget.js se sirve desde la app, el cambio aplica
+  automáticamente donde sea que esté pegado el snippet.
+- **`/admin` → demo del panel:** controles de nombre de tienda/asistente,
+  saludo, color primario y fondo (con presets), selector de artesano (con
+  avatares) y dominio del catálogo. Re-marca la vista previa EN VIVO
+  (variables CSS client-side, reutiliza los estilos reales del chat). Sin
+  persistencia ni auth; botón "Guardar" deshabilitado con nota "Fase 7".
+  Badge visible: "DEMO · vista previa sin guardar".
 
 ## Backlog v2 — Motor de marca / multi-tienda
 

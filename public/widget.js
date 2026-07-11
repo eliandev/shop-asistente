@@ -89,9 +89,10 @@
   btn.addEventListener("click", function () {
     abierto = !abierto;
     if (abierto && !panel.src) {
-      // carga perezosa: solo al primer clic
+      // carga perezosa: solo al primer clic. El chat vive en /chat
+      // (la raíz del sitio es la landing del producto).
       panel.src =
-        origen + "/" + (artesano ? "?artesano=" + encodeURIComponent(artesano) : "");
+        origen + "/chat" + (artesano ? "?artesano=" + encodeURIComponent(artesano) : "");
     }
     panel.classList.toggle("abierto", abierto);
     btn.innerHTML = abierto ? iconoCerrar : iconoChat;

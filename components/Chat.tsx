@@ -123,12 +123,21 @@ export default function Chat() {
         ))}
 
         {cargando && (
-          <div className="burbuja de-silvi" aria-label="Silvi está escribiendo">
-            <div className="etiqueta">Silvi</div>
-            <div className="escribiendo">
-              <span />
-              <span />
-              <span />
+          <div className="fila-silvi">
+            <img
+              className="avatar-silvi"
+              src="/avatar-silvi.png"
+              alt=""
+              width={36}
+              height={36}
+            />
+            <div className="burbuja de-silvi" aria-label="Silvi está escribiendo">
+              <div className="etiqueta">Silvi</div>
+              <div className="escribiendo">
+                <span />
+                <span />
+                <span />
+              </div>
             </div>
           </div>
         )}

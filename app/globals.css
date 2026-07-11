@@ -203,6 +203,21 @@ body {
   font-weight: 700;
 }
 
+/* fila del indicador "escribiendo": avatar de Silvi + burbuja */
+.fila-silvi {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+.avatar-silvi {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--marca-suave);
+  background: var(--superficie);
+}
+
 /* indicador "escribiendo" */
 .escribiendo {
   display: inline-flex;

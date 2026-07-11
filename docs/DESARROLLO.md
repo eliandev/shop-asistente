@@ -19,7 +19,9 @@ conocimiento, la voz del asistente y la paleta visual.
 | 2 | Integración Shopify en vivo | ✅ Completada (2026-07-10) — pendiente solo el test end-to-end con API key | — |
 | 3 | Branding UI (assets y paleta) | ✅ Completada (2026-07-10) | — |
 | 4 | Calidad y endurecimiento (QA) | 🟡 En curso (QA funcional inicial pasado) | — |
-| 5 | Despliegue a producción (Vercel) | ⬜ Pendiente | Fase 4 |
+| 5 | Despliegue a producción (Vercel) | ⬜ Pendiente | Fase 4 + decisión GitHub/Vercel |
+| 6 | Widget flotante embebible | ✅ Completada (2026-07-11) — URL de prod pendiente | — |
+| 7 | Admin de personalización multi-tienda | ⬜ Planificada | Fase 5 + decisiones de almacenamiento |
 
 ---
 
@@ -236,6 +238,47 @@ Vercel → QA sobre el preview → merge a `main` → producción.
 - [ ] URL pública verificada en móvil y escritorio
 
 ---
+
+## Fase 6 — Widget flotante embebible (2026-07-11)
+
+**Pedido del dueño:** el asistente debe vivir en (a) un link público y (b) una
+burbuja flotante insertable en la tienda Shopify vía script.
+
+**Implementado y verificado en local:**
+- `public/widget.js`: script auto-contenido que inyecta botón flotante + panel
+  iframe con el chat. Personalizable por atributos (`data-color`,
+  `data-posicion`, `data-etiqueta`). Carga perezosa (el iframe solo carga al
+  primer clic → no afecta velocidad de la tienda). Accesible (aria-expanded,
+  focus-visible). Empuja eventos `silvi_widget_abierto/cerrado` a dataLayer (GA4).
+- `public/widget-demo.html`: página de prueba local.
+- `docs/WIDGET.md`: guía de inserción en Shopify. Vía recomendada: sección
+  **Custom Liquid** en el grupo Footer del Theme Editor (aparece en todas las
+  páginas, editable por no-técnicos, NO toca theme.liquid). Vía alternativa
+  (theme.liquid) documentada con advertencia de riesgo + flujo de tema
+  duplicado/preview.
+- Avatar humano de Silvi (`public/avatar-silvi.png`, 160px) junto al indicador
+  de "escribiendo".
+
+**Pendiente:** reemplazar `TU-APP.vercel.app` por la URL real tras la Fase 5.
+
+## Fase 7 — Admin de personalización multi-tienda (planificada)
+
+**Pedido del dueño:** panel admin para personalizar UI, avatar y personalidad
+por tienda, y conectar el catálogo (dominio → UCP MCP) sin tocar código.
+
+**Diseño propuesto (a validar):**
+- `/admin` protegido con contraseña (`ADMIN_PASSWORD` en env).
+- Config de marca (colores, logo/avatar por URL, nombre del asistente, saludo,
+  sugerencias, voz/país, dominio Shopify) guardada en un **KV** (Vercel KV /
+  Upstash Redis, gratis en tier inicial) en vez de archivos, porque el
+  filesystem de Vercel es efímero.
+- El chat y el system prompt leen la config del KV con fallback a los archivos
+  actuales (knowledge-base.ts sigue siendo la fuente de datos de negocio).
+- Multi-tienda: una config por `tiendaId`; el widget y el link pasan
+  `?tienda=...` para elegirla.
+
+**Decisiones abiertas:** proveedor de KV, alcance v1 del admin (¿solo branding
+y catálogo, o también knowledge base editable?).
 
 ## Backlog v2 — Motor de marca / multi-tienda
 

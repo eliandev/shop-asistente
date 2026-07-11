@@ -109,7 +109,7 @@ export const knowledgeBase: KnowledgeBase = {
         "Bolsos tejidos a mano y de crochet, y carteras artesanales (San Salvador).",
       bio:
         "Silvi es la artesana detrás de Eseoese by Silvi, en San Salvador. Teje a mano cada bolso y cartera en algodón, trapillo y cordón, con diseños propios de inspiración femenina.",
-      avatar: "/avatar-silvi.png",
+      avatar: "/avatar-silvi.jpg",
       saludo:
         "¡Hola! Te atiende el taller de Silvi 🧶 Acá tejemos a mano cada bolso y cartera de ART-ES. Preguntame por precios, envíos, pagos o lo que necesités.",
       alias: ["silvi", "eseoese", "eseoese-by-silvi", "eseoese by silvi"],
@@ -122,7 +122,7 @@ export const knowledgeBase: KnowledgeBase = {
         "Bolsos de mecate, cojines bordados y arte en madera (Nahuizalco, Sonsonate).",
       bio:
         "Don José es artesano de Nahuizalco, cuna de la artesanía en fibras naturales de El Salvador. Trabaja el mecate y la fibra natural para bolsos, borda cojines y talla arte en madera con técnicas tradicionales.",
-      avatar: "/avatar-jose.png",
+      avatar: "/avatar-jose.jpg",
       saludo:
         "¡Hola! Te atiende el taller de don José, en Nahuizalco 🧺 Acá hacemos los bolsos de mecate, cojines bordados y arte en madera de ART-ES. ¿Qué buscás?",
       alias: [

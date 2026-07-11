@@ -22,7 +22,7 @@ La forma segura y editable desde el **Theme Editor** (no requiere tocar código 
   la pieza (usa el vendor del producto); en el resto de páginas, el default.
 {% endcomment %}
 <script
-  src="https://TU-APP.vercel.app/widget.js"
+  src="https://silvi-art-es-eliandevs-projects-be1bfa79.vercel.app/widget.js"
   defer
   data-color="#0047AB"
   data-posicion="derecha"

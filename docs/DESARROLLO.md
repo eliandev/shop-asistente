@@ -19,7 +19,7 @@ conocimiento, la voz del asistente y la paleta visual.
 | 2 | Integración Shopify en vivo | ✅ Completada (2026-07-10) — pendiente solo el test end-to-end con API key | — |
 | 3 | Branding UI (assets y paleta) | ✅ Completada (2026-07-10) | — |
 | 4 | Calidad y endurecimiento (QA) | 🟡 En curso (QA funcional inicial pasado) | — |
-| 5 | Despliegue a producción (Vercel) | ⬜ Pendiente | Fase 4 + decisión GitHub/Vercel |
+| 5 | Despliegue a producción (Vercel) | 🟡 Desplegado (Ready) — faltan 2 pasos del dueño: quitar Vercel Auth de producción y agregar ANTHROPIC_API_KEY | — |
 | 6 | Widget flotante embebible | ✅ Completada (2026-07-11) — URL de prod pendiente | — |
 | 6.5 | Artesanos por sesión (Silvi / Don José) | ✅ Completada (2026-07-11) | — |
 | 7 | Admin de personalización multi-tienda | ⬜ Planificada | Fase 5 + decisiones de almacenamiento |
@@ -332,6 +332,39 @@ por tienda, y conectar el catálogo (dominio → UCP MCP) sin tocar código.
 
 **Decisiones abiertas:** proveedor de KV, alcance v1 del admin (¿solo branding
 y catálogo, o también knowledge base editable?).
+
+## Fase 5 — Despliegue a producción (2026-07-11)
+
+**Proyecto Vercel:** `silvi-art-es` (team eliandev's projects).
+**URL de producción:** https://silvi-art-es-eliandevs-projects-be1bfa79.vercel.app
+
+**Cómo se llegó (lecciones incluidas):**
+- Primer intento vía herramienta MCP `deploy_to_vercel`: requiere incrustar TODO
+  el árbol de archivos en una sola llamada; el paquete completo (código +
+  imágenes base64) supera el límite de una llamada → 3 builds fallidos
+  (`module_not_found`, inofensivos). **Lección:** para este proyecto, deploy
+  por CLI, no por MCP.
+- Vía definitiva: **Vercel CLI** autenticada por el dueño (`npx vercel login`,
+  flujo device-code). `vercel link` al proyecto + `vercel deploy --prod` con la
+  carpeta real → **Ready en 49s**.
+- `.vercelignore` creado: excluye `.env*`, `.next`, `node_modules`, docs y
+  markdown del paquete.
+- Imágenes optimizadas para producción: logo 96px (9KB), favicon 128px (12KB),
+  avatares JPEG 112px (~4KB c/u).
+- Env vars en el proyecto (agregadas por el dueño en el dashboard):
+  ANTHROPIC_MODEL, SHOPIFY_STORE_DOMAIN, UCP_AGENT_PROFILE,
+  SHOPIFY_STOREFRONT_TOKEN, SHOPIFY_API_VERSION.
+
+**Pendiente (solo puede hacerlo el dueño, por ser accesos/credenciales):**
+- [ ] **Quitar la protección de producción:** Vercel → proyecto `silvi-art-es`
+      → Settings → **Deployment Protection** → Vercel Authentication →
+      dejar solo para previews (Standard Protection) o desactivar. Hoy la URL
+      redirige al SSO de Vercel (302) y no es pública.
+- [ ] **Agregar `ANTHROPIC_API_KEY`** en Settings → Environment Variables
+      (Production). Sin ella el chat responde el error controlado de
+      configuración.
+- [ ] Avisar para redesplegar (las env vars aplican en el siguiente deploy)
+      y correr el QA final en la URL pública.
 
 ## Backlog v2 — Motor de marca / multi-tienda
 

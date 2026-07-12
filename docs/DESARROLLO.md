@@ -509,3 +509,17 @@ tokens) para que re-marcar sea tocar la menor cantidad de archivos posible.
 
 | 2026-07-11 | Identidad propia de la plataforma: tema negro + lima (#0E0E0F / #C9F73A) en landing, /crear y /admin; logo de ART-ES retirado del hero (queda solo como marca demo); la vista previa del chat en los paneles conserva el tema claro (lienzo del cliente) | Pedido del dueño: separar la marca del producto de la marca demo |
 | 2026-07-11 | Rediseño de la landing al estilo estudio/agencia (referencia del dueño): marco con grilla y banda rayada, nav con wordmark "SILVI°", display condensada (Oswald) gigante "CREÁ/CONECTÁ/VENDÉ", etiquetas [entre corchetes], stats en grilla, demos numeradas 001–003 con chips y tiles, barra CTA lima full-width, precios con palabra de fondo y snippet | Pedido del dueño con referencia visual; demos = asistentes reales clickeables (ART-ES, María/ColourPop) |
+
+### Equipo por proveedor en asistentes personalizados (2026-07-11)
+
+**Pedido del dueño:** el formulario debe pedir los proveedores (vendors) de la
+tienda —ej. "ART-ES", "ARTESANIAS NAHUIZALCO", "Eseoese by Silvi"— para hacer
+match como en la tienda; sin match, asistente por defecto.
+
+**Implementado:** `ConfigAsistente.equipo[]` (máx. 4, sanitizado) con
+vendor→nombre→especialidad, editor en el paso Catálogo del wizard, match
+normalizado (sin acentos/mayúsculas) en `miembroDeEquipo()`. El widget pasa
+`{{ product.vendor }}` también con config; el chat y el prompt genérico
+adoptan la persona del miembro (UI + saludo + reglas de crédito al equipo y
+autenticidad). QA: vendor conocido → atiende el miembro; sin vendor o vendor
+desconocido → asistente por defecto, sin romperse.

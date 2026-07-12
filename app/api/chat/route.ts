@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
 import { getSystemPrompt, getSystemPromptGenerico } from "@/lib/system-prompt";
-import { decodificarConfig } from "@/lib/config-asistente";
+import { decodificarConfig, miembroDeEquipo } from "@/lib/config-asistente";
 import { licenciaValida, mensajeSinLicencia } from "@/lib/licencias";
 import {
   buscarProductos,
@@ -218,8 +218,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Con config, `artesano` trae el vendor de Shopify del producto que el
+    // cliente estaba viendo → atiende el miembro del equipo que corresponda.
     const system = config
-      ? getSystemPromptGenerico(config)
+      ? getSystemPromptGenerico(config, miembroDeEquipo(config, artesano))
       : getSystemPrompt(artesano);
     const dominio = config ? config.dominio || null : null;
     // con config, solo hay herramientas si esa marca conectó su catálogo

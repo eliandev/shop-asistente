@@ -99,9 +99,9 @@
       if (configAsistente) {
         params.push("c=" + configAsistente);
         if (licencia) params.push("lic=" + encodeURIComponent(licencia));
-      } else if (artesano) {
-        params.push("artesano=" + encodeURIComponent(artesano));
       }
+      // vendor del producto (ART-ES: artesano · config: miembro del equipo)
+      if (artesano) params.push("artesano=" + encodeURIComponent(artesano));
       panel.src = origen + "/chat" + (params.length ? "?" + params.join("&") : "");
     }
     panel.classList.toggle("abierto", abierto);

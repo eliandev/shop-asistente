@@ -11,7 +11,9 @@ import {
   codificarConfig,
   sanitizarConfig,
   saludoPorDefecto,
+  MAX_EQUIPO,
   type ConfigAsistente,
+  type MiembroEquipo,
 } from "@/lib/config-asistente";
 
 const PRESETS = [
@@ -44,7 +46,24 @@ export default function CrearAsistente() {
   const [whatsapp, setWhatsapp] = useState("");
   const [web, setWeb] = useState("");
   const [datos, setDatos] = useState("");
+  const [equipo, setEquipo] = useState<MiembroEquipo[]>([]);
   const [copiado, setCopiado] = useState<"link" | "widget" | null>(null);
+
+  function actualizarMiembro(i: number, campo: keyof MiembroEquipo, valor: string) {
+    setEquipo((prev) =>
+      prev.map((m, j) => (j === i ? { ...m, [campo]: valor } : m))
+    );
+  }
+  function agregarMiembro() {
+    setEquipo((prev) =>
+      prev.length >= MAX_EQUIPO
+        ? prev
+        : [...prev, { vendor: "", nombre: "", rubro: "" }]
+    );
+  }
+  function quitarMiembro(i: number) {
+    setEquipo((prev) => prev.filter((_, j) => j !== i));
+  }
 
   const config: ConfigAsistente = useMemo(
     () =>
@@ -59,8 +78,9 @@ export default function CrearAsistente() {
         whatsapp,
         web,
         datos,
+        equipo,
       }),
-    [marca, asistente, rubro, saludo, color, fondo, dominio, whatsapp, web, datos]
+    [marca, asistente, rubro, saludo, color, fondo, dominio, whatsapp, web, datos, equipo]
   );
 
   const identidadLista = config.marca.length >= 2 && config.asistente.length >= 2;
@@ -70,10 +90,13 @@ export default function CrearAsistente() {
       : "https://silvi-assistants.vercel.app";
   const c = codificarConfig(config);
   const linkChat = `${origen}/chat?c=${c}`;
+  const lineaVendor = config.equipo.length
+    ? `\n  {% if product %}data-artesano="{{ product.vendor | escape }}"{% endif %}`
+    : "";
   const snippetWidget = `<script src="${origen}/widget.js" defer
   data-color="${config.color}"
   data-etiqueta="Chateá con ${config.asistente || "tu asistente"}"
-  data-licencia="TU-LICENCIA-PRO"
+  data-licencia="TU-LICENCIA-PRO"${lineaVendor}
   data-config="${c}">
 </script>`;
   const mensajeActivacion = encodeURIComponent(
@@ -320,6 +343,51 @@ export default function CrearAsistente() {
                   ? `✓ ${config.asistente || "Tu asistente"} responderá con el catálogo en vivo de ${config.dominio}`
                   : "¿Sin tienda Shopify? No pasa nada: en el siguiente paso le enseñás tu negocio."}
               </p>
+
+              <h2 className="crd-equipo-titulo">¿Quién atiende cada línea? (opcional)</h2>
+              <p className="crd-paso-sub">
+                Si tu tienda tiene varios <strong>proveedores</strong> (en
+                Shopify: Organización del producto → Proveedor), asigná quién
+                atiende cada uno. En las páginas de esos productos, el widget
+                abrirá el chat con esa persona. Sin match, atiende{" "}
+                {config.asistente || "tu asistente"} — no hay problema.
+              </p>
+              {equipo.map((m, i) => (
+                <div className="crd-miembro" key={i}>
+                  <input
+                    value={m.vendor}
+                    onChange={(e) => actualizarMiembro(i, "vendor", e.target.value)}
+                    placeholder="Proveedor en Shopify (ej. Eseoese by Silvi)"
+                    maxLength={40}
+                    aria-label={`Proveedor ${i + 1}`}
+                  />
+                  <input
+                    value={m.nombre}
+                    onChange={(e) => actualizarMiembro(i, "nombre", e.target.value)}
+                    placeholder="Quién atiende (ej. Silvi)"
+                    maxLength={30}
+                    aria-label={`Atiende ${i + 1}`}
+                  />
+                  <button
+                    type="button"
+                    className="crd-miembro-quitar"
+                    onClick={() => quitarMiembro(i)}
+                    aria-label={`Quitar miembro ${i + 1}`}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+              {equipo.length < MAX_EQUIPO && (
+                <button type="button" className="crd-agregar" onClick={agregarMiembro}>
+                  + Agregar proveedor
+                </button>
+              )}
+              {config.equipo.length > 0 && (
+                <p className="adm-nota">
+                  ✓ {config.equipo.map((m) => `${m.nombre} → ${m.vendor}`).join(" · ")}
+                </p>
+              )}
             </div>
           )}
 

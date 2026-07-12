@@ -1,6 +1,6 @@
 import { knowledgeBase as kb, resolverArtesano, type Artesano } from "./knowledge-base";
 import { shopifyConfigurado } from "./shopify";
-import type { ConfigAsistente } from "./config-asistente";
+import type { ConfigAsistente, MiembroEquipo } from "./config-asistente";
 
 /** Productos de ejemplo (respaldo) — solo se usan si Shopify NO está conectado. */
 function productosRespaldoTexto(): string {
@@ -110,13 +110,37 @@ ${otros}
  * servidor); las reglas anti-invención son fijas de esta plantilla y la
  * config nunca puede alterarlas.
  */
-export function getSystemPromptGenerico(cfg: ConfigAsistente): string {
+export function getSystemPromptGenerico(
+  cfg: ConfigAsistente,
+  miembro?: MiembroEquipo | null
+): string {
   const contacto = [
     cfg.whatsapp ? `WhatsApp/Teléfono: ${cfg.whatsapp}` : "",
     cfg.web ? `Web: ${cfg.web}` : "",
   ]
     .filter(Boolean)
     .join("\n");
+
+  // Quién atiende esta sesión: un miembro del equipo (por vendor) o el default.
+  const nombreActivo = miembro?.nombre || cfg.asistente;
+  const bloqueEquipo = cfg.equipo.length
+    ? `
+EQUIPO DE ${cfg.marca.toUpperCase()} (cada quien atiende su especialidad; presentá el trabajo de los demás con naturalidad y dales crédito)
+${cfg.equipo
+  .map(
+    (m) =>
+      `- ${m.nombre} atiende lo de "${m.vendor}"${m.rubro ? ` (${m.rubro})` : ""}`
+  )
+  .join("\n")}
+- ${cfg.asistente} es quien atiende de forma general.
+${
+  miembro
+    ? `EN ESTA SESIÓN atendés vos: ${miembro.nombre}${miembro.rubro ? `, especialidad: ${miembro.rubro}` : ""} (el cliente está viendo productos de "${miembro.vendor}").`
+    : `EN ESTA SESIÓN atiende ${cfg.asistente} (atención general).`
+}
+- IMPORTANTE (autenticidad): si te preguntan si sos la persona real, aclaralo con calidez: sos el asistente virtual del equipo${cfg.whatsapp ? `; para hablar con la persona está el contacto (${cfg.whatsapp})` : ""}.
+`.trim()
+    : "";
 
   const bloqueCatalogo = cfg.dominio
     ? `
@@ -135,8 +159,8 @@ precios concretos, explicá con honestidad que no tenés el catálogo a mano${cf
 `.trim();
 
   return `
-Sos "${cfg.asistente}", asistente virtual de ${cfg.marca}${cfg.rubro ? ` — ${cfg.rubro}` : ""}.
-
+Sos "${nombreActivo}", asistente virtual de ${cfg.marca}${cfg.rubro ? ` — ${cfg.rubro}` : ""}.
+${bloqueEquipo ? `\n# QUIÉN ATIENDE\n${bloqueEquipo}\n` : ""}
 # TU TONO
 - Hablás en español, cálido/a, cercano/a y profesional. Podés usar el registro
   natural del cliente (si te hablan de vos, respondé con voseo; si te hablan de tú, con tuteo).

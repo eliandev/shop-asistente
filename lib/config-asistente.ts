@@ -15,6 +15,20 @@
  * ============================================================================
  */
 
+/**
+ * Miembro del equipo: quién atiende cuando el cliente mira un producto de un
+ * proveedor (vendor) específico de la tienda. Ej: vendor "Eseoese by Silvi"
+ * → atiende "Silvi". Sin match, atiende el asistente por defecto.
+ */
+export interface MiembroEquipo {
+  /** vendor EXACTO como está en Shopify (Organización del producto → Proveedor) */
+  vendor: string;
+  /** nombre de quien atiende para ese proveedor */
+  nombre: string;
+  /** especialidad breve (opcional) */
+  rubro: string;
+}
+
 export interface ConfigAsistente {
   /** nombre de la marca/tienda (ej. "Glow Beauty") */
   marca: string;
@@ -36,9 +50,13 @@ export interface ConfigAsistente {
   web: string;
   /** datos del negocio en texto libre: envíos, pagos, políticas, horarios */
   datos: string;
+  /** equipo por proveedor (opcional): match con el vendor de Shopify */
+  equipo: MiembroEquipo[];
 }
 
-const LIMITES: Record<keyof ConfigAsistente, number> = {
+export const MAX_EQUIPO = 4;
+
+const LIMITES = {
   marca: 40,
   asistente: 30,
   rubro: 90,
@@ -49,7 +67,10 @@ const LIMITES: Record<keyof ConfigAsistente, number> = {
   whatsapp: 30,
   web: 120,
   datos: 700,
-};
+  vendor: 40,
+  miembroNombre: 30,
+  miembroRubro: 80,
+} as const;
 
 const HEX = /^#[0-9a-fA-F]{3,8}$/;
 
@@ -84,6 +105,17 @@ export function sanitizarConfig(cruda: any): ConfigAsistente {
   const fondo = typeof cruda?.fondo === "string" && HEX.test(cruda.fondo.trim())
     ? cruda.fondo.trim()
     : "#F5EEE3";
+  const equipo: MiembroEquipo[] = Array.isArray(cruda?.equipo)
+    ? cruda.equipo
+        .slice(0, MAX_EQUIPO)
+        .map((m: any) => ({
+          vendor: limpiarTexto(m?.vendor, LIMITES.vendor),
+          nombre: limpiarTexto(m?.nombre, LIMITES.miembroNombre),
+          rubro: limpiarTexto(m?.rubro, LIMITES.miembroRubro),
+        }))
+        .filter((m: MiembroEquipo) => m.vendor.length >= 2 && m.nombre.length >= 2)
+    : [];
+
   return {
     marca: limpiarTexto(cruda?.marca, LIMITES.marca),
     asistente: limpiarTexto(cruda?.asistente, LIMITES.asistente),
@@ -95,7 +127,33 @@ export function sanitizarConfig(cruda: any): ConfigAsistente {
     whatsapp: limpiarTexto(cruda?.whatsapp, LIMITES.whatsapp),
     web: limpiarTexto(cruda?.web, LIMITES.web),
     datos: limpiarTexto(cruda?.datos, LIMITES.datos),
+    equipo,
   };
+}
+
+/** Normaliza para comparar vendors (sin acentos, sin mayúsculas). */
+function claveVendor(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Busca al miembro del equipo que atiende para un vendor de Shopify.
+ * Devuelve null si no hay match → atiende el asistente por defecto.
+ */
+export function miembroDeEquipo(
+  cfg: ConfigAsistente,
+  vendor: unknown
+): MiembroEquipo | null {
+  if (typeof vendor !== "string" || !vendor.trim() || !cfg.equipo.length) {
+    return null;
+  }
+  const clave = claveVendor(vendor);
+  return cfg.equipo.find((m) => claveVendor(m.vendor) === clave) ?? null;
 }
 
 /** ¿Tiene lo mínimo para funcionar? (marca + asistente) */

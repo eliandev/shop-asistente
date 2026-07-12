@@ -4,8 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { resolverArtesano, type Artesano } from "@/lib/knowledge-base";
 import {
   decodificarConfig,
+  miembroDeEquipo,
   saludoPorDefecto,
   type ConfigAsistente,
+  type MiembroEquipo,
 } from "@/lib/config-asistente";
 
 type Rol = "user" | "assistant";
@@ -77,6 +79,9 @@ export default function Chat() {
   // Asistente personalizado (creado en /crear): config del link (?c=).
   const [config, setConfig] = useState<ConfigAsistente | null>(null);
   const [cRaw, setCRaw] = useState<string | null>(null);
+  // Miembro del equipo que atiende (match por vendor de Shopify); null = default.
+  const [miembro, setMiembro] = useState<MiembroEquipo | null>(null);
+  const [vendorParam, setVendorParam] = useState<string | null>(null);
   // Plan Pro: si el chat corre embebido (widget en otro sitio) manda la
   // licencia; el servidor decide si está activado.
   const [embebido, setEmbebido] = useState(false);
@@ -103,16 +108,16 @@ export default function Chat() {
       setConfig(cfg);
       setCRaw(c);
       aplicarMarca(cfg);
+      // ¿atiende un miembro del equipo? (vendor del producto → match)
+      const vendor = params.get("artesano");
+      const m = miembroDeEquipo(cfg, vendor);
+      setMiembro(m);
+      if (vendor) setVendorParam(vendor);
+      const saludoActivo = m
+        ? saludoPorDefecto(m.nombre, cfg.marca)
+        : cfg.saludo || saludoPorDefecto(cfg.asistente, cfg.marca);
       setMensajes((prev) =>
-        prev.length <= 1
-          ? [
-              {
-                role: "assistant",
-                content:
-                  cfg.saludo || saludoPorDefecto(cfg.asistente, cfg.marca),
-              },
-            ]
-          : prev
+        prev.length <= 1 ? [{ role: "assistant", content: saludoActivo }] : prev
       );
       return;
     }
@@ -146,7 +151,8 @@ export default function Chat() {
         // se envían solo role/content (las tarjetas son de presentación)
         body: JSON.stringify({
           messages: nuevos.map(({ role, content }) => ({ role, content })),
-          artesano: artesano.id,
+          // ART-ES: id del artesano · config: vendor de Shopify (equipo)
+          artesano: cRaw ? vendorParam || "" : artesano.id,
           ...(cRaw ? { c: cRaw, embebido, ...(lic ? { lic } : {}) } : {}),
         }),
       });
@@ -185,17 +191,19 @@ export default function Chat() {
 
   const mostrarSugerencias = mensajes.length <= 1 && !cargando;
 
-  // Textos e identidad según el modo (ART-ES o asistente personalizado)
+  // Textos e identidad según el modo (ART-ES o asistente personalizado).
+  // Si un miembro del equipo hace match con el vendor, atiende esa persona.
+  const nombreActivo = miembro?.nombre || config?.asistente || "";
   const nombreMarca = config ? config.marca : "ART-ES";
   const subtitulo = config
-    ? `${config.asistente} · asistente virtual`
+    ? `${nombreActivo} · asistente virtual${miembro?.rubro ? ` · ${miembro.rubro}` : ""}`
     : `Taller de ${artesano.nombre} · ${artesano.taller}`;
-  const etiqueta = config ? config.asistente : `Taller de ${artesano.nombre}`;
+  const etiqueta = config ? nombreActivo : `Taller de ${artesano.nombre}`;
   const sugerencias = config ? SUGERENCIAS_GENERICAS : SUGERENCIAS_ARTES;
   const pie = config
     ? `${config.marca} · asistente virtual`
     : "Hecho a mano en El Salvador 🇸🇻";
-  const inicial = (config?.asistente || "A").charAt(0).toUpperCase();
+  const inicial = (nombreActivo || "A").charAt(0).toUpperCase();
 
   return (
     <section className="tarjeta" aria-label={`Chat con ${etiqueta} de ${nombreMarca}`}>

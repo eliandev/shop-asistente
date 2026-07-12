@@ -1,5 +1,102 @@
 # Textos listos para publicar
 
+---
+
+# RETO 3 · "La forma más creativa de capturar leads"
+
+## R3-1 · Comentario para la clase de Platzi (Reto 3)
+
+---
+
+🎣 **Silvi Assistants — capturo leads regalando algo que ya funciona, no pidiendo el correo primero**
+
+La mayoría de las capturas de leads son al revés: "dejá tu correo y DESPUÉS
+te doy algo". Yo lo di vuelta.
+
+En [silvi-assistants.vercel.app/crear](https://silvi-assistants.vercel.app/crear)
+cualquier persona arma **su propio asistente de IA** en 2 minutos —con su
+marca, sus colores y su catálogo de Shopify en vivo— y lo ve **funcionando de
+verdad** antes de que le pida absolutamente nada. Sin cuenta, sin correo, sin
+fricción.
+
+Recién cuando ya tiene su asistente listo aparece el intercambio justo: para
+**llevárselo** (recibir el link + el instalador por correo) o pedir el **widget
+Pro** para su tienda, deja sus datos. El gancho no es una promesa: es una
+herramienta que ya tiene en la mano. Eso es lo que lo hace creativo — **el lead
+se captura en el pico de valor, no antes.**
+
+**Lo que hay detrás (de verdad, no maqueta):**
+- Los leads se guardan en **Firestore** (Firebase), con dedupe por correo
+  (mismo correo no duplica, cuenta reintentos) y un **snapshot del asistente**
+  que creó cada persona — oro puro para segmentar: sé qué marca es, de qué
+  rubro y si conectó tienda.
+- Credenciales solo en el servidor, IP guardada hasheada, honeypot
+  anti-bots, rate-limit y consentimiento explícito.
+- Correo automático cableado (extensión Trigger Email de Firebase): al
+  reclamar, sale el correo con el link de su asistente.
+
+**Probalo vos mismo** (creá un asistente y reclamalo) 👉
+https://silvi-assistants.vercel.app/crear
+
+Y de paso conocé la historia detrás: es el motor de
+[ART-ES](https://art-es.shop), mi emprendimiento salvadoreño de artesanía real.
+
+Código abierto del proyecto: https://github.com/eliandev/shop-asistente
+
+Si te parece creativo, **tu like en este comentario es el voto** 💚 ¡Gracias!
+
+---
+
+## R3-2 · Post para redes (LinkedIn / X) — Reto 3
+
+---
+
+La mayoría te dice "dejá tu correo y después te muestro".
+
+Yo lo hice al revés: en mi proyecto, primero te doy un asistente de IA
+funcionando con tu marca y tu catálogo —gratis, en 2 minutos, sin cuenta— y
+recién cuando ya lo tenés en la mano te ofrezco llevártelo por correo.
+
+El lead se captura en el pico de valor, no antes. Y no es una demo: los datos
+se guardan en Firestore con dedupe, snapshot del negocio de cada quien y
+correo automático.
+
+Es parte de Silvi Assistants, el motor detrás de mi emprendimiento salvadoreño
+ART-ES 🧶
+
+🎣 Creá tu asistente y reclamalo: https://silvi-assistants.vercel.app/crear
+
+Compitiendo en la #VibecodersLeague de @platzi — **el voto es un like a mi
+comentario** 👉 [LINK-AL-COMENTARIO-EN-PLATZI]. Cualquiera puede votar, sin
+suscripción. 🙌
+
+---
+
+## R3-3 · Mensaje para WhatsApp / amigos (Reto 3)
+
+---
+
+¡Hola! 👋 Sigo en el reto de IA de Platzi, ahora en el desafío de "captura de
+leads". Hice algo distinto: en vez de pedirte el correo primero, te dejo crear
+un asistente de IA con tu marca GRATIS y funcionando, y recién ahí te lo
+llevás por correo.
+
+¿Me ayudás con tu voto? Es un **like a mi comentario** (cuenta gratis de
+Platzi, sin suscripción):
+👉 [LINK-AL-COMENTARIO-EN-PLATZI]
+
+Y si querés jugar creando uno: https://silvi-assistants.vercel.app/crear
+¡Gracias! 💚
+
+---
+
+> Reemplazá `[LINK-AL-COMENTARIO-EN-PLATZI]` por el link directo a tu
+> comentario del Reto 3 (menú ⋮ del comentario → copiar enlace).
+
+---
+
+# RETO 1 · "El asistente que responde por tu negocio"
+
 ## 1 · Comentario para la clase de Platzi (Reto 1)
 
 ---

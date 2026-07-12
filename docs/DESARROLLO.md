@@ -26,6 +26,7 @@ conocimiento, la voz del asistente y la paleta visual.
 | 8 | Landing de producto + dashboard demo | ✅ Completada (2026-07-11) | — |
 | 9 | Creador de asistentes generalizado | ✅ Completada (2026-07-11) | — |
 | 10 | Monetización: widget Pro con licencias | ✅ Completada (2026-07-11) | — |
+| 11 | Captura de leads "Reclamar tu asistente" (Reto 3) | ✅ Completada (2026-07-12) — Firestore en vivo | — |
 
 ---
 
@@ -547,6 +548,21 @@ desconocido → asistente por defecto, sin romperse.
 bad_request, honeypot 200 silencioso, 500 server_not_configured sin creds);
 flujo UI completo en navegador (modal abre/cierra, pro preseleccionado,
 error con reintento); bundle del cliente sin rastro de firebase (grep sobre
-.next/static). **Pendiente del dueño:** crear el proyecto Firebase + cargar
-FIREBASE_PROJECT_ID/CLIENT_EMAIL/PRIVATE_KEY (local y Vercel) y publicar las
-reglas → recién ahí probar escritura real y dedupe en la consola.
+.next/static).
+
+**Cierre con credenciales reales (2026-07-12):**
+- El dueño creó el proyecto Firebase y cargó FIREBASE_* en local y Vercel.
+- **Bug encontrado y corregido:** el primer POST tardaba ~90s — firebase-admin
+  usa gRPC con keepalive que se cuelga en serverless/dev. Fix:
+  `db.settings({ preferRest: true })` (transporte REST), aplicado una sola vez
+  al crear el app + singleton cacheado. Latencia ahora ~1-12s cold, <1s caliente.
+- **QA de escritura real (local Y producción):** 1er envío `duplicate:false`,
+  reenvío mismo correo `duplicate:true` (dedupe transaccional por SHA-256 del
+  email confirmado), correo distinto `duplicate:false`. Flujo UI end-to-end en
+  producción llega a "¡Listo! Tu asistente quedó reclamado" + link.
+- **Leads de prueba creados** (borrar de la consola cuando se quiera): dominio
+  @silvi-test.dev — prueba.1783850537, qa.reto3.v2, segundo.lead, qa.prod.reto3,
+  ui.prod.
+
+**Fase 11 = COMPLETADA.** Pendiente opcional del dueño: extensión Trigger Email
++ Firebase Analytics (docs/LEADS.md §correo automático).

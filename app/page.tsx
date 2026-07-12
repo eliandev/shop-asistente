@@ -27,9 +27,47 @@ const MARIA = sanitizarConfig({
 });
 const LINK_MARIA = `/chat?c=${codificarConfig(MARIA)}`;
 
+// Datos estructurados (JSON-LD) para buscadores: la plataforma como
+// aplicación web gratuita + el sitio.
+const JSON_LD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      name: "Silvi Assistants",
+      url: "https://silvi-assistants.vercel.app",
+      inLanguage: "es",
+    },
+    {
+      "@type": "SoftwareApplication",
+      name: "Silvi Assistants",
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Web",
+      description:
+        "Creá un asistente de IA para tu tienda: catálogo Shopify en vivo, tu conocimiento y tu marca. Nunca inventa datos.",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+        description: "Link compartible del asistente, gratis para siempre.",
+      },
+      creator: {
+        "@type": "Organization",
+        name: "ART-ES",
+        url: "https://art-es.shop",
+      },
+      inLanguage: "es",
+    },
+  ],
+};
+
 export default function Landing() {
   return (
     <main className="ld lx">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+      />
       <div className="lx-marco">
         {/* ── banda rayada superior ── */}
         <div className="lx-franja" aria-hidden="true" />

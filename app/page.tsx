@@ -3,6 +3,19 @@ import {
   codificarConfig,
   sanitizarConfig,
 } from "@/lib/config-asistente";
+import {
+  IconoBolsa,
+  IconoCaja,
+  IconoCheck,
+  IconoChispas,
+  IconoCorazon,
+  IconoEstrella,
+  IconoEtiqueta,
+  IconoFlechaAbajo,
+  IconoGota,
+  IconoHoja,
+  IconoTaza,
+} from "@/components/Iconos";
 
 /**
  * Landing de la PLATAFORMA (negro + lima, estilo estudio/agencia):
@@ -185,10 +198,10 @@ export default function Landing() {
               <a className="lx-demo-link" href="/chat">↳ Abrir demo</a>
             </div>
             <div className="lx-tiles">
-              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#0047AB,#002a69)" }}>🧶</span>
-              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#1b5fd0,#0047AB)" }}>👜</span>
-              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#e8b023,#b4471b)" }}>🧺</span>
-              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#2e7d32,#14532d)" }}>🪵</span>
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#0047AB,#002a69)" }}><IconoBolsa /></span>
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#1b5fd0,#0047AB)" }}><IconoCorazon /></span>
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#e8b023,#b4471b)" }}><IconoCaja /></span>
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#2e7d32,#14532d)" }}><IconoHoja /></span>
             </div>
           </article>
 
@@ -207,10 +220,10 @@ export default function Landing() {
               <a className="lx-demo-link" href={LINK_MARIA}>↳ Chatear con María</a>
             </div>
             <div className="lx-tiles">
-              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#C2185B,#7c0f3a)" }}>💄</span>
-              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#f06292,#C2185B)" }}>💅</span>
-              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#fdb4c9,#f06292)" }}>🌸</span>
-              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#8e24aa,#4a148c)" }}>✨</span>
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#C2185B,#7c0f3a)" }}><IconoGota /></span>
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#f06292,#C2185B)" }}><IconoEstrella /></span>
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#fdb4c9,#f06292)" }}><IconoCorazon /></span>
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#8e24aa,#4a148c)" }}><IconoChispas /></span>
             </div>
           </article>
 
@@ -229,9 +242,9 @@ export default function Landing() {
               <a className="lx-demo-link" href="/crear">↳ Crearlo ahora</a>
             </div>
             <div className="lx-tiles">
-              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#c9f73a,#5a7a10)" }}>🛍️</span>
-              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#26c6da,#00838f)" }}>☕</span>
-              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#ffb300,#e65100)" }}>👟</span>
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#c9f73a,#5a7a10)" }}><IconoBolsa /></span>
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#26c6da,#00838f)" }}><IconoTaza /></span>
+              <span className="lx-tile" style={{ background: "linear-gradient(140deg,#ffb300,#e65100)" }}><IconoEtiqueta /></span>
               <span className="lx-tile lx-tile-mas">+</span>
             </div>
           </article>
@@ -255,10 +268,10 @@ export default function Landing() {
                 <span>/ link compartible, para siempre</span>
               </div>
               <ul className="lx-plan-lista">
-                <li>✓ Catálogo Shopify en vivo (sin tokens)</li>
-                <li>✓ Tarjetas de producto con foto y precio</li>
-                <li>✓ Anti-invención y derivación a tu WhatsApp</li>
-                <li>✓ Tu marca: colores, nombre y personalidad</li>
+                <li><IconoCheck size={16} /><span>Catálogo Shopify en vivo (sin tokens)</span></li>
+                <li><IconoCheck size={16} /><span>Tarjetas de producto con foto y precio</span></li>
+                <li><IconoCheck size={16} /><span>Anti-invención y derivación a tu WhatsApp</span></li>
+                <li><IconoCheck size={16} /><span>Tu marca: colores, nombre y personalidad</span></li>
               </ul>
               <a className="lx-plan-btn" href="/crear">↳ Crear gratis</a>
             </div>
@@ -294,7 +307,7 @@ export default function Landing() {
         <footer className="lx-pie">
           <span>SILVI° — asistentes de IA para tiendas</span>
           <span>
-            Hecho en El Salvador 🇸🇻 · Demo con la tienda real de{" "}
+            Hecho en El Salvador · Demo con la tienda real de{" "}
             <a href="https://art-es.shop" target="_blank" rel="noopener noreferrer">ART-ES</a>{" "}
             · Reto 1 — Vibecoders League 2.0 · <a href="/admin">Panel (demo)</a>
           </span>

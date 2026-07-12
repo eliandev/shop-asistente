@@ -1001,6 +1001,32 @@ a.producto-card:focus-visible {
   color: #a8a79d;
   margin: -4px 0 16px;
 }
+.crd-icono-inline {
+  display: inline-block;
+  vertical-align: -2px;
+  margin-left: 5px;
+  color: var(--marca);
+}
+.crd-icono-lima { color: var(--marca); flex: 0 0 auto; }
+.crd-h2-icono {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.adm .adm-nota {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+}
+.adm .adm-nota svg { flex: 0 0 auto; margin-top: 2px; }
+.crd-nav-seguir,
+.adm .ld-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.adm .crd-probar { display: flex; }
 .crd-nav {
   margin-top: auto;
   padding-top: 20px;
@@ -1419,6 +1445,12 @@ a.producto-card:focus-visible {
   place-items: center;
   font-size: clamp(26px, 3.4vw, 44px);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.92); /* iconos outlined en blanco */
+}
+.lx-tile svg {
+  width: 42%;
+  height: 42%;
+  stroke-width: 1.5;
 }
 .lx-tile-mas {
   background: #131416;
@@ -1508,10 +1540,18 @@ a.producto-card:focus-visible {
 .lx-plan-precio span { font-size: 13px; color: #a8a79d; }
 .lx-plan-lista { list-style: none; margin-bottom: 22px; }
 .lx-plan-lista li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
   font-size: 14px;
   color: #cfcec4;
   padding: 7px 0;
   border-bottom: 1px dashed #232427;
+}
+.lx-plan-lista li svg {
+  flex: 0 0 auto;
+  color: var(--marca);
+  margin-top: 1px;
 }
 .lx-plan-btn {
   display: block;

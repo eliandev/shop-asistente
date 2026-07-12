@@ -17,6 +17,12 @@ import {
   type MiembroEquipo,
   type RedSocial,
 } from "@/lib/config-asistente";
+import {
+  IconoBurbuja,
+  IconoCheck,
+  IconoChispas,
+  IconoEscudo,
+} from "@/components/Iconos";
 
 const PRESETS = [
   { nombre: "Cobalto", marca: "#0047AB", fondo: "#F5EEE3" },
@@ -166,7 +172,9 @@ export default function CrearAsistente() {
             disabled={p.n > maxPaso}
             aria-current={paso === p.n ? "step" : undefined}
           >
-            <span className="crd-step-num">{maxPaso > p.n ? "✓" : p.n}</span>
+            <span className="crd-step-num">
+              {maxPaso > p.n ? <IconoCheck size={13} strokeWidth={2.4} /> : p.n}
+            </span>
             <span className="crd-step-nombre">{p.titulo}</span>
           </button>
         ))}
@@ -224,10 +232,10 @@ export default function CrearAsistente() {
               <div className="burbuja de-silvi">
                 <div className="etiqueta">{config.asistente || "—"}</div>
                 {config.dominio
-                  ? `Te muestro el catálogo en vivo de ${config.dominio} con precios reales ✨`
+                  ? `Te muestro el catálogo en vivo de ${config.dominio} con precios reales.`
                   : config.datos
-                    ? "Te respondo con los datos que me enseñó la marca ✨"
-                    : "Cargá tu catálogo o tus datos y respondo con información real ✨"}
+                    ? "Te respondo con los datos que me enseñó la marca."
+                    : "Cargá tu catálogo o tus datos y respondo con información real."}
               </div>
             </div>
             <div className="entrada">
@@ -355,9 +363,20 @@ export default function CrearAsistente() {
                 />
               </label>
               <p className="adm-nota">
-                {config.dominio
-                  ? `✓ ${config.asistente || "Tu asistente"} responderá con el catálogo en vivo de ${config.dominio}`
-                  : "¿Sin tienda Shopify? No pasa nada: en el siguiente paso le enseñás tu negocio."}
+                {config.dominio ? (
+                  <>
+                    <IconoCheck size={14} strokeWidth={2.2} />
+                    <span>
+                      {config.asistente || "Tu asistente"} responderá con el
+                      catálogo en vivo de {config.dominio}
+                    </span>
+                  </>
+                ) : (
+                  <span>
+                    ¿Sin tienda Shopify? No pasa nada: en el siguiente paso le
+                    enseñás tu negocio.
+                  </span>
+                )}
               </p>
 
               <h2 className="crd-equipo-titulo">¿Quién atiende cada línea? (opcional)</h2>
@@ -401,7 +420,10 @@ export default function CrearAsistente() {
               )}
               {config.equipo.length > 0 && (
                 <p className="adm-nota">
-                  ✓ {config.equipo.map((m) => `${m.nombre} → ${m.vendor}`).join(" · ")}
+                  <IconoCheck size={14} strokeWidth={2.2} />
+                  <span>
+                    {config.equipo.map((m) => `${m.nombre} → ${m.vendor}`).join(" · ")}
+                  </span>
                 </p>
               )}
             </div>
@@ -412,7 +434,8 @@ export default function CrearAsistente() {
               <h2>Enseñale tu negocio</h2>
               <p className="crd-paso-sub">
                 Envíos, pagos, políticas, horarios… Si algo no está aquí ni en
-                el catálogo, tu asistente lo admite — nunca inventa. 🛡️
+                el catálogo, tu asistente lo admite — nunca inventa.
+                <IconoEscudo size={14} className="crd-icono-inline" />
               </p>
               <label className="adm-campo">
                 <span>WhatsApp / teléfono de contacto</span>
@@ -484,7 +507,10 @@ export default function CrearAsistente() {
 
           {paso === 5 && (
             <div className="crd-paso-anim">
-              <h2>🎉 {config.asistente} está en línea</h2>
+              <h2 className="crd-h2-icono">
+                <IconoChispas size={22} className="crd-icono-lima" />
+                {config.asistente} está en línea
+              </h2>
               <p className="crd-paso-sub">
                 Este link ES tu asistente — compartilo en redes, en tu bio o
                 por WhatsApp. Gratis para siempre.
@@ -533,7 +559,8 @@ export default function CrearAsistente() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Activar el widget Pro 💬
+                  Activar el widget Pro
+                  <IconoBurbuja size={16} strokeWidth={2.2} />
                 </a>
               </div>
             </div>
@@ -555,7 +582,14 @@ export default function CrearAsistente() {
                 onClick={avanzar}
                 disabled={!puedeAvanzar}
               >
-                {paso === 4 ? "Generar mi asistente ✨" : "Continuar →"}
+                {paso === 4 ? (
+                  <>
+                    Generar mi asistente
+                    <IconoChispas size={16} strokeWidth={2.2} />
+                  </>
+                ) : (
+                  "Continuar →"
+                )}
               </button>
             )}
           </div>

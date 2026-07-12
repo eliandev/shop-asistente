@@ -206,5 +206,5 @@ export function decodificarConfig(c: unknown): ConfigAsistente | null {
 
 /** Saludo por defecto al crear un asistente. */
 export function saludoPorDefecto(asistente: string, marca: string): string {
-  return `¡Hola! Soy ${asistente || "tu asistente"}, de ${marca || "la tienda"} 💬 Puedo ayudarte con productos, precios y más. ¿Qué buscás?`;
+  return `¡Hola! Soy ${asistente || "tu asistente"}, de ${marca || "la tienda"}. Puedo ayudarte con productos, precios y más. ¿Qué buscás?`;
 }

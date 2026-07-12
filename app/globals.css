@@ -909,6 +909,157 @@ a.producto-card:focus-visible {
 .crd-pro-nota { color: #9a998f; }
 
 /* ============================================================
+   /crear — WIZARD por pasos con vista previa siempre visible
+   ============================================================ */
+.crd-stepper {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 6px 24px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 22px;
+  position: relative;
+}
+.crd-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  padding: 8px 0 12px;
+  cursor: pointer;
+  color: #6d6e66;
+  font-family: var(--font-body);
+}
+.crd-step:disabled { cursor: not-allowed; opacity: 0.55; }
+.crd-step-num {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid #3a3b3f;
+  font-size: 12.5px;
+  font-weight: 800;
+}
+.crd-step-nombre {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+.crd-step.alcanzado { color: #cfcec4; }
+.crd-step.hecho .crd-step-num {
+  border-color: var(--marca);
+  color: var(--marca);
+}
+.crd-step.actual { color: var(--marca); }
+.crd-step.actual .crd-step-num {
+  background: var(--marca);
+  border-color: var(--marca);
+  color: #0e0e0f;
+}
+.crd-progreso {
+  flex-basis: 100%;
+  height: 3px;
+  background: #232427;
+  border-radius: 99px;
+  overflow: hidden;
+}
+.crd-progreso span {
+  display: block;
+  height: 100%;
+  background: var(--marca);
+  border-radius: 99px;
+  transition: width 0.35s ease;
+}
+
+.crd-cuerpo { grid-template-columns: minmax(0, 1fr) 440px; }
+.crd-panel {
+  order: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 540px;
+}
+.crd-preview {
+  order: 2;
+  position: sticky;
+  top: 16px;
+  align-self: start;
+}
+.crd-paso-anim { animation: crdAparecer 0.28s ease; }
+@keyframes crdAparecer {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .crd-paso-anim { animation: none; }
+}
+.crd-paso-sub {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: #a8a79d;
+  margin: -4px 0 16px;
+}
+.crd-nav {
+  margin-top: auto;
+  padding-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.crd-nav-seguir {
+  padding: 13px 26px;
+  border: none;
+  border-radius: 10px;
+  background: var(--marca);
+  color: #0e0e0f;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 14.5px;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+}
+.crd-nav-seguir:hover:not(:disabled) { background: var(--marca-oscuro); }
+.crd-nav-seguir:disabled { opacity: 0.4; cursor: not-allowed; }
+.crd-nav-volver {
+  padding: 12px 18px;
+  border: 1.5px solid #3a3b3f;
+  border-radius: 10px;
+  background: transparent;
+  color: #cfcec4;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+.crd-nav-volver:hover { border-color: var(--marca); color: var(--marca); }
+.crd-presets-grandes { margin-bottom: 16px; }
+.crd-presets-grandes .adm-preset { width: 44px; height: 44px; }
+.adm-preset.elegido {
+  box-shadow: 0 0 0 3px #0e0e0f, 0 0 0 5px var(--marca);
+}
+
+@media (max-width: 860px) {
+  .crd-cuerpo { grid-template-columns: 1fr; }
+  .crd-preview {
+    order: 0;
+    top: 8px;
+    z-index: 5;
+    padding: 12px;
+  }
+  .crd-preview .adm-tarjeta { min-height: 0; }
+  .crd-preview .adm-tarjeta .mensajes {
+    min-height: 0;
+    max-height: 168px;
+    overflow: hidden;
+    padding-bottom: 4px;
+  }
+  .crd-panel { order: 1; min-height: 0; }
+}
+
+/* ============================================================
    LANDING "LX" — estilo estudio/agencia sobre negro + lima
    (marco con grilla, banda rayada, display condensada gigante)
    ============================================================ */

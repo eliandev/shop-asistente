@@ -8,42 +8,39 @@
 
 ---
 
-🎣 **Silvi Assistants — capturo leads regalando algo que ya funciona, no pidiendo el correo primero**
+¡Hola, Platzi mates! 👋 Les presento mi creación para este Reto 3 de captura
+de leads: **Silvi Assistants**.
 
-La mayoría de las capturas de leads son al revés: "dejá tu correo y DESPUÉS
-te doy algo". Yo lo di vuelta.
+**En qué me inspiré** 💡
+Tengo un emprendimiento salvadoreño real, [ART-ES](https://art-es.shop):
+artesanía hecha a mano por gente de verdad —Silvi teje los bolsos en San
+Salvador y don José borda cojines y talla madera en Nahuizalco—. Vendiendo por
+redes me di cuenta de algo: la gente pregunta lo mismo mil veces (precios,
+envíos, si hay stock) y muchas ventas se enfrían por no responder a tiempo. De
+ahí salió la idea: un asistente de IA que responde por el negocio. Y después
+pensé… ¿por qué solo para ART-ES? Que **cualquier marca pueda crear el suyo**.
 
-En [silvi-assistants.vercel.app/crear](https://silvi-assistants.vercel.app/crear)
-cualquier persona arma **su propio asistente de IA** en 2 minutos —con su
-marca, sus colores y su catálogo de Shopify en vivo— y lo ve **funcionando de
-verdad** antes de que le pida absolutamente nada. Sin cuenta, sin correo, sin
-fricción.
+**Cómo lo hice** 🛠️
+Next.js + la IA de Claude para las respuestas, el catálogo **en vivo de
+Shopify** (precios y stock reales, sin inventar nada), y para este reto sumé
+**Firebase/Firestore** para la captura de leads. Todo desplegado en Vercel.
 
-Recién cuando ya tiene su asistente listo aparece el intercambio justo: para
-**llevárselo** (recibir el link + el instalador por correo) o pedir el **widget
-Pro** para su tienda, deja sus datos. El gancho no es una promesa: es una
-herramienta que ya tiene en la mano. Eso es lo que lo hace creativo — **el lead
-se captura en el pico de valor, no antes.**
+**Cómo funciona (y por qué creo que es una captura de leads distinta)** 🎣
+La mayoría te pide el correo PRIMERO y te da algo después. Yo lo di vuelta:
+entrás, creás **tu propio asistente** en 2 minutos con tu marca, tus colores y
+tu catálogo, y lo ves **funcionando de verdad** — sin cuenta, sin pedirte nada.
+Recién cuando ya lo tenés listo y te encantó, dejás tu correo para
+**llevártelo** (te llega el link + el instalador para tu tienda). El lead se
+captura en el pico de valor, no en la puerta. Atrás: se guarda en Firestore
+con dedupe por correo, un snapshot del negocio de cada quien y correo
+automático. 🙌
 
-**Lo que hay detrás (de verdad, no maqueta):**
-- Los leads se guardan en **Firestore** (Firebase), con dedupe por correo
-  (mismo correo no duplica, cuenta reintentos) y un **snapshot del asistente**
-  que creó cada persona — oro puro para segmentar: sé qué marca es, de qué
-  rubro y si conectó tienda.
-- Credenciales solo en el servidor, IP guardada hasheada, honeypot
-  anti-bots, rate-limit y consentimiento explícito.
-- Correo automático cableado (extensión Trigger Email de Firebase): al
-  reclamar, sale el correo con el link de su asistente.
+**Podés probarlo** 👉 https://silvi-assistants.vercel.app/crear
+(creá un asistente con cualquier tienda Shopify y "reclamalo" para ver el flujo
+completo). Código abierto: https://github.com/eliandev/shop-asistente
 
-**Probalo vos mismo** (creá un asistente y reclamalo) 👉
-https://silvi-assistants.vercel.app/crear
-
-Y de paso conocé la historia detrás: es el motor de
-[ART-ES](https://art-es.shop), mi emprendimiento salvadoreño de artesanía real.
-
-Código abierto del proyecto: https://github.com/eliandev/shop-asistente
-
-Si te parece creativo, **tu like en este comentario es el voto** 💚 ¡Gracias!
+Si te gusta, **tu like en este comentario es el voto** 💚 ¡Gracias por el apoyo,
+mates! Hecho con 🤍 desde El Salvador 🇸🇻
 
 ---
 

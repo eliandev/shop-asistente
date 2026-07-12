@@ -564,5 +564,13 @@ error con reintento); bundle del cliente sin rastro de firebase (grep sobre
   @silvi-test.dev — prueba.1783850537, qa.reto3.v2, segundo.lead, qa.prod.reto3,
   ui.prod.
 
-**Fase 11 = COMPLETADA.** Pendiente opcional del dueño: extensión Trigger Email
-+ Firebase Analytics (docs/LEADS.md §correo automático).
+**Fase 11 = COMPLETADA.**
+
+**Correo automático cableado (2026-07-12):** `lib/correo.ts` compone el correo
+(link + snippet del widget, variante guardar/pro) y `/api/lead` lo encola en la
+colección `mail` con el formato de la extensión "Trigger Email from Firestore"
+(`to` + `message.{subject,html,text}`). Verificado en local y producción: el
+lead con `share_url` crea el doc en `mail` sin errores. **Falta solo que el
+dueño instale la extensión** con su SMTP apuntando a la colección `mail`
+(pasos en docs/LEADS.md); hasta entonces los docs se acumulan sin enviarse.
+Analytics queda opcional.

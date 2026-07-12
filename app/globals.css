@@ -662,6 +662,9 @@ a.producto-card:focus-visible {
   color: #4a4438;
 }
 .adm-campo input[type="text"],
+.adm-campo input[type="email"],
+.adm-campo input[type="tel"],
+.adm-campo input[type="url"],
 .adm-campo input:not([type]),
 .adm-campo textarea {
   width: 100%;
@@ -858,6 +861,9 @@ a.producto-card:focus-visible {
   border-color: var(--linea);
 }
 .adm-campo input[type="text"],
+.adm-campo input[type="email"],
+.adm-campo input[type="tel"],
+.adm-campo input[type="url"],
 .adm-campo input:not([type]),
 .adm-campo textarea,
 .crd-copia input,
@@ -868,6 +874,17 @@ a.producto-card:focus-visible {
 }
 .adm-campo input:focus, .adm-campo textarea:focus {
   outline-color: var(--marca);
+}
+/* autofill del navegador: mantener fondo oscuro y texto claro (si no, Chrome
+   pinta el campo con fondo claro y el texto queda casi invisible). */
+.adm input:-webkit-autofill,
+.adm input:-webkit-autofill:hover,
+.adm input:-webkit-autofill:focus,
+.rec-dialogo input:-webkit-autofill {
+  -webkit-text-fill-color: #f2f1ec;
+  -webkit-box-shadow: 0 0 0 1000px #101113 inset;
+  caret-color: #f2f1ec;
+  border: 1px solid #2e2f33;
 }
 .adm-campo input[type="color"] {
   background: #101113;

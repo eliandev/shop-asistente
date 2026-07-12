@@ -128,8 +128,15 @@ export default function Landing() {
           <span className="lx-etiqueta">[ el producto ]</span>
           <div className="lx-sobre-fila">
             <h2>
-              Tu catálogo Shopify en vivo, tu conocimiento y tu marca,
-              atendiendo clientes 24/7 — sin inventar jamás un precio.
+              Tu catálogo{" "}
+              <img
+                className="lx-shopify"
+                src="/shopify.svg"
+                alt="Shopify"
+                height={34}
+              />{" "}
+              en vivo, tu conocimiento y tu marca, atendiendo clientes 24/7 —
+              sin inventar jamás un precio.
             </h2>
             <div className="lx-desde">
               <span>desde</span>

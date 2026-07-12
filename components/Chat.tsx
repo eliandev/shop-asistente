@@ -228,44 +228,66 @@ export default function Chat() {
       </header>
 
       <div className="mensajes" role="log" aria-live="polite">
-        {mensajes.map((m, i) => (
-          <div
-            key={i}
-            className={`burbuja ${m.role === "user" ? "de-usuario" : "de-silvi"}`}
-          >
-            {m.role === "assistant" && <div className="etiqueta">{etiqueta}</div>}
-            {m.role === "assistant" ? conEnlaces(m.content) : m.content}
-            {m.role === "assistant" && (m.productos?.length ?? 0) > 0 && (
-              <div className="productos">
-                {m.productos!.map((p) =>
-                  p.url ? (
-                    <a
-                      key={p.url}
-                      className="producto-card"
-                      href={p.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {p.imagen && <img src={p.imagen} alt="" loading="lazy" />}
-                      <span className="producto-info">
-                        <span className="producto-nombre">{p.titulo}</span>
-                        <span className="producto-precio">{p.precio}</span>
-                      </span>
-                    </a>
-                  ) : (
-                    <span key={p.titulo} className="producto-card">
-                      {p.imagen && <img src={p.imagen} alt="" loading="lazy" />}
-                      <span className="producto-info">
-                        <span className="producto-nombre">{p.titulo}</span>
-                        <span className="producto-precio">{p.precio}</span>
-                      </span>
-                    </span>
-                  )
+        {mensajes.map((m, i) =>
+          m.role === "user" ? (
+            <div key={i} className="burbuja de-usuario">
+              {m.content}
+            </div>
+          ) : (
+            // cada mensaje del asistente lleva el avatar de quien habla
+            <div key={i} className="fila-silvi">
+              {config ? (
+                <span
+                  className="avatar-silvi avatar-inicial-chica"
+                  aria-hidden="true"
+                >
+                  {inicial}
+                </span>
+              ) : (
+                <img
+                  className="avatar-silvi"
+                  src={artesano.avatar}
+                  alt=""
+                  width={36}
+                  height={36}
+                />
+              )}
+              <div className="burbuja de-silvi">
+                <div className="etiqueta">{etiqueta}</div>
+                {conEnlaces(m.content)}
+                {(m.productos?.length ?? 0) > 0 && (
+                  <div className="productos">
+                    {m.productos!.map((p) =>
+                      p.url ? (
+                        <a
+                          key={p.url}
+                          className="producto-card"
+                          href={p.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {p.imagen && <img src={p.imagen} alt="" loading="lazy" />}
+                          <span className="producto-info">
+                            <span className="producto-nombre">{p.titulo}</span>
+                            <span className="producto-precio">{p.precio}</span>
+                          </span>
+                        </a>
+                      ) : (
+                        <span key={p.titulo} className="producto-card">
+                          {p.imagen && <img src={p.imagen} alt="" loading="lazy" />}
+                          <span className="producto-info">
+                            <span className="producto-nombre">{p.titulo}</span>
+                            <span className="producto-precio">{p.precio}</span>
+                          </span>
+                        </span>
+                      )
+                    )}
+                  </div>
                 )}
               </div>
-            )}
-          </div>
-        ))}
+            </div>
+          )
+        )}
 
         {cargando && (
           <div className="fila-silvi">

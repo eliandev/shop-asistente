@@ -55,11 +55,33 @@ Consola Firebase → Firestore Database → colección **`leads`**. Cada doc:
 contacto, intención (`guardar`/`pro`), snapshot del asistente, `fuente`
 (utm_source), `submissions`, timestamps.
 
-## Siguiente paso (no bloqueante): correo automático
+## Correo automático — YA cableado, falta instalar la extensión
 
-Instalar la extensión **Trigger Email from Firestore** (Firebase →
-Extensiones) apuntando a una colección `mail`, o adaptarla para `leads`, con
-tu SMTP (SendGrid/Resend/Gmail). Plantilla sugerida: asunto "Tu asistente
-{{asistente.asistente}} está listo", cuerpo con el link del asistente y el
-snippet del widget. También: activar **Firebase Analytics** para medir el
-embudo crear → reclamar.
+El código **ya compone y encola el correo**: al guardar un lead con su link,
+`/api/lead` escribe un documento en la colección **`mail`** con el mensaje
+listo (`to`, `message.subject`, `message.html`, `message.text`) — asunto y
+cuerpo generados en `lib/correo.ts` (link del asistente + snippet del widget,
+con variante para `guardar` y `pro`). Solo falta el cartero:
+
+1. Firebase → **Extensiones** → instalar **Trigger Email from Firestore**
+   (`firebase/firestore-send-email`).
+2. Configurar durante la instalación:
+   - **Collection:** `mail` (es la que ya escribe la API).
+   - **SMTP connection URI:** de tu proveedor (SendGrid / Resend / Brevo /
+     Gmail con app password). Ej: `smtps://usuario:clave@smtp.host.com:465`.
+   - **Default FROM:** ej. `Silvi Assistants <hola@tudominio.com>`.
+3. Listo: cada nuevo lead con link dispara el correo. La extensión agrega a
+   cada doc de `mail` un campo `delivery` con el estado del envío (útil para
+   depurar).
+
+> El campo del correo destino ya viene como `to` y el contenido como
+> `message.{subject,html,text}` — el formato exacto que la extensión espera,
+> así que no hay que mapear nada.
+
+Mientras la extensión NO esté instalada, los documentos de `mail` se
+acumulan sin enviarse (no rompe nada); al instalarla, procesa los pendientes.
+
+## Firebase Analytics (opcional)
+
+Activar **Analytics** en el proyecto para medir el embudo crear → reclamar
+(eventos de página `/crear`, apertura del modal, envío del lead).

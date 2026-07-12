@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createHash } from "crypto";
 import { FieldValue } from "firebase-admin/firestore";
 import { firebaseConfigurado, getDb } from "@/lib/firebase-admin";
+import { construirCorreoLead, snippetDesdeShareUrl } from "@/lib/correo";
 
 export const runtime = "nodejs";
 
@@ -84,6 +85,11 @@ export async function POST(req: NextRequest) {
 
     const tipo = body?.tipo === "pro" ? "pro" : "guardar";
     const asistente = snapshotAsistente(body?.asistente);
+    // link del asistente (contiene ?c=): sirve para el correo y para que el
+    // dueño lo abra desde la consola. Debe ser una URL http(s) del propio sitio.
+    const shareUrlBruto = texto(body?.share_url, 3500);
+    const shareUrl =
+      shareUrlBruto && /^https?:\/\//.test(shareUrlBruto) ? shareUrlBruto : null;
 
     if (!firebaseConfigurado()) {
       return NextResponse.json(
@@ -103,6 +109,7 @@ export async function POST(req: NextRequest) {
       negocio: texto(body?.negocio, 40) ?? asistente?.marca ?? null,
       tipo,
       asistente,
+      share_url: shareUrl,
       acepta_marketing: body?.acepta_marketing === true,
       fuente: texto(body?.fuente, 40),
       user_agent: texto(req.headers.get("user-agent"), 200),
@@ -128,6 +135,39 @@ export async function POST(req: NextRequest) {
       });
       return false;
     });
+
+    // Disparo de correo (no bloqueante): escribimos el mensaje ya compuesto en
+    // la colección `mail`. La extensión "Trigger Email from Firestore" lo envía
+    // por SMTP. Si la extensión no está instalada aún, el doc queda pendiente
+    // sin romper nada. Solo se envía si la persona dio un correo y un link.
+    if (shareUrl) {
+      try {
+        const origen = req.nextUrl?.origin || "https://silvi-assistants.vercel.app";
+        const { subject, html, text: cuerpo } = construirCorreoLead({
+          nombre: datos.nombre,
+          tipo,
+          asistente: asistente?.asistente || "tu asistente",
+          marca: datos.negocio || asistente?.marca || "tu marca",
+          color: asistente?.color || "#0047AB",
+          shareUrl,
+          widgetSnippet: snippetDesdeShareUrl(
+            shareUrl,
+            origen,
+            asistente?.asistente || "tu asistente",
+            asistente?.color || "#0047AB",
+            tipo
+          ),
+        });
+        await db.collection("mail").add({
+          to: email,
+          message: { subject, html, text: cuerpo },
+          lead_tipo: tipo,
+          createdAt: FieldValue.serverTimestamp(),
+        });
+      } catch (e) {
+        console.warn("No se pudo encolar el correo del lead:", e);
+      }
+    }
 
     return NextResponse.json({ ok: true, duplicate });
   } catch (err) {

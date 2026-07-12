@@ -86,6 +86,7 @@ export default function ReclamarAsistente({
           },
           acepta_marketing: acepta,
           fuente,
+          share_url: shareUrl, // link del asistente, para el correo
           website: "", // honeypot: siempre vacío en humanos
         }),
       });

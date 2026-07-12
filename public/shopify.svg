@@ -5,7 +5,7 @@
 <style type="text/css">
 	.st0{fill:#95BF47;}
 	.st1{fill:#5E8E3E;}
-	.st2{fill:#FFFFFF;} path:not([class]){fill:#F7F6F0;}
+	.st2{fill:#FFFFFF;} path:not([class]),polygon:not([class]),polyline:not([class]){fill:#F7F6F0;}
 </style>
 <g>
 	<g>

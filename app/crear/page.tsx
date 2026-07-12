@@ -23,6 +23,7 @@ import {
   IconoChispas,
   IconoEscudo,
 } from "@/components/Iconos";
+import ReclamarAsistente, { type TipoLead } from "@/components/ReclamarAsistente";
 
 const PRESETS = [
   { nombre: "Cobalto", marca: "#0047AB", fondo: "#F5EEE3" },
@@ -55,6 +56,14 @@ export default function CrearAsistente() {
   const [datos, setDatos] = useState("");
   const [equipo, setEquipo] = useState<MiembroEquipo[]>([]);
   const [redes, setRedes] = useState<RedSocial[]>([]);
+  // modal "Reclamar tu asistente" (captura de leads)
+  const [reclamarAbierto, setReclamarAbierto] = useState(false);
+  const [tipoReclamo, setTipoReclamo] = useState<TipoLead>("guardar");
+
+  function abrirReclamo(tipo: TipoLead) {
+    setTipoReclamo(tipo);
+    setReclamarAbierto(true);
+  }
 
   function actualizarRed(i: number, campo: keyof RedSocial, valor: string) {
     setRedes((prev) => prev.map((r, j) => (j === i ? { ...r, [campo]: valor } : r)));
@@ -121,10 +130,6 @@ export default function CrearAsistente() {
   data-licencia="TU-LICENCIA-PRO"${lineaVendor}
   data-config="${c}">
 </script>`;
-  const mensajeActivacion = encodeURIComponent(
-    `Hola! Quiero activar el widget Pro de mi asistente "${config.asistente || "?"}" para ${config.marca || "mi marca"}${config.dominio ? ` (tienda: ${config.dominio})` : ""}.`
-  );
-  const linkActivacion = `https://wa.me/50372100755?text=${mensajeActivacion}`;
 
   const puedeAvanzar = paso === 1 ? identidadLista : true;
 
@@ -515,6 +520,14 @@ export default function CrearAsistente() {
                 Este link ES tu asistente — compartilo en redes, en tu bio o
                 por WhatsApp. Gratis para siempre.
               </p>
+              <button
+                type="button"
+                className="crd-nav-seguir crd-reclamar"
+                onClick={() => abrirReclamo("guardar")}
+              >
+                Guardar mi asistente — llevármelo
+                <IconoChispas size={16} strokeWidth={2.2} />
+              </button>
               <label className="adm-campo">
                 <span>Link para compartir</span>
                 <div className="crd-copia">
@@ -525,7 +538,7 @@ export default function CrearAsistente() {
                 </div>
               </label>
               <a
-                className="ld-btn ld-btn-primario crd-probar"
+                className="ld-btn ld-btn-secundario crd-probar"
                 href={linkChat}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -553,18 +566,26 @@ export default function CrearAsistente() {
                   Sin licencia, el widget muestra una vista previa con aviso de
                   activación (tu link gratis sigue funcionando siempre).
                 </p>
-                <a
-                  className="ld-btn ld-btn-primario crd-probar"
-                  href={linkActivacion}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  type="button"
+                  className="ld-btn ld-btn-primario crd-probar crd-boton-pro"
+                  onClick={() => abrirReclamo("pro")}
                 >
-                  Activar el widget Pro
+                  Solicitar activación Pro
                   <IconoBurbuja size={16} strokeWidth={2.2} />
-                </a>
+                </button>
               </div>
             </div>
           )}
+
+          {/* ── modal de captura (Reto 3) ── */}
+          <ReclamarAsistente
+            open={reclamarAbierto}
+            onClose={() => setReclamarAbierto(false)}
+            config={config}
+            shareUrl={linkChat}
+            tipoInicial={tipoReclamo}
+          />
 
           {/* ── navegación ── */}
           <div className="crd-nav">

@@ -1,0 +1,14 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Los leads se escriben SOLO desde el servidor (Admin SDK, que ignora
+    // estas reglas). Nadie con la config pública del proyecto puede leer
+    // ni escribir nada.
+    match /leads/{leadId} {
+      allow read, write: if false;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -523,3 +523,30 @@ normalizado (sin acentos/mayúsculas) en `miembroDeEquipo()`. El widget pasa
 adoptan la persona del miembro (UI + saludo + reglas de crédito al equipo y
 autenticidad). QA: vendor conocido → atiende el miembro; sin vendor o vendor
 desconocido → asistente por defecto, sin romperse.
+
+## Fase 11 — Captura de leads "Reclamar tu asistente" (2026-07-12 · Reto 3)
+
+**Spec del dueño implementado completo** (ver docs/LEADS.md para operación):
+- `lib/firebase-admin.ts` (Admin SDK singleton, credenciales solo en env) y
+  `POST /api/lead`: validación de correo, rate-limit por IP (8/min), honeypot
+  `website` (bots reciben ok sin persistir), saneamiento de campos, y dedupe
+  transaccional con ID = SHA-256 del correo (merge + submissions++ →
+  `duplicate: true`). IP solo hasheada con sal del servidor.
+- `components/ReclamarAsistente.tsx`: modal accesible (role=dialog, ESC,
+  foco visible) con dos intenciones (guardar | pro), consentimiento, y
+  estados form/enviando/ok/dupe/error; en éxito muestra el link y avisa del
+  correo. Estética de plataforma (negro+lima; el spec decía cobalto — se usó
+  el acento de /crear por coherencia, cambiarlo es 1 línea).
+- Integración en /crear: CTA "Guardar mi asistente — llevármelo" en el paso
+  Publicar + el botón Pro ("Solicitar activación Pro") abre el mismo modal
+  con `tipo=pro` (reemplaza el link de WhatsApp).
+- `firestore.rules` (todo denegado al cliente) y variables FIREBASE_* en
+  .env.example.
+
+**QA (local):** contrato del endpoint verificado (400 invalid_email/
+bad_request, honeypot 200 silencioso, 500 server_not_configured sin creds);
+flujo UI completo en navegador (modal abre/cierra, pro preseleccionado,
+error con reintento); bundle del cliente sin rastro de firebase (grep sobre
+.next/static). **Pendiente del dueño:** crear el proyecto Firebase + cargar
+FIREBASE_PROJECT_ID/CLIENT_EMAIL/PRIVATE_KEY (local y Vercel) y publicar las
+reglas → recién ahí probar escritura real y dedupe en la consola.

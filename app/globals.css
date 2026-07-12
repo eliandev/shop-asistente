@@ -1325,10 +1325,10 @@ a.producto-card:focus-visible {
 }
 .lx-shopify {
   display: inline-block;
-  height: 1.35em; /* más grande que el texto: que resalte */
+  height: 1.5em; /* más grande que el texto: que resalte */
   width: auto;
   vertical-align: -0.34em;
-  margin: 0 0.08em;
+  margin: 0 0.08em 0.5rem 0.08em;
 }
 .lx-desde { text-align: right; }
 .lx-desde span {

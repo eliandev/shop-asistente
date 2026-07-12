@@ -10,11 +10,18 @@
  *
  *  Las reglas de Firestore (firestore.rules) niegan todo acceso de clientes;
  *  el Admin SDK las ignora por diseño, así que SOLO el servidor escribe.
+ *
+ *  Transporte REST (`preferRest`): en serverless (Vercel) las conexiones gRPC
+ *  con keepalive se cuelgan/tardan decenas de segundos en el arranque en frío.
+ *  Forzar REST evita ese hang. Firestore.settings() debe llamarse UNA sola vez
+ *  antes de la primera operación, por eso cacheamos la instancia.
  * ============================================================================
  */
 
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
+
+let dbCache: Firestore | null = null;
 
 /** ¿Están las credenciales de Firebase configuradas? */
 export function firebaseConfigurado(): boolean {
@@ -25,12 +32,16 @@ export function firebaseConfigurado(): boolean {
   );
 }
 
-/** Firestore listo para usar (inicializa el app una sola vez). */
+/** Firestore listo para usar (inicializa app + settings una sola vez). */
 export function getDb(): Firestore {
+  if (dbCache) return dbCache;
   if (!firebaseConfigurado()) {
     throw new Error("Firebase no está configurado (faltan variables FIREBASE_*).");
   }
-  if (!getApps().length) {
+  // ¿El app ya existía? (en dev con hot-reload el app persiste aunque este
+  // módulo se recargue, y settings() ya se habría aplicado sobre su Firestore).
+  const recienCreado = getApps().length === 0;
+  if (recienCreado) {
     initializeApp({
       credential: cert({
         projectId: process.env.FIREBASE_PROJECT_ID,
@@ -40,5 +51,17 @@ export function getDb(): Firestore {
       }),
     });
   }
-  return getFirestore();
+  const db = getFirestore();
+  // REST en vez de gRPC: evita el cuelgue de conexión en serverless/dev.
+  // settings() solo se puede llamar una vez y antes de cualquier operación:
+  // por eso solo al crear el app, y con guarda por si ya se aplicó.
+  if (recienCreado) {
+    try {
+      db.settings({ preferRest: true });
+    } catch {
+      /* ya inicializado en otra instancia del módulo: usar tal cual */
+    }
+  }
+  dbCache = db;
+  return db;
 }

@@ -117,6 +117,7 @@ export function getSystemPromptGenerico(
   const contacto = [
     cfg.whatsapp ? `WhatsApp/Teléfono: ${cfg.whatsapp}` : "",
     cfg.web ? `Web: ${cfg.web}` : "",
+    ...cfg.redes.map((r) => `${r.red}: ${r.usuario}`),
   ]
     .filter(Boolean)
     .join("\n");

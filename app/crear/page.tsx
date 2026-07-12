@@ -12,8 +12,10 @@ import {
   sanitizarConfig,
   saludoPorDefecto,
   MAX_EQUIPO,
+  MAX_REDES,
   type ConfigAsistente,
   type MiembroEquipo,
+  type RedSocial,
 } from "@/lib/config-asistente";
 
 const PRESETS = [
@@ -44,9 +46,21 @@ export default function CrearAsistente() {
   const [fondo, setFondo] = useState("#FDF0F4");
   const [dominio, setDominio] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
-  const [web, setWeb] = useState("");
   const [datos, setDatos] = useState("");
   const [equipo, setEquipo] = useState<MiembroEquipo[]>([]);
+  const [redes, setRedes] = useState<RedSocial[]>([]);
+
+  function actualizarRed(i: number, campo: keyof RedSocial, valor: string) {
+    setRedes((prev) => prev.map((r, j) => (j === i ? { ...r, [campo]: valor } : r)));
+  }
+  function agregarRed() {
+    setRedes((prev) =>
+      prev.length >= MAX_REDES ? prev : [...prev, { red: "", usuario: "" }]
+    );
+  }
+  function quitarRed(i: number) {
+    setRedes((prev) => prev.filter((_, j) => j !== i));
+  }
   const [copiado, setCopiado] = useState<"link" | "widget" | null>(null);
 
   function actualizarMiembro(i: number, campo: keyof MiembroEquipo, valor: string) {
@@ -76,11 +90,13 @@ export default function CrearAsistente() {
         fondo,
         dominio,
         whatsapp,
-        web,
+        // la web de la marca se deriva de la tienda conectada en Catálogo
+        web: dominio.trim() ? `https://${dominio.trim().replace(/^https?:\/\//, "")}` : "",
         datos,
         equipo,
+        redes,
       }),
-    [marca, asistente, rubro, saludo, color, fondo, dominio, whatsapp, web, datos, equipo]
+    [marca, asistente, rubro, saludo, color, fondo, dominio, whatsapp, datos, equipo, redes]
   );
 
   const identidadLista = config.marca.length >= 2 && config.asistente.length >= 2;
@@ -407,16 +423,53 @@ export default function CrearAsistente() {
                   maxLength={30}
                 />
               </label>
-              <label className="adm-campo">
-                <span>Web</span>
-                <input
-                  value={web}
-                  onChange={(e) => setWeb(e.target.value)}
-                  placeholder="https://mitienda.com"
-                  maxLength={120}
-                />
-              </label>
-              <label className="adm-campo">
+
+              <h2 className="crd-equipo-titulo">Redes sociales (opcional)</h2>
+              <p className="crd-paso-sub">
+                Agregá las que tenga tu marca — tu asistente las compartirá
+                cuando se las pidan.
+              </p>
+              {redes.map((r, i) => (
+                <div className="crd-miembro crd-red" key={i}>
+                  <input
+                    value={r.red}
+                    onChange={(e) => actualizarRed(i, "red", e.target.value)}
+                    placeholder="Instagram"
+                    maxLength={20}
+                    aria-label={`Red social ${i + 1}`}
+                    list="crd-redes-sugeridas"
+                  />
+                  <input
+                    value={r.usuario}
+                    onChange={(e) => actualizarRed(i, "usuario", e.target.value)}
+                    placeholder="@mimarca o link"
+                    maxLength={80}
+                    aria-label={`Usuario o link ${i + 1}`}
+                  />
+                  <button
+                    type="button"
+                    className="crd-miembro-quitar"
+                    onClick={() => quitarRed(i)}
+                    aria-label={`Quitar red ${i + 1}`}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+              {redes.length < MAX_REDES && (
+                <button type="button" className="crd-agregar" onClick={agregarRed}>
+                  + Agregar red social
+                </button>
+              )}
+              <datalist id="crd-redes-sugeridas">
+                <option value="Instagram" />
+                <option value="Facebook" />
+                <option value="TikTok" />
+                <option value="X" />
+                <option value="YouTube" />
+              </datalist>
+
+              <label className="adm-campo crd-equipo-titulo">
                 <span>Lo que debe saber</span>
                 <textarea
                   value={datos}

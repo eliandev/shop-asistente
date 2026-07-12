@@ -52,9 +52,19 @@ export interface ConfigAsistente {
   datos: string;
   /** equipo por proveedor (opcional): match con el vendor de Shopify */
   equipo: MiembroEquipo[];
+  /** redes sociales de la marca (opcional) */
+  redes: RedSocial[];
 }
 
 export const MAX_EQUIPO = 4;
+
+/** Red social de la marca (ej. red "Instagram", usuario "@mimarca"). */
+export interface RedSocial {
+  red: string;
+  usuario: string;
+}
+
+export const MAX_REDES = 5;
 
 const LIMITES = {
   marca: 40,
@@ -70,6 +80,8 @@ const LIMITES = {
   vendor: 40,
   miembroNombre: 30,
   miembroRubro: 80,
+  red: 20,
+  redUsuario: 80,
 } as const;
 
 const HEX = /^#[0-9a-fA-F]{3,8}$/;
@@ -116,6 +128,16 @@ export function sanitizarConfig(cruda: any): ConfigAsistente {
         .filter((m: MiembroEquipo) => m.vendor.length >= 2 && m.nombre.length >= 2)
     : [];
 
+  const redes: RedSocial[] = Array.isArray(cruda?.redes)
+    ? cruda.redes
+        .slice(0, MAX_REDES)
+        .map((r: any) => ({
+          red: limpiarTexto(r?.red, LIMITES.red),
+          usuario: limpiarTexto(r?.usuario, LIMITES.redUsuario),
+        }))
+        .filter((r: RedSocial) => r.red.length >= 2 && r.usuario.length >= 2)
+    : [];
+
   return {
     marca: limpiarTexto(cruda?.marca, LIMITES.marca),
     asistente: limpiarTexto(cruda?.asistente, LIMITES.asistente),
@@ -128,6 +150,7 @@ export function sanitizarConfig(cruda: any): ConfigAsistente {
     web: limpiarTexto(cruda?.web, LIMITES.web),
     datos: limpiarTexto(cruda?.datos, LIMITES.datos),
     equipo,
+    redes,
   };
 }
 

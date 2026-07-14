@@ -26,6 +26,7 @@ import {
 import ReclamarAsistente, { type TipoLead } from "@/components/ReclamarAsistente";
 
 const PRESETS = [
+  { nombre: "Gris (neutro)", marca: "#4B5563", fondo: "#F3F4F6" },
   { nombre: "Cobalto", marca: "#0047AB", fondo: "#F5EEE3" },
   { nombre: "Rosa beauty", marca: "#C2185B", fondo: "#FDF0F4" },
   { nombre: "Verde selva", marca: "#1B7A43", fondo: "#F1F6EC" },
@@ -49,8 +50,8 @@ export default function CrearAsistente() {
   const [asistente, setAsistente] = useState("");
   const [rubro, setRubro] = useState("");
   const [saludo, setSaludo] = useState("");
-  const [color, setColor] = useState("#C2185B");
-  const [fondo, setFondo] = useState("#FDF0F4");
+  const [color, setColor] = useState("#4B5563");
+  const [fondo, setFondo] = useState("#F3F4F6");
   const [dominio, setDominio] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [datos, setDatos] = useState("");

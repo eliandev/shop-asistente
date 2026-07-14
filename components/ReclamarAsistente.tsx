@@ -86,7 +86,8 @@ export default function ReclamarAsistente({
           },
           acepta_marketing: acepta,
           fuente,
-          share_url: shareUrl, // link del asistente, para el correo
+          url: shareUrl, // link del asistente (correo, ClickUp, n8n)
+          share_url: shareUrl, // alias, por compatibilidad
           website: "", // honeypot: siempre vacío en humanos
         }),
       });

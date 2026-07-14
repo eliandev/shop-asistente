@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
     const asistente = snapshotAsistente(body?.asistente);
     // link del asistente (contiene ?c=): sirve para el correo y para que el
     // dueño lo abra desde la consola. Debe ser una URL http(s) del propio sitio.
-    const shareUrlBruto = texto(body?.share_url, 3500);
+    const shareUrlBruto = texto(body?.url ?? body?.share_url, 3500);
     const shareUrl =
       shareUrlBruto && /^https?:\/\//.test(shareUrlBruto) ? shareUrlBruto : null;
 
@@ -152,7 +152,8 @@ export async function POST(req: NextRequest) {
             tipo: datos.tipo,
             asistente: datos.asistente,
             fuente: datos.fuente,
-            share_url: datos.share_url,
+            url: datos.share_url, // link del asistente (para correo/ClickUp)
+            share_url: datos.share_url, // alias, por compatibilidad
             duplicate,
           }),
         });

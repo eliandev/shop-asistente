@@ -136,6 +136,31 @@ export async function POST(req: NextRequest) {
       return false;
     });
 
+    // Disparar la automatización de n8n (Silvi Lead Engine). En serverless hay
+    // que usar await: una promesa sin await se cancela al terminar la función.
+    // El try/catch garantiza que un fallo del webhook NO afecte el guardado.
+    if (process.env.N8N_WEBHOOK_URL) {
+      try {
+        await fetch(process.env.N8N_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: datos.email,
+            nombre: datos.nombre,
+            whatsapp: datos.whatsapp,
+            negocio: datos.negocio,
+            tipo: datos.tipo,
+            asistente: datos.asistente,
+            fuente: datos.fuente,
+            share_url: datos.share_url,
+            duplicate,
+          }),
+        });
+      } catch (err) {
+        console.error("No se pudo disparar n8n:", err); // no bloquea la respuesta
+      }
+    }
+
     // Disparo de correo (no bloqueante): escribimos el mensaje ya compuesto en
     // la colección `mail`. La extensión "Trigger Email from Firestore" lo envía
     // por SMTP. Si la extensión no está instalada aún, el doc queda pendiente

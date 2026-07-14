@@ -81,6 +81,22 @@ con variante para `guardar` y `pro`). Solo falta el cartero:
 Mientras la extensión NO esté instalada, los documentos de `mail` se
 acumulan sin enviarse (no rompe nada); al instalarla, procesa los pendientes.
 
+## Automatización con n8n (Silvi Lead Engine)
+
+Además del correo, cada lead guardado dispara un **webhook de n8n** (POST con
+`email, nombre, whatsapp, negocio, tipo, asistente, fuente, share_url,
+duplicate`). Ahí vive el workflow que notifica por Telegram, crea la tarea en
+ClickUp, manda el email de bienvenida, etc.
+
+- Variable: `N8N_WEBHOOK_URL` (en `.env.local` y en Vercel). Si está vacía, no
+  se dispara nada.
+- El fire usa `await` dentro de `try/catch`: en serverless una promesa sin
+  `await` se cancela al terminar la función (el webhook no llegaría); y el
+  `try/catch` asegura que un fallo del webhook **nunca** rompa el guardado del
+  lead ni la respuesta al usuario.
+- El payload incluye `duplicate` para que el workflow pueda evitar duplicar
+  acciones (ej. no crear dos tarjetas de ClickUp por el mismo correo).
+
 ## Firebase Analytics (opcional)
 
 Activar **Analytics** en el proyecto para medir el embudo crear → reclamar

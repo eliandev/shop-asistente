@@ -574,3 +574,12 @@ lead con `share_url` crea el doc en `mail` sin errores. **Falta solo que el
 dueño instale la extensión** con su SMTP apuntando a la colección `mail`
 (pasos en docs/LEADS.md); hasta entonces los docs se acumulan sin enviarse.
 Analytics queda opcional.
+
+**Automatización n8n (2026-07-12):** tras guardar el lead, `/api/lead` dispara
+`N8N_WEBHOOK_URL` (POST con email/nombre/whatsapp/negocio/tipo/asistente/
+fuente/share_url/duplicate) para el workflow "Silvi Lead Engine"
+(Telegram + ClickUp + email vía Resend, que corren EN n8n, no en la app).
+`await` + `try/catch` (serverless-safe, no bloquea el guardado). Verificado en
+local y producción (webhook responde 200, lead lo dispara sin error). Var en
+.env.local y Vercel. Las claves de Telegram/ClickUp/Resend viven solo en n8n y
+en .env.local (gitignored), NO en el bundle ni en Vercel.

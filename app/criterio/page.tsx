@@ -47,13 +47,20 @@ function conEnlaces(texto: string): React.ReactNode[] {
   });
 }
 
+/** Extrae el texto de la respuesta, tolerando varias formas comunes de n8n. */
 function extraerOutput(data: any): string {
+  if (data == null) return "";
   if (typeof data === "string") return data;
-  if (Array.isArray(data)) {
-    const f = data[0];
-    return (f?.output ?? f?.text ?? "").toString();
-  }
-  return (data?.output ?? data?.text ?? "").toString();
+  if (Array.isArray(data)) return extraerOutput(data[0]);
+  return (
+    data.output ??
+    data.text ??
+    data.message ??
+    data.answer ??
+    data.reply ??
+    data.respuesta ??
+    ""
+  ).toString();
 }
 
 function separarMeta(texto: string): { cuerpo: string; meta: string | null } {
@@ -62,11 +69,15 @@ function separarMeta(texto: string): { cuerpo: string; meta: string | null } {
   return { cuerpo: texto.slice(0, i).trim(), meta: texto.slice(i + 3).trim() || null };
 }
 
-/** ¿La decisión de Criterio indica que hace falta intervención humana? */
-function necesitaContacto(cuerpo: string, meta: string | null): boolean {
-  const base = (meta || cuerpo || "").toLowerCase();
-  return /🟡|🔴|borrador|escal|nivel\s*2|nivel\s*3|intervenci[oó]n humana|un asesor|una persona del equipo|te contactar/.test(
-    base
+/**
+ * ¿La DECISIÓN de Criterio indica intervención humana? Se evalúa SOLO sobre la
+ * meta (lo que viene tras "———"), nunca sobre el cuerpo de la respuesta: así el
+ * texto normal (o un fallback) no dispara la captura de contacto por error.
+ */
+function necesitaContacto(meta: string | null): boolean {
+  if (!meta) return false;
+  return /🟡|🔴|borrador|escal|nivel\s*2|nivel\s*3|intervenci[oó]n humana|revisa (un|una) (humano|persona|asesor)/.test(
+    meta.toLowerCase()
   );
 }
 
@@ -122,10 +133,11 @@ export default function SoporteCriterio() {
       if (!res.ok) throw new Error(`webhook ${res.status}`);
       const data = await res.json().catch(() => ({}));
       const { cuerpo, meta } = separarMeta(extraerOutput(data));
-      const contenido = cuerpo || "Recibido ✅. Un miembro del equipo te contactará.";
+      const contenido =
+        cuerpo || "No pude leer la respuesta del asistente. Probá de nuevo en un momento.";
       setTurnos((prev) => [...prev, { role: "assistant", content: contenido, meta }]);
-      // ¿escaló? si no tenemos contacto aún, lo pedimos.
-      if (!contactoAhora && necesitaContacto(contenido, meta)) {
+      // ¿escaló? solo si la DECISIÓN (meta) lo indica y aún no hay contacto.
+      if (!contactoAhora && necesitaContacto(meta)) {
         setPidiendoContacto(true);
       }
     } catch (err) {

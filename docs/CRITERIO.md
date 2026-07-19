@@ -48,6 +48,26 @@ El asistente está definido como un objeto `ConfigAsistente` en
 `app/criterio/page.tsx` (`CRITERIO`): marca, nombre, saludo, color, fondo y los
 chips de sugerencia. Cambiá esos valores para re-marcar el demo.
 
+## ⚠️ La respuesta al navegador debe ser el texto del CLIENTE
+
+El workflow debe terminar con un nodo **"Respond to Webhook"** que devuelva el
+texto para el cliente, NO la respuesta de la API de Telegram / la notificación
+interna. Formas aceptadas por el front:
+
+```json
+{ "output": "¡Hola! Para crear tu asistente entrá a /crear…" }
+```
+o, para mostrar la decisión (y disparar la captura de contacto en 🟡/🔴):
+```json
+{ "output": "…respuesta…", "decision": "🟡 BORRADOR · intervención humana · 68%" }
+```
+(también sirve meter la decisión dentro del texto tras `———`).
+
+Si el webhook devuelve `{ ok, result: { text } }` (respuesta de Telegram), el
+front no encuentra `output` y muestra un fallback — no es la respuesta real.
+La escalación (formulario de contacto) se dispara SOLO desde `decision`/meta,
+nunca desde el texto de la respuesta.
+
 ## Fuera de alcance (vive en n8n)
 
 Decisión de autonomía, redacción de respuestas, envío de email (Resend),

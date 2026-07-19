@@ -1,12 +1,15 @@
-# Demo "Criterio" — chat conectado a n8n
+# Soporte "Criterio" — centro de ayuda conectado a n8n
 
-Ruta pública: **`/criterio`** → https://silvi-assistants.vercel.app/criterio
+Ruta pública: **`/criterio`** → https://www.silvi-chatbot.online/criterio
 
-Demo de un asistente creado con Silvi ("Criterio", de la tienda ficticia
-**Aurora Store**) que decide cuánta autonomía tomarse con cada mensaje:
-🟢 responde solo · 🟡 deja borrador para un humano · 🔴 escala sin responder.
-**Toda la lógica de decisión vive en n8n**; esta página es solo el frontend del
-chat que le habla al webhook.
+Es el **centro de soporte** de silvi-chatbot.online (se entra desde la nav y el
+footer de la landing). Los usuarios preguntan sobre sus chatbots —crearlos,
+instalar el widget, plan Pro, conectar el catálogo, dudas técnicas—. Lo atiende
+**Criterio**, el agente de soporte de Silvi, que decide cuánta autonomía
+tomarse: 🟢 responde solo · 🟡 deja borrador para un humano · 🔴 escala al
+equipo. **Toda la lógica de decisión vive en n8n**; esta página es solo el
+frontend del chat que le habla al webhook. Se presenta con el chrome del
+sistema (negro+lima), no como micrositio aparte.
 
 ## Cómo funciona
 

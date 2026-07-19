@@ -1,20 +1,20 @@
 import type { Metadata, Viewport } from "next";
 
 export const viewport: Viewport = {
-  themeColor: "#4F46E5",
+  themeColor: "#0E0E0F",
   width: "device-width",
   initialScale: 1,
 };
 
 export const metadata: Metadata = {
-  title: { absolute: "Criterio · Aurora Store — asistente de e-commerce" },
+  title: { absolute: "Soporte · Silvi Assistants" },
   description:
-    "Criterio decide cuándo responder solo y cuándo pasarle el caso a una persona. Demo en vivo de un asistente creado con Silvi Assistants.",
+    "Centro de soporte de Silvi Assistants. Resolvé dudas sobre tu asistente de IA —crearlo, instalar el widget, plan Pro, catálogo, técnico— con Criterio, que responde o te deriva al equipo.",
   alternates: { canonical: "/criterio" },
   openGraph: {
-    title: "Criterio — el agente que sabe cuándo escalar",
+    title: "Soporte · Silvi Assistants",
     description:
-      "Soporte de e-commerce con criterio: responde solo, deja borrador o escala a un humano. Demo de Silvi Assistants.",
+      "¿Cómo podemos ayudarte? Dudas sobre tu asistente, del '¿por dónde empiezo?' a lo técnico.",
     url: "/criterio",
   },
 };

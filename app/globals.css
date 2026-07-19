@@ -1248,68 +1248,73 @@ a.producto-card:focus-visible {
 .crd-boton-pro { width: 100%; border: none; cursor: pointer; font-family: var(--font-body); font-size: 16px; }
 
 /* ============================================================
-   /criterio — asistente "Criterio" como UNA PÁGINA MÁS del
-   sistema: vive dentro del chrome de plataforma (.lx, negro+lima,
-   misma nav y marco). Solo la tarjeta de chat es clara; su paleta
-   de marca llega inline desde el componente (.crit-card-wrap).
+   /criterio — CENTRO DE SOPORTE de la plataforma, atendido por
+   "Criterio". Es una página más del sistema (chrome .lx negro+lima);
+   hero centrado estilo help-center + tarjeta de chat clara (su
+   paleta llega inline desde el componente, .sop-card-wrap).
    ============================================================ */
-.crit-wrap {
-  display: grid;
-  grid-template-columns: 1fr minmax(340px, 440px);
-  gap: 36px;
-  align-items: center;
-  padding: 48px 26px;
-  border-bottom: 1px solid var(--linea);
+.sop-hero {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 52px 24px 60px;
+  text-align: center;
 }
-@media (max-width: 900px) {
-  .crit-wrap { grid-template-columns: 1fr; gap: 26px; padding: 32px 20px; }
-}
-.crit-intro h1 {
-  font-family: var(--font-condensada);
+.sop-hero > .lx-etiqueta { text-align: center; }
+.sop-hero h1 {
+  font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(52px, 8vw, 96px);
-  line-height: 0.95;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  font-size: clamp(34px, 5.5vw, 56px);
+  line-height: 1.05;
   color: #f7f6f0;
   margin: 6px 0 14px;
 }
-.crit-tag {
-  font-size: clamp(16px, 2.2vw, 19px);
-  line-height: 1.55;
+.sop-sub {
+  font-size: clamp(15px, 2vw, 18px);
+  line-height: 1.6;
   color: #a8a79d;
-  max-width: 440px;
-  margin-bottom: 22px;
+  max-width: 560px;
+  margin: 0 auto 30px;
 }
-.crit-tag strong { color: #f2f1ec; }
-.crit-cta { margin-top: 6px; }
-.crit-card-wrap { display: flex; justify-content: center; }
+.sop-sub strong { color: #f2f1ec; }
+.sop-card-wrap {
+  display: flex;
+  justify-content: center;
+  text-align: left;
+}
 
-.crit-niveles {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 22px;
+/* temas frecuentes (browse-by-topic, siempre visibles) */
+.sop-temas { margin-top: 42px; text-align: left; }
+.sop-temas-titulo {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #8f9086;
+  margin-bottom: 14px;
+  text-align: center;
 }
-.crit-nivel {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  font-size: 14.5px;
-  line-height: 1.45;
-  color: #cfcec4;
+.sop-temas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
 }
-.crit-nivel b { font-weight: 700; color: #f2f1ec; }
-.crit-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  margin-top: 4px;
-  flex: 0 0 auto;
+.sop-temas-grid > div {
+  background: #131416;
+  border: 1px solid var(--linea);
+  border-radius: 14px;
+  padding: 16px 18px;
 }
+.sop-temas-grid b {
+  display: block;
+  font-size: 15px;
+  color: #f7f6f0;
+  margin-bottom: 5px;
+}
+.sop-temas-grid span { font-size: 13px; line-height: 1.5; color: #a8a79d; }
 
 /* la tarjeta reusa .tarjeta pero con alto propio (no el fijo de 760px) */
-.crit-card { height: min(620px, 78vh); }
+.crit-card { height: min(560px, 74vh); width: 100%; max-width: 460px; }
 
 /* gate de captura (nombre + email) */
 .crit-gate {

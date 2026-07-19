@@ -1,4 +1,3 @@
-import Script from "next/script";
 import {
   codificarConfig,
   sanitizarConfig,
@@ -92,6 +91,7 @@ export default function Landing() {
             <a href="#producto">El producto</a>
             <a href="#demos">Demos</a>
             <a href="#precios">Precios</a>
+            <a href="/criterio">Soporte</a>
           </nav>
           <div className="lx-logo">SILVI°</div>
           <a className="lx-btn-nav" href="/crear">↳ Crear asistente</a>
@@ -307,15 +307,12 @@ export default function Landing() {
         <footer className="lx-pie">
           <span>SILVI° — asistentes de IA para tiendas</span>
           <span>
-            Hecho en El Salvador · Demo con la tienda real de{" "}
+            <a href="/criterio">Soporte</a> · Demo con la tienda real de{" "}
             <a href="https://art-es.shop" target="_blank" rel="noopener noreferrer">ART-ES</a>{" "}
-            · Reto 1 — Vibecoders League 2.0 · <a href="/admin">Panel (demo)</a>
+            · Hecho en El Salvador · <a href="/admin">Panel (demo)</a>
           </span>
         </footer>
       </div>
-
-      {/* El widget real, comiendo nuestro propio dogfood */}
-      <Script src="/widget.js" strategy="afterInteractive" />
     </main>
   );
 }

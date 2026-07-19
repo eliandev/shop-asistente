@@ -1,26 +1,26 @@
 "use client";
 
 /**
- * "Criterio" — asistente de soporte/ventas de e-commerce (Aurora Store),
- * presentado como UNA PÁGINA MÁS de la plataforma Silvi (mismo chrome negro +
- * lima, nav y marco que la landing). Solo frontend: captura nombre+email y
- * cada mensaje va por POST al Chat Trigger de n8n
- * (NEXT_PUBLIC_CRITERIO_CHAT_URL). La lógica de decisión de autonomía
- * (🟢 responde · 🟡 borrador · 🔴 escala) vive en n8n.
+ * SOPORTE de silvi-chatbot.online — atendido por "Criterio", el agente de
+ * soporte de Silvi Assistants. Los usuarios preguntan sobre sus chatbots
+ * (crearlos, instalarlos, plan Pro, catálogo, dudas técnicas). Es UNA PÁGINA
+ * MÁS del sistema (mismo chrome negro+lima). Solo frontend: cada mensaje va
+ * por POST al Chat Trigger de n8n (NEXT_PUBLIC_CRITERIO_CHAT_URL); Criterio
+ * decide responder solo (🟢), dejar borrador (🟡) o escalar a una persona (🔴).
  */
 
 import { useEffect, useRef, useState } from "react";
 import type { ConfigAsistente } from "@/lib/config-asistente";
 
-// Asistente en la forma de config de Silvi (fácil de re-marcar).
+// Criterio = agente de soporte de la plataforma, en la forma de config de Silvi.
 const CRITERIO: ConfigAsistente = {
-  marca: "Aurora Store",
+  marca: "Silvi Assistants",
   asistente: "Criterio",
-  rubro: "e-commerce",
+  rubro: "soporte de asistentes de IA",
   saludo:
-    "Soy Criterio, el asistente de Aurora Store. Resuelvo tus dudas al toque; y si tu caso necesita a una persona, lo derivo sin que pierdas tiempo. ¿En qué te ayudo?",
-  color: "#4F46E5",
-  fondo: "#F1F0FB",
+    "Soy Criterio, del soporte de Silvi Assistants. Te ayudo con tu asistente: crearlo, instalar el widget, el plan Pro, conectar tu catálogo o cualquier duda técnica. Si el caso necesita a una persona, lo derivo. ¿En qué te ayudo?",
+  color: "#0047AB",
+  fondo: "#0e0e0f",
   dominio: "",
   whatsapp: "",
   web: "",
@@ -31,25 +31,26 @@ const CRITERIO: ConfigAsistente = {
 
 // Paleta CLARA de la tarjeta de chat (sobrescribe los tokens negros de .lx).
 const PALETA_CHAT: React.CSSProperties = {
-  "--marca": CRITERIO.color,
-  "--marca-oscuro": CRITERIO.color,
-  "--marca-profundo": CRITERIO.color,
-  "--marca-suave": "#b9b4ef",
-  "--fondo": CRITERIO.fondo,
+  "--marca": "#0047AB",
+  "--marca-oscuro": "#003585",
+  "--marca-profundo": "#002a69",
+  "--marca-suave": "#8aa9d6",
+  "--fondo": "#eef2fb",
   "--superficie": "#ffffff",
-  "--superficie-tinte": "#f4f3fb",
+  "--superficie-tinte": "#f2f5fc",
   "--tinta": "#1e1e1e",
-  "--linea": "#e7e5f1",
+  "--linea": "#dfe4ef",
 } as React.CSSProperties;
 
 const CHAT_URL = process.env.NEXT_PUBLIC_CRITERIO_CHAT_URL || "";
 
+// Temas frecuentes de soporte (dudas reales de usuarios de la plataforma).
 const CHIPS = [
-  "¿Cuál es el horario de la tienda?",
-  "¿Aceptan pago contra entrega?",
-  "Mi pedido no llegó y quiero un reembolso",
-  "¿Puedo cambiar un producto que ya usé?",
-  "Quiero comprar 200 unidades al mayoreo",
+  "¿Cómo creo mi asistente?",
+  "¿Cómo instalo el widget en mi tienda Shopify?",
+  "¿Qué incluye el plan Pro?",
+  "Mi asistente no encuentra mis productos",
+  "¿Puedo conectar mi catálogo sin tokens?",
 ];
 
 type Rol = "user" | "assistant";
@@ -79,7 +80,7 @@ function separarMeta(texto: string): { cuerpo: string; meta: string | null } {
   };
 }
 
-export default function CriterioPagina() {
+export default function SoporteCriterio() {
   const [iniciado, setIniciado] = useState(false);
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
@@ -141,7 +142,7 @@ export default function CriterioPagina() {
         ...prev,
         {
           role: "assistant",
-          content: cuerpo || "Recibido ✅, un asesor te contactará.",
+          content: cuerpo || "Recibido ✅. Un miembro del equipo te contactará por correo.",
           meta,
         },
       ]);
@@ -152,7 +153,7 @@ export default function CriterioPagina() {
         {
           role: "assistant",
           content: sinWebhook
-            ? "El asistente aún no está conectado a su cerebro (n8n). Configurá NEXT_PUBLIC_CRITERIO_CHAT_URL para activarlo."
+            ? "El soporte aún no está conectado a su cerebro (n8n). Configurá NEXT_PUBLIC_CRITERIO_CHAT_URL para activarlo."
             : "No pude conectar en este momento. Probá de nuevo en un ratito 🙏",
         },
       ]);
@@ -181,48 +182,33 @@ export default function CriterioPagina() {
             <a href="/#producto">El producto</a>
             <a href="/#demos">Demos</a>
             <a href="/#precios">Precios</a>
+            <a href="/criterio" aria-current="page">Soporte</a>
           </nav>
           <a className="lx-logo" href="/">SILVI°</a>
           <a className="lx-btn-nav" href="/crear">↳ Crear asistente</a>
         </header>
 
-        {/* contenido: narrativa (chrome plataforma) + tarjeta de chat */}
-        <section className="crit-wrap">
-          <div className="crit-intro">
-            <span className="lx-etiqueta">[ asistente en vivo ]</span>
-            <h1>Criterio</h1>
-            <p className="crit-tag">
-              El agente que sabe <strong>cuándo responder solo</strong> y cuándo
-              pasarle el caso a una persona.
-            </p>
-            <div className="crit-niveles">
-              <div className="crit-nivel">
-                <span className="crit-dot" style={{ background: "#22c55e" }} />
-                <span><b>Responde solo</b> — dudas claras (horarios, pagos, envíos).</span>
-              </div>
-              <div className="crit-nivel">
-                <span className="crit-dot" style={{ background: "#eab308" }} />
-                <span><b>Deja un borrador</b> — casos sensibles que revisa un humano.</span>
-              </div>
-              <div className="crit-nivel">
-                <span className="crit-dot" style={{ background: "#ef4444" }} />
-                <span><b>Escala</b> — decisiones grandes (mayoreo, reclamos): pasa a una persona.</span>
-              </div>
-            </div>
-            <a className="lx-btn-nav crit-cta" href="/crear">↳ Creá un asistente así para tu tienda</a>
-          </div>
+        {/* hero de soporte, centrado (estilo help center) */}
+        <section className="sop-hero">
+          <span className="lx-etiqueta">[ centro de soporte ]</span>
+          <h1>¿Cómo podemos ayudarte?</h1>
+          <p className="sop-sub">
+            Resolvé dudas sobre tu asistente de Silvi — desde “¿por dónde
+            empiezo?” hasta lo técnico. Te atiende <strong>Criterio</strong>;
+            si tu caso necesita a una persona, lo deriva al equipo.
+          </p>
 
-          {/* tarjeta de chat: elemento claro, con su propia paleta de marca */}
-          <div className="crit-card-wrap" style={PALETA_CHAT}>
-            <section className="tarjeta crit-card" aria-label="Chat con Criterio de Aurora Store">
+          {/* tarjeta de chat: único elemento claro, con paleta propia */}
+          <div className="sop-card-wrap" style={PALETA_CHAT}>
+            <section className="tarjeta crit-card" aria-label="Soporte de Silvi Assistants con Criterio">
               <header className="encabezado">
                 <div className="marca-fila">
                   <div className="avatar" aria-hidden="true">
                     <span className="avatar-inicial">{inicial}</span>
                   </div>
                   <div>
-                    <div className="marca-nombre">{CRITERIO.marca}</div>
-                    <div className="marca-sub">{CRITERIO.asistente} · asistente de e-commerce</div>
+                    <div className="marca-nombre">Soporte · Silvi</div>
+                    <div className="marca-sub">{CRITERIO.asistente} · asistente de soporte</div>
                     <div className="estado">
                       <span className="punto" aria-hidden="true" />
                       En línea
@@ -233,8 +219,10 @@ export default function CriterioPagina() {
 
               {!iniciado ? (
                 <form className="crit-gate" onSubmit={iniciar}>
-                  <h2>Antes de empezar…</h2>
-                  <p className="crit-sub">Dejanos tu nombre y correo para atender tu consulta.</p>
+                  <h2>Contanos quién sos</h2>
+                  <p className="crit-sub">
+                    Así podemos darte seguimiento por correo si tu caso pasa a una persona.
+                  </p>
                   <div className="crit-campo">
                     <label htmlFor="crit-nombre">Tu nombre</label>
                     <input
@@ -261,7 +249,7 @@ export default function CriterioPagina() {
                     />
                   </div>
                   <button className="crit-iniciar" type="submit" disabled={!puedeIniciar}>
-                    Iniciar chat
+                    Empezar
                   </button>
                   <p className="crit-priv">🔒 Tus datos solo se usan para atender tu consulta.</p>
                 </form>
@@ -311,8 +299,8 @@ export default function CriterioPagina() {
                       type="text"
                       value={texto}
                       onChange={(e) => setTexto(e.target.value)}
-                      placeholder="Escribí tu mensaje…"
-                      aria-label="Escribí tu mensaje"
+                      placeholder="Escribí tu consulta…"
+                      aria-label="Escribí tu consulta"
                       maxLength={800}
                       disabled={cargando}
                     />
@@ -320,7 +308,7 @@ export default function CriterioPagina() {
                       className="enviar"
                       type="submit"
                       disabled={cargando || !texto.trim()}
-                      aria-label="Enviar mensaje"
+                      aria-label="Enviar consulta"
                     >
                       Enviar
                     </button>
@@ -328,15 +316,34 @@ export default function CriterioPagina() {
                 </>
               )}
 
-              <div className="pie">Aurora Store · con criterio, por Silvi Assistants</div>
+              <div className="pie">Soporte de Silvi Assistants</div>
             </section>
+          </div>
+
+          {/* temas frecuentes (visibles siempre, como "browse by topic") */}
+          <div className="sop-temas" aria-label="Temas frecuentes">
+            <span className="sop-temas-titulo">Temas frecuentes</span>
+            <div className="sop-temas-grid">
+              <div>
+                <b>Primeros pasos</b>
+                <span>Crear tu asistente · compartir el link · conectar tu tienda</span>
+              </div>
+              <div>
+                <b>Widget en tu tienda</b>
+                <span>Instalarlo en Shopify · plan Pro · activar tu licencia</span>
+              </div>
+              <div>
+                <b>Catálogo y respuestas</b>
+                <span>Conectar Shopify sin tokens · por qué no inventa · equipo por proveedor</span>
+              </div>
+            </div>
           </div>
         </section>
 
         <footer className="lx-pie">
           <span>SILVI° — asistentes de IA para tiendas</span>
           <span>
-            Criterio · Aurora Store · <a href="/crear">Creá el tuyo</a>
+            <a href="/">Inicio</a> · <a href="/crear">Crear asistente</a> · Soporte
           </span>
         </footer>
       </div>

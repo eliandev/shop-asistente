@@ -1276,14 +1276,126 @@ a.producto-card:focus-visible {
   margin: 0 auto 30px;
 }
 .sop-sub strong { color: #f2f1ec; }
-.sop-card-wrap {
+
+/* campo para preguntar (estilo "ask anything") */
+.sop-ask {
   display: flex;
-  justify-content: center;
+  gap: 8px;
+  align-items: center;
+  max-width: 640px;
+  margin: 0 auto;
+  background: #17181a;
+  border: 1px solid #2e2f33;
+  border-radius: 14px;
+  padding: 6px 6px 6px 18px;
   text-align: left;
 }
+.sop-ask:focus-within { border-color: var(--marca); }
+.sop-ask input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #f2f1ec;
+  font-family: var(--font-body);
+  font-size: 16px;
+  padding: 11px 0;
+}
+.sop-ask input::placeholder { color: #6d6e66; }
+.sop-ask button {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  background: var(--marca);
+  color: #0e0e0f;
+  font-size: 18px;
+  cursor: pointer;
+}
+.sop-ask button:disabled { opacity: 0.4; cursor: not-allowed; }
 
-/* temas frecuentes (browse-by-topic, siempre visibles) */
-.sop-temas { margin-top: 42px; text-align: left; }
+/* conversación (pregunta → respuesta → contacto si escala) */
+.sop-conversacion {
+  max-width: 640px;
+  margin: 30px auto 0;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.sop-turno { display: flex; flex-direction: column; gap: 6px; }
+.sop-pregunta {
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 1.25;
+  color: #f7f6f0;
+}
+.sop-respuesta-label {
+  font-size: 11.5px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--marca);
+}
+.sop-respuesta { font-size: 15px; line-height: 1.65; color: #cfcec4; white-space: pre-wrap; }
+.sop-respuesta a {
+  color: var(--marca);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  word-break: break-word;
+}
+.sop-typing { display: inline-flex; gap: 4px; padding: 4px 0; }
+.sop-typing span {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #6d6e66; animation: rebote 1s infinite ease-in-out;
+}
+.sop-typing span:nth-child(2) { animation-delay: 0.15s; }
+.sop-typing span:nth-child(3) { animation-delay: 0.3s; }
+
+/* captura de contacto (solo cuando Criterio escala) */
+.sop-contacto {
+  border: 1px solid rgba(201, 247, 58, 0.4);
+  background: rgba(201, 247, 58, 0.05);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+.sop-contacto h3 {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 15px;
+  color: #f7f6f0;
+  margin-bottom: 4px;
+}
+.sop-contacto p { font-size: 13px; line-height: 1.5; color: #a8a79d; margin-bottom: 12px; }
+.sop-campo { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+.sop-campo label { font-size: 12.5px; font-weight: 600; color: #cfcec4; }
+.sop-campo input {
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  padding: 10px 12px;
+  border: 1px solid #2e2f33;
+  border-radius: 10px;
+  background: #101113;
+  color: #f2f1ec;
+}
+.sop-campo input:focus { outline: 2px solid var(--marca); border-color: transparent; }
+.sop-contacto-enviar {
+  width: 100%;
+  padding: 11px;
+  border: none;
+  border-radius: 10px;
+  background: var(--marca);
+  color: #0e0e0f;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+.sop-contacto-enviar:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* temas frecuentes (chips bajo el campo, en la primera pantalla) */
+.sop-temas { margin-top: 30px; }
 .sop-temas-titulo {
   display: block;
   font-size: 12px;
@@ -1292,73 +1404,13 @@ a.producto-card:focus-visible {
   text-transform: uppercase;
   color: #8f9086;
   margin-bottom: 14px;
-  text-align: center;
 }
-.sop-temas-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 14px;
-}
-.sop-temas-grid > div {
-  background: #131416;
-  border: 1px solid var(--linea);
-  border-radius: 14px;
-  padding: 16px 18px;
-}
-.sop-temas-grid b {
-  display: block;
-  font-size: 15px;
-  color: #f7f6f0;
-  margin-bottom: 5px;
-}
-.sop-temas-grid span { font-size: 13px; line-height: 1.5; color: #a8a79d; }
-
-/* la tarjeta reusa .tarjeta pero con alto propio (no el fijo de 760px) */
-.crit-card { height: min(560px, 74vh); width: 100%; max-width: 460px; }
-
-/* gate de captura (nombre + email) */
-.crit-gate {
-  flex: 1;
+.sop-temas-chips {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 8px;
   justify-content: center;
-  gap: 14px;
-  padding: 26px 24px;
 }
-.crit-gate h2 {
-  font-family: var(--font-display);
-  font-size: 22px;
-  color: var(--tinta);
-}
-.crit-sub { font-size: 14px; color: var(--tinta); opacity: 0.7; margin-top: -8px; }
-.crit-campo { display: flex; flex-direction: column; gap: 5px; }
-.crit-campo label { font-size: 13px; font-weight: 600; color: var(--tinta); }
-.crit-campo input {
-  font-family: var(--font-body);
-  font-size: 15px;
-  padding: 11px 13px;
-  border: 1px solid var(--linea);
-  border-radius: 12px;
-  background: var(--superficie-tinte);
-  color: var(--tinta);
-}
-.crit-campo input:focus { outline: 2px solid var(--marca); border-color: transparent; }
-.crit-iniciar {
-  margin-top: 4px;
-  padding: 13px;
-  border: none;
-  border-radius: 12px;
-  background: var(--marca);
-  color: #fff;
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-  transition: opacity 0.15s;
-}
-.crit-iniciar:disabled { opacity: 0.5; cursor: not-allowed; }
-.crit-iniciar:focus-visible { outline: 2px solid var(--marca); outline-offset: 2px; }
-.crit-priv { font-size: 12px; color: var(--tinta); opacity: 0.6; }
 
 /* meta de decisión del agente (parte tras "———") */
 .meta-decision {

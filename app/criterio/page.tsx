@@ -30,12 +30,17 @@ interface Turno {
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const URL_RE = /(https?:\/\/[^\s)]+|(?:www\.|wa\.me\/)[^\s)]+)/g;
+// tokeniza **negrita** y enlaces (http/https, www., wa.me), dejando el resto tal cual
+const TOKEN_RE = /(\*\*[^*\n]+\*\*|https?:\/\/[^\s)]+|(?:www\.|wa\.me\/)[^\s)]+)/g;
 
-/** Convierte URLs en enlaces clickeables dentro de la respuesta. */
+/** Renderiza el texto de Criterio: negritas markdown + URLs clickeables. */
 function conEnlaces(texto: string): React.ReactNode[] {
-  return texto.split(URL_RE).map((parte, i) => {
-    if (i % 2 === 1) {
+  return texto.split(TOKEN_RE).map((parte, i) => {
+    if (!parte) return null;
+    if (parte.length > 4 && parte.startsWith("**") && parte.endsWith("**")) {
+      return <strong key={i}>{parte.slice(2, -2)}</strong>;
+    }
+    if (/^https?:\/\//.test(parte) || /^(?:www\.|wa\.me\/)/.test(parte)) {
       const href = parte.startsWith("http") ? parte : `https://${parte}`;
       return (
         <a key={i} href={href} target="_blank" rel="noopener noreferrer">
@@ -48,10 +53,10 @@ function conEnlaces(texto: string): React.ReactNode[] {
 }
 
 /** Extrae el texto de la respuesta, tolerando varias formas comunes de n8n. */
-function extraerOutput(data: any): string {
+function extraerTexto(data: any): string {
   if (data == null) return "";
   if (typeof data === "string") return data;
-  if (Array.isArray(data)) return extraerOutput(data[0]);
+  if (Array.isArray(data)) return extraerTexto(data[0]);
   return (
     data.output ??
     data.text ??
@@ -59,6 +64,7 @@ function extraerOutput(data: any): string {
     data.answer ??
     data.reply ??
     data.respuesta ??
+    data.result?.text ?? // fallback: respuesta tipo notificación (Telegram)
     ""
   ).toString();
 }
@@ -67,6 +73,38 @@ function separarMeta(texto: string): { cuerpo: string; meta: string | null } {
   const i = texto.indexOf("———");
   if (i < 0) return { cuerpo: texto.trim(), meta: null };
   return { cuerpo: texto.slice(0, i).trim(), meta: texto.slice(i + 3).trim() || null };
+}
+
+/** Quita ruido que agregan algunos nodos (p.ej. la atribución de Telegram). */
+function limpiarCuerpo(texto: string): string {
+  return texto
+    .replace(/\n*\s*This message was sent automatically with[\s\S]*$/i, "")
+    .trim();
+}
+
+/**
+ * Interpreta la respuesta en cualquiera de las formas que manda n8n:
+ *  - { output: "respuesta ——— decisión" }
+ *  - texto de notificación: "🟢 …decisión…\nEnvié: <respuesta al cliente>"
+ * Devuelve el texto para el cliente (`cuerpo`) y la decisión (`meta`).
+ */
+function parseRespuesta(data: any): { cuerpo: string; meta: string | null } {
+  const texto = extraerTexto(data);
+  if (!texto) return { cuerpo: "", meta: null };
+  let cuerpo: string;
+  let meta: string | null;
+  const m = texto.match(/Envi[eé]:\s*([\s\S]*)$/);
+  if (m && m.index !== undefined) {
+    const metaPrevia = texto.slice(0, m.index).trim() || null;
+    const sub = separarMeta(m[1].trim()); // por si la respuesta trae además ———
+    cuerpo = sub.cuerpo;
+    meta = sub.meta || metaPrevia;
+  } else {
+    const sub = separarMeta(texto);
+    cuerpo = sub.cuerpo;
+    meta = sub.meta;
+  }
+  return { cuerpo: limpiarCuerpo(cuerpo), meta };
 }
 
 /**
@@ -91,6 +129,12 @@ export default function SoporteCriterio() {
   const [cEmail, setCEmail] = useState("");
   const finRef = useRef<HTMLDivElement>(null);
   const sessionIdRef = useRef<string | null>(null);
+  // guard SÍNCRONO contra doble POST (doble clic / doble submit en el mismo tick,
+  // antes de que `cargando` se actualice). Más fiable que mirar el estado.
+  const enviandoRef = useRef(false);
+  // la consulta que hizo escalar a Criterio: se reenvía CON el contacto en una
+  // sola llamada, en vez de mandar un POST aparte con "mis datos de contacto".
+  const consultaEscaladaRef = useRef("");
 
   function getSessionId(): string {
     if (!sessionIdRef.current) {
@@ -103,17 +147,24 @@ export default function SoporteCriterio() {
   }
 
   useEffect(() => {
-    finRef.current?.scrollIntoView({ behavior: "smooth" });
+    // scrollea SOLO el contenedor de conversación (.sop-scroll), no la página
+    finRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [turnos, cargando, pidiendoContacto]);
 
   async function preguntar(
     consulta: string,
-    contactoAhora: { nombre: string; email: string } | null = contacto
+    contactoAhora: { nombre: string; email: string } | null = contacto,
+    opciones: { mostrarPregunta?: boolean } = {}
   ) {
+    const { mostrarPregunta = true } = opciones;
     const limpio = consulta.trim();
-    if (!limpio || cargando) return;
-    setTurnos((prev) => [...prev, { role: "user", content: limpio }]);
-    setTexto("");
+    // guard síncrono: si ya hay un POST en curso, no dispares otro (doble clic).
+    if (!limpio || enviandoRef.current) return;
+    enviandoRef.current = true;
+    if (mostrarPregunta) {
+      setTurnos((prev) => [...prev, { role: "user", content: limpio }]);
+      setTexto("");
+    }
     setCargando(true);
     try {
       if (!CHAT_URL) throw new Error("sin-webhook");
@@ -132,7 +183,7 @@ export default function SoporteCriterio() {
       // respuesta válida: lo tratamos como fallo de conexión, no como "recibido".
       if (!res.ok) throw new Error(`webhook ${res.status}`);
       const data = await res.json().catch(() => ({}));
-      let { cuerpo, meta } = separarMeta(extraerOutput(data));
+      let { cuerpo, meta } = parseRespuesta(data);
       // n8n puede mandar la decisión en un campo aparte (más simple que ———)
       const metaCampo =
         data && typeof data === "object" ? data.decision ?? data.meta ?? data.nivel : null;
@@ -143,7 +194,9 @@ export default function SoporteCriterio() {
         cuerpo || "No pude leer la respuesta del asistente. Probá de nuevo en un momento.";
       setTurnos((prev) => [...prev, { role: "assistant", content: contenido, meta }]);
       // ¿escaló? solo si la DECISIÓN (meta) lo indica y aún no hay contacto.
+      // Recordamos la consulta para reenviarla CON el contacto (una sola llamada).
       if (!contactoAhora && necesitaContacto(meta)) {
+        consultaEscaladaRef.current = limpio;
         setPidiendoContacto(true);
       }
     } catch (err) {
@@ -159,6 +212,7 @@ export default function SoporteCriterio() {
       ]);
     } finally {
       setCargando(false);
+      enviandoRef.current = false;
     }
   }
 
@@ -175,14 +229,21 @@ export default function SoporteCriterio() {
     const c = { nombre, email };
     setContacto(c);
     setPidiendoContacto(false);
-    // avisamos a n8n con el contacto para que complete la escalación
-    preguntar(`Mis datos de contacto — nombre: ${nombre}, correo: ${email}`, c);
+    // UNA sola llamada: reenviamos la CONSULTA ORIGINAL (la que escaló) ahora con
+    // el contacto en el MISMO body. No mandamos un POST aparte de "mis datos de
+    // contacto" (eso creaba una segunda tarjeta con mensaje basura). Tampoco
+    // re-mostramos la pregunta como burbuja nueva (mostrarPregunta: false).
+    const consulta =
+      consultaEscaladaRef.current ||
+      [...turnos].reverse().find((t) => t.role === "user")?.content ||
+      "";
+    if (consulta) preguntar(consulta, c, { mostrarPregunta: false });
   }
 
   const hayConversacion = turnos.length > 0 || cargando;
 
   return (
-    <main className="ld lx">
+    <main className="ld lx sop-page">
       <div className="lx-marco">
         <div className="lx-franja" aria-hidden="true" />
 
@@ -198,16 +259,105 @@ export default function SoporteCriterio() {
           <a className="lx-btn-nav" href="/crear">↳ Crear asistente</a>
         </header>
 
-        <section className="sop-hero">
-          <span className="lx-etiqueta">[ centro de soporte ]</span>
-          <h1>¿Cómo podemos ayudarte?</h1>
-          <p className="sop-sub">
-            Preguntá lo que necesités sobre tu asistente de Silvi — desde
-            “¿por dónde empiezo?” hasta lo técnico. Te atiende{" "}
-            <strong>Criterio</strong>; si hace falta, te deriva al equipo.
-          </p>
+        <section className={`sop-hero${hayConversacion ? " sop-chat" : ""}`}>
+          <div className="sop-cabecera">
+            <span className="lx-etiqueta">[ centro de soporte ]</span>
+            <h1>¿Cómo podemos ayudarte?</h1>
+            <p className="sop-sub">
+              Preguntá lo que necesités sobre tu asistente de Silvi — desde
+              “¿por dónde empiezo?” hasta lo técnico. Te atiende{" "}
+              <strong>Criterio</strong>; si hace falta, te deriva al equipo.
+            </p>
+          </div>
 
-          {/* campo para preguntar (siempre visible) */}
+          {/* área que scrollea por dentro — la página no se mueve */}
+          <div className="sop-scroll">
+            {!hayConversacion ? (
+              /* primera pantalla: temas frecuentes */
+              <div className="sop-temas" aria-label="Temas frecuentes">
+                <span className="sop-temas-titulo">Temas frecuentes</span>
+                <div className="sop-temas-chips">
+                  {TEMAS.map((t) => (
+                    <button key={t} className="chip" onClick={() => preguntar(t)}>
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              /* conversación: pregunta → respuesta (+ meta) → contacto si escala */
+              <div className="sop-conversacion">
+                {turnos.map((t, i) =>
+                  t.role === "user" ? (
+                    <p key={i} className="sop-pregunta">{t.content}</p>
+                  ) : (
+                    <div key={i} className="sop-turno">
+                      <div className="sop-respuesta-label">✧ Respuesta de Criterio</div>
+                      <div className="sop-respuesta">
+                        {conEnlaces(t.content)}
+                        {t.meta && <div className="meta-decision">🔎 {t.meta}</div>}
+                      </div>
+                    </div>
+                  )
+                )}
+
+                {cargando && (
+                  <div className="sop-turno">
+                    <div className="sop-respuesta-label">✧ Criterio</div>
+                    <div className="sop-typing" aria-label="Criterio está escribiendo">
+                      <span /><span /><span />
+                    </div>
+                  </div>
+                )}
+
+                {pidiendoContacto && (
+                  <form className="sop-contacto" onSubmit={enviarContacto}>
+                    <h3>Esto lo ve una persona del equipo</h3>
+                    <p>Dejanos tu nombre y correo y te contactamos para darle seguimiento.</p>
+                    <div className="sop-campo">
+                      <label htmlFor="c-nombre">Tu nombre</label>
+                      <input
+                        id="c-nombre"
+                        value={cNombre}
+                        onChange={(e) => setCNombre(e.target.value)}
+                        placeholder="Ana"
+                        maxLength={60}
+                        autoComplete="name"
+                        required
+                      />
+                    </div>
+                    <div className="sop-campo">
+                      <label htmlFor="c-email">Tu correo</label>
+                      <input
+                        id="c-email"
+                        type="email"
+                        value={cEmail}
+                        onChange={(e) => setCEmail(e.target.value)}
+                        placeholder="ana@correo.com"
+                        maxLength={120}
+                        autoComplete="email"
+                        required
+                      />
+                    </div>
+                    <button
+                      className="sop-contacto-enviar"
+                      type="submit"
+                      disabled={
+                        cargando ||
+                        cNombre.trim().length < 2 ||
+                        !EMAIL_RE.test(cEmail.trim())
+                      }
+                    >
+                      {cargando ? "Enviando…" : "Enviar mis datos"}
+                    </button>
+                  </form>
+                )}
+                <div ref={finRef} />
+              </div>
+            )}
+          </div>
+
+          {/* campo para preguntar — anclado abajo, siempre visible */}
           <form className="sop-ask" onSubmit={onSubmit}>
             <input
               type="text"
@@ -223,86 +373,6 @@ export default function SoporteCriterio() {
               ↑
             </button>
           </form>
-
-          {!hayConversacion ? (
-            /* primera pantalla: solo temas frecuentes bajo el campo */
-            <div className="sop-temas" aria-label="Temas frecuentes">
-              <span className="sop-temas-titulo">Temas frecuentes</span>
-              <div className="sop-temas-chips">
-                {TEMAS.map((t) => (
-                  <button key={t} className="chip" onClick={() => preguntar(t)}>
-                    {t}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            /* conversación: pregunta → respuesta (+ meta) → contacto si escala */
-            <div className="sop-conversacion">
-              {turnos.map((t, i) =>
-                t.role === "user" ? (
-                  <p key={i} className="sop-pregunta">{t.content}</p>
-                ) : (
-                  <div key={i} className="sop-turno">
-                    <div className="sop-respuesta-label">✧ Respuesta de Criterio</div>
-                    <div className="sop-respuesta">
-                      {conEnlaces(t.content)}
-                      {t.meta && <div className="meta-decision">🔎 {t.meta}</div>}
-                    </div>
-                  </div>
-                )
-              )}
-
-              {cargando && (
-                <div className="sop-turno">
-                  <div className="sop-respuesta-label">✧ Criterio</div>
-                  <div className="sop-typing" aria-label="Criterio está escribiendo">
-                    <span /><span /><span />
-                  </div>
-                </div>
-              )}
-
-              {pidiendoContacto && (
-                <form className="sop-contacto" onSubmit={enviarContacto}>
-                  <h3>Esto lo ve una persona del equipo</h3>
-                  <p>Dejanos tu nombre y correo y te contactamos para darle seguimiento.</p>
-                  <div className="sop-campo">
-                    <label htmlFor="c-nombre">Tu nombre</label>
-                    <input
-                      id="c-nombre"
-                      value={cNombre}
-                      onChange={(e) => setCNombre(e.target.value)}
-                      placeholder="Ana"
-                      maxLength={60}
-                      autoComplete="name"
-                      required
-                    />
-                  </div>
-                  <div className="sop-campo">
-                    <label htmlFor="c-email">Tu correo</label>
-                    <input
-                      id="c-email"
-                      type="email"
-                      value={cEmail}
-                      onChange={(e) => setCEmail(e.target.value)}
-                      placeholder="ana@correo.com"
-                      maxLength={120}
-                      autoComplete="email"
-                      required
-                    />
-                  </div>
-                  <button
-                    className="sop-contacto-enviar"
-                    type="submit"
-                    disabled={cNombre.trim().length < 2 || !EMAIL_RE.test(cEmail.trim())}
-                  >
-                    Enviar mis datos
-                  </button>
-                </form>
-              )}
-              <div ref={finRef} />
-            </div>
-          )}
         </section>
 
         <footer className="lx-pie">

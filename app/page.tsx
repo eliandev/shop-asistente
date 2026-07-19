@@ -309,7 +309,7 @@ export default function Landing() {
           <span>
             <a href="/criterio">Soporte</a> · Demo con la tienda real de{" "}
             <a href="https://art-es.shop" target="_blank" rel="noopener noreferrer">ART-ES</a>{" "}
-            · Hecho en El Salvador · <a href="/admin">Panel (demo)</a>
+            · Hecho en El Salvador
           </span>
         </footer>
       </div>

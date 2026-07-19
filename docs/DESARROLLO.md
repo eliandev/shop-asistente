@@ -609,3 +609,51 @@ enviar degrada elegante ("aún no está conectado"). Build limpio (14 rutas,
 `/criterio` estática). **Pendiente del dueño:** setear
 `NEXT_PUBLIC_CRITERIO_CHAT_URL` (local + Vercel), permitir CORS en el Chat
 Trigger, redeploy, y probar el round-trip real.
+
+**Pivote a Centro de Soporte + fix de parseo (2026-07-18):** por pedido del
+dueño, `/criterio` dejó de ser un "demo" y pasó a ser el **centro de soporte**
+real de silvi-chatbot.online (se entra desde nav/footer), con el chrome del
+sistema (negro+lima) y flujo **ask-first**: se quitó el gate; la página abre en
+"¿Cómo podemos ayudarte?" con campo + chips, y **solo** pide nombre+correo si la
+decisión de Criterio escala (🟡/🔴).
+
+Bugs resueltos en el round-trip real con n8n:
+- **Falsa escalación en preguntas básicas:** el webhook devolvía la respuesta de
+  Telegram y el front la malinterpretaba. Fix: `necesitaContacto()` mira SOLO la
+  decisión (meta), nunca el texto de la respuesta.
+- **"No pude leer la respuesta":** la respuesta HTTP real es la notificación de
+  Telegram `{ ok, result:{ text:"🟢 …decisión…\nEnvié: <respuesta>" } }`.
+  `parseRespuesta()` ahora la interpreta (respuesta = tras `Envié:`, decisión =
+  lo previo), quita el pie "sent automatically with n8n" y sigue soportando
+  `{output}` / `[{…}]` / campo `decision` / separador `———`.
+- **Markdown literal:** `**negrita**` ahora se renderiza como `<strong>` (además
+  de enlaces) en `conEnlaces()`.
+
+**QA (local + producción, round-trip real):** verificado en vivo — pregunta
+básica → 🟢 ACTUO SOLO 95%, respuesta con negritas, sin pie de n8n y **sin**
+formulario; consulta fuera de KB → 🟡 BORRADOR 65% con mensaje de derivación y
+formulario de contacto. Desplegado a producción (www.silvi-chatbot.online).
+Nota: algunas preguntas de producto (p.ej. instalar el widget) las escala porque
+no están en la KB de Criterio — es contenido a completar en n8n, no un bug del
+front.
+
+**Layout tipo app de chat (2026-07-19):** `/criterio` pasó a alto fijo de
+viewport (`100dvh`) — la PÁGINA ya no scrollea; solo scrollea por dentro el área
+de conversación (`.sop-scroll`) y el campo (`.sop-ask`) queda anclado abajo,
+siempre visible. La cabecera se compacta al iniciar la conversación (se oculta el
+subtítulo). Se hizo scoped con la clase `.sop-page` en el `<main>` para NO afectar
+la landing (que sí debe scrollear). El auto-scroll usa `scrollIntoView({block:
+"end"})` sobre el contenedor, no la página. En pantallas bajas los chips scrollean
+dentro de su propia área (no la página). Verificado en local y producción (desktop
++ mobile): `paginaScrollea=false`, conversación con scroll interno, input sobre el
+footer. La KB de Criterio ya fue reescrita en n8n para reflejar el producto real
+(/crear, el link es el asistente, widget Pro con licencia, catálogo sin tokens).
+
+**Fix doble llamada al webhook (2026-07-19):** la escalación de `/criterio` hacía
+2 POST (mensaje sin contacto + un 2º POST con "mis datos de contacto" → 2 cards en
+ClickUp, la 2ª mal clasificada). Se mantuvo ask-first y se corrigió para que, al
+dejar el contacto, se **reenvíe la consulta original + nombre + email en un solo
+POST** (`consultaEscaladaRef`, `mostrarPregunta:false`), más guard síncrono
+`enviandoRef` contra doble clic y botón deshabilitado en vuelo. Verificado
+interceptando `fetch`: 1 POST con los 3 campos poblados y la consulta real.
+Detalle completo en `docs/FIX-widget-doble-llamada.md`.

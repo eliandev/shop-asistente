@@ -1422,6 +1422,75 @@ a.producto-card:focus-visible {
   opacity: 0.9;
 }
 
+/* ── /criterio como APP DE CHAT ──────────────────────────────────
+   La página NO scrollea: queda fija al alto del viewport. Solo el
+   área de conversación (.sop-scroll) scrollea por dentro y el campo
+   (.sop-ask) queda anclado abajo, siempre visible. */
+.sop-page {
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.sop-page .lx-marco {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.sop-page .lx-franja,
+.sop-page .lx-nav,
+.sop-page .lx-pie { flex: 0 0 auto; }
+.sop-page .lx-pie { padding-bottom: 20px; } /* sin la reserva del viejo widget */
+
+.sop-page .sop-hero {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* pantalla inicial: bloque centrado */
+  padding: 26px 24px 18px;
+}
+.sop-page .sop-cabecera { flex: 0 0 auto; }
+
+.sop-page .sop-scroll {
+  flex: 0 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* si en pantallas bajas no entran los chips, scrollea acá (no la página) */
+  overscroll-behavior: contain;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #3a3b40 transparent; /* thumb · track (Firefox) */
+}
+/* scrollbar sutil, acorde al tema oscuro (Chrome/Safari/Edge) */
+.sop-page .sop-scroll::-webkit-scrollbar { width: 10px; }
+.sop-page .sop-scroll::-webkit-scrollbar-track { background: transparent; }
+.sop-page .sop-scroll::-webkit-scrollbar-thumb {
+  background: #3a3b40;
+  border-radius: 8px;
+  border: 3px solid transparent; /* deja aire: el thumb se ve más fino */
+  background-clip: padding-box;
+}
+.sop-page .sop-scroll::-webkit-scrollbar-thumb:hover { background: #55565c; }
+.sop-page .sop-ask { width: 100%; max-width: none; margin: 16px 0 0; } /* campo a ancho completo */
+.sop-page .sop-conversacion { width: 100%; max-width: none; margin: 8px 0 0; }
+
+/* modo conversación: cabecera compacta, conversación scrollea, campo abajo */
+.sop-page .sop-hero.sop-chat { justify-content: flex-start; }
+.sop-chat .sop-cabecera { margin-bottom: 4px; }
+.sop-chat .sop-cabecera h1 { font-size: clamp(20px, 3vw, 26px); margin: 4px 0 0; }
+.sop-chat .sop-sub { display: none; }
+.sop-chat .sop-scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 6px; /* aire para el scrollbar */
+}
+
 /* ============================================================
    LANDING "LX" — estilo estudio/agencia sobre negro + lima
    (marco con grilla, banda rayada, display condensada gigante)

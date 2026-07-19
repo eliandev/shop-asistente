@@ -13,17 +13,36 @@ sistema (negro+lima), no como micrositio aparte.
 
 ## Cómo funciona
 
-1. **Gate:** captura nombre + email (validado) antes de chatear.
+1. **Ask-first (sin gate):** la página abre con "¿Cómo podemos ayudarte?" y un
+   campo de pregunta. **No** se piden datos por adelantado; se conversa directo.
 2. **Chat:** cada mensaje hace `POST` al Chat Trigger de n8n con:
    ```json
    { "action": "sendMessage", "sessionId": "<id>", "chatInput": "<texto>",
      "nombre": "<nombre>", "email": "<email>" }
    ```
-3. **Respuesta:** parseo defensivo de `output` / `text` / `[{output|text}]`;
-   si no viene nada, muestra "Recibido ✅, un asesor te contactará.".
-4. **Meta de decisión:** si el `output` trae el separador `———`, la primera
-   parte se muestra como respuesta y la segunda como nota sutil
-   (ej. "🔎 Decisión: BORRADOR · 68%").
+   (`nombre`/`email` van vacíos hasta que el usuario los deja en la escalación).
+3. **Respuesta:** parseo defensivo y tolerante en `parseRespuesta()`. Acepta:
+   - `{ output }`, `{ text|message|answer|reply|respuesta }`, string suelto y
+     arrays `[{…}]`;
+   - la **notificación tipo Telegram** `{ ok, result: { text } }`: toma como
+     respuesta al cliente lo que va después de `Envié:` y como decisión lo de
+     antes; además **quita el pie** "This message was sent automatically with n8n";
+   - **markdown**: `**negrita**` se renderiza como `<strong>` y las URLs como
+     enlaces.
+   Si aun así no logra extraer texto, muestra un fallback neutro
+   ("No pude leer la respuesta del asistente. Probá de nuevo en un momento.").
+4. **Meta de decisión:** la decisión puede venir en un campo aparte
+   (`decision`/`meta`/`nivel`), tras el separador `———`, o (en el shape Telegram)
+   en las líneas previas a `Envié:`. Se muestra como nota sutil
+   (ej. "🔎 🟢 ACTUO SOLO · 95%").
+5. **Escalación:** el formulario de contacto (nombre + correo) aparece **solo**
+   cuando la DECISIÓN indica 🟡/🔴 (borrador, escalar, nivel 2/3, intervención
+   humana). Nunca se dispara desde el texto de la respuesta.
+
+**Layout tipo chat:** la página tiene alto fijo de viewport y **no scrollea**;
+solo scrollea por dentro el área de conversación (`.sop-scroll`), mientras el
+campo de pregunta queda anclado abajo, siempre visible. Está scoped con la clase
+`.sop-page` en el `<main>` para no tocar el scroll de la landing.
 
 ## Configuración
 
@@ -48,11 +67,10 @@ El asistente está definido como un objeto `ConfigAsistente` en
 `app/criterio/page.tsx` (`CRITERIO`): marca, nombre, saludo, color, fondo y los
 chips de sugerencia. Cambiá esos valores para re-marcar el demo.
 
-## ⚠️ La respuesta al navegador debe ser el texto del CLIENTE
+## ⚠️ Qué debe responder el webhook al navegador
 
-El workflow debe terminar con un nodo **"Respond to Webhook"** que devuelva el
-texto para el cliente, NO la respuesta de la API de Telegram / la notificación
-interna. Formas aceptadas por el front:
+**Lo más limpio** es terminar el workflow con un nodo **"Respond to Webhook"**
+que devuelva el texto para el cliente:
 
 ```json
 { "output": "¡Hola! Para crear tu asistente entrá a /crear…" }
@@ -63,10 +81,17 @@ o, para mostrar la decisión (y disparar la captura de contacto en 🟡/🔴):
 ```
 (también sirve meter la decisión dentro del texto tras `———`).
 
-Si el webhook devuelve `{ ok, result: { text } }` (respuesta de Telegram), el
-front no encuentra `output` y muestra un fallback — no es la respuesta real.
-La escalación (formulario de contacto) se dispara SOLO desde `decision`/meta,
-nunca desde el texto de la respuesta.
+**El front es resiliente:** si el webhook devuelve la notificación de Telegram
+`{ ok, result: { text: "🟢 …decisión…\nEnvié: <respuesta>" } }`, igual funciona
+—toma como respuesta lo de después de `Envié:`, como decisión lo de antes, y
+quita el pie "sent automatically with n8n". Aun así, devolver `{ output }` limpio
+es preferible (menos frágil y sin texto interno como "respondió a Cliente").
+
+Recomendación opcional en n8n: en el nodo de Telegram, desactivar **"Append
+n8n Attribution"** para que no cuelgue ese pie en el texto.
+
+La escalación (formulario de contacto) se dispara SOLO desde la decisión
+(`decision`/meta o líneas de decisión), nunca desde el texto de la respuesta.
 
 ## Fuera de alcance (vive en n8n)
 

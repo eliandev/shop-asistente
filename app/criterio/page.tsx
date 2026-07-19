@@ -117,6 +117,9 @@ export default function SoporteCriterio() {
           email: contactoAhora?.email || "",
         }),
       });
+      // un 4xx/5xx (webhook mal configurado o error del workflow) NO es una
+      // respuesta válida: lo tratamos como fallo de conexión, no como "recibido".
+      if (!res.ok) throw new Error(`webhook ${res.status}`);
       const data = await res.json().catch(() => ({}));
       const { cuerpo, meta } = separarMeta(extraerOutput(data));
       const contenido = cuerpo || "Recibido ✅. Un miembro del equipo te contactará.";

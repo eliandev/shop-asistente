@@ -1,20 +1,18 @@
 "use client";
 
 /**
- * DEMO "Criterio" — asistente de soporte/ventas de e-commerce (Aurora Store).
- * Solo frontend: captura nombre+email, y cada mensaje va por POST al Chat
- * Trigger de n8n (NEXT_PUBLIC_CRITERIO_CHAT_URL). La lógica de decisión de
- * autonomía (🟢 responde · 🟡 borrador · 🔴 escala) vive en n8n; esta página
- * solo conversa con el webhook y muestra la respuesta (+ meta de decisión).
- *
- * Reutiliza el design system de Silvi (config con forma ConfigAsistente y las
- * clases de chat de globals.css: .tarjeta, .burbuja, .escribiendo, .chip…).
+ * "Criterio" — asistente de soporte/ventas de e-commerce (Aurora Store),
+ * presentado como UNA PÁGINA MÁS de la plataforma Silvi (mismo chrome negro +
+ * lima, nav y marco que la landing). Solo frontend: captura nombre+email y
+ * cada mensaje va por POST al Chat Trigger de n8n
+ * (NEXT_PUBLIC_CRITERIO_CHAT_URL). La lógica de decisión de autonomía
+ * (🟢 responde · 🟡 borrador · 🔴 escala) vive en n8n.
  */
 
 import { useEffect, useRef, useState } from "react";
 import type { ConfigAsistente } from "@/lib/config-asistente";
 
-// Asistente demo, en la forma de config de Silvi (fácil de cambiar).
+// Asistente en la forma de config de Silvi (fácil de re-marcar).
 const CRITERIO: ConfigAsistente = {
   marca: "Aurora Store",
   asistente: "Criterio",
@@ -31,6 +29,19 @@ const CRITERIO: ConfigAsistente = {
   redes: [],
 };
 
+// Paleta CLARA de la tarjeta de chat (sobrescribe los tokens negros de .lx).
+const PALETA_CHAT: React.CSSProperties = {
+  "--marca": CRITERIO.color,
+  "--marca-oscuro": CRITERIO.color,
+  "--marca-profundo": CRITERIO.color,
+  "--marca-suave": "#b9b4ef",
+  "--fondo": CRITERIO.fondo,
+  "--superficie": "#ffffff",
+  "--superficie-tinte": "#f4f3fb",
+  "--tinta": "#1e1e1e",
+  "--linea": "#e7e5f1",
+} as React.CSSProperties;
+
 const CHAT_URL = process.env.NEXT_PUBLIC_CRITERIO_CHAT_URL || "";
 
 const CHIPS = [
@@ -45,12 +56,11 @@ type Rol = "user" | "assistant";
 interface Mensaje {
   role: Rol;
   content: string;
-  meta?: string | null; // nota de decisión (parte tras "———")
+  meta?: string | null;
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-/** Parseo defensivo del cuerpo de respuesta de n8n. */
 function extraerOutput(data: any): string {
   if (typeof data === "string") return data;
   if (Array.isArray(data)) {
@@ -60,7 +70,6 @@ function extraerOutput(data: any): string {
   return (data?.output ?? data?.text ?? "").toString();
 }
 
-/** Separa respuesta y meta de decisión si viene el separador "———". */
 function separarMeta(texto: string): { cuerpo: string; meta: string | null } {
   const i = texto.indexOf("———");
   if (i < 0) return { cuerpo: texto.trim(), meta: null };
@@ -70,7 +79,7 @@ function separarMeta(texto: string): { cuerpo: string; meta: string | null } {
   };
 }
 
-export default function CriterioDemo() {
+export default function CriterioPagina() {
   const [iniciado, setIniciado] = useState(false);
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
@@ -102,10 +111,7 @@ export default function CriterioDemo() {
     if (!puedeIniciar) return;
     getSessionId();
     setMensajes([
-      {
-        role: "assistant",
-        content: `¡Hola, ${nombre.trim()}! ${CRITERIO.saludo}`,
-      },
+      { role: "assistant", content: `¡Hola, ${nombre.trim()}! ${CRITERIO.saludo}` },
     ]);
     setIniciado(true);
   }
@@ -116,11 +122,8 @@ export default function CriterioDemo() {
     setMensajes((prev) => [...prev, { role: "user", content: limpio }]);
     setTexto("");
     setCargando(true);
-
     try {
-      if (!CHAT_URL) {
-        throw new Error("sin-webhook");
-      }
+      if (!CHAT_URL) throw new Error("sin-webhook");
       const res = await fetch(CHAT_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -133,8 +136,7 @@ export default function CriterioDemo() {
         }),
       });
       const data = await res.json().catch(() => ({}));
-      const salida = extraerOutput(data);
-      const { cuerpo, meta } = separarMeta(salida);
+      const { cuerpo, meta } = separarMeta(extraerOutput(data));
       setMensajes((prev) => [
         ...prev,
         {
@@ -150,7 +152,7 @@ export default function CriterioDemo() {
         {
           role: "assistant",
           content: sinWebhook
-            ? "El demo aún no está conectado a su cerebro (n8n). Configurá NEXT_PUBLIC_CRITERIO_CHAT_URL para activarlo."
+            ? "El asistente aún no está conectado a su cerebro (n8n). Configurá NEXT_PUBLIC_CRITERIO_CHAT_URL para activarlo."
             : "No pude conectar en este momento. Probá de nuevo en un ratito 🙏",
         },
       ]);
@@ -168,176 +170,176 @@ export default function CriterioDemo() {
   const mostrarChips = iniciado && mensajes.length <= 1 && !cargando;
 
   return (
-    <main
-      className="crit-pantalla"
-      style={
-        {
-          "--marca": CRITERIO.color,
-          "--marca-oscuro": CRITERIO.color,
-          "--marca-profundo": CRITERIO.color,
-          "--marca-suave": "#b9b4ef",
-          "--superficie-tinte": "#f4f3fb",
-          "--linea": "#e7e5f1",
-          background: CRITERIO.fondo,
-        } as React.CSSProperties
-      }
-    >
-      {/* ── Hero / narrativa ── */}
-      <section className="crit-hero">
-        <span className="crit-badge">Demo · por Silvi Assistants</span>
-        <h1>Criterio</h1>
-        <p className="crit-tag">
-          El agente que sabe <strong>cuándo responder solo</strong> y cuándo
-          pasarle el caso a una persona.
-        </p>
-        <div className="crit-niveles" aria-hidden="true">
-          <div className="crit-nivel">
-            <span className="crit-dot" style={{ background: "#22c55e" }} />
-            <span><b>Responde solo</b> — dudas claras (horarios, pagos, envíos).</span>
-          </div>
-          <div className="crit-nivel">
-            <span className="crit-dot" style={{ background: "#eab308" }} />
-            <span><b>Deja un borrador</b> — casos sensibles que revisa un humano.</span>
-          </div>
-          <div className="crit-nivel">
-            <span className="crit-dot" style={{ background: "#ef4444" }} />
-            <span><b>Escala</b> — decisiones grandes (mayoreo, reclamos): pasa a una persona.</span>
-          </div>
-        </div>
-        <p className="crit-firma">
-          ¿Querés uno para tu tienda? <a href="/crear">Creá tu asistente →</a>
-        </p>
-      </section>
+    <main className="ld lx">
+      <div className="lx-marco">
+        <div className="lx-franja" aria-hidden="true" />
 
-      {/* ── Tarjeta de chat (reusa el design system) ── */}
-      <section className="tarjeta crit-card" aria-label="Chat con Criterio de Aurora Store">
-        <header className="encabezado">
-          <div className="marca-fila">
-            <div className="avatar" aria-hidden="true">
-              <span className="avatar-inicial">{inicial}</span>
-            </div>
-            <div>
-              <div className="marca-nombre">{CRITERIO.marca}</div>
-              <div className="marca-sub">{CRITERIO.asistente} · asistente de e-commerce</div>
-              <div className="estado">
-                <span className="punto" aria-hidden="true" />
-                En línea
-              </div>
-            </div>
-          </div>
+        {/* nav — idéntica al resto del sistema */}
+        <header className="lx-nav">
+          <nav className="lx-menu" aria-label="Navegación principal">
+            <a href="/">Inicio</a>
+            <a href="/#producto">El producto</a>
+            <a href="/#demos">Demos</a>
+            <a href="/#precios">Precios</a>
+          </nav>
+          <a className="lx-logo" href="/">SILVI°</a>
+          <a className="lx-btn-nav" href="/crear">↳ Crear asistente</a>
         </header>
 
-        {!iniciado ? (
-          /* ── Gate: captura nombre + email ── */
-          <form className="crit-gate" onSubmit={iniciar}>
-            <h2>Antes de empezar…</h2>
-            <p className="crit-sub">Dejanos tu nombre y correo para atender tu consulta.</p>
-            <div className="crit-campo">
-              <label htmlFor="crit-nombre">Tu nombre</label>
-              <input
-                id="crit-nombre"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                placeholder="Ana"
-                maxLength={60}
-                autoComplete="name"
-                required
-              />
-            </div>
-            <div className="crit-campo">
-              <label htmlFor="crit-email">Tu correo</label>
-              <input
-                id="crit-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="ana@correo.com"
-                maxLength={120}
-                autoComplete="email"
-                required
-              />
-            </div>
-            <button className="crit-iniciar" type="submit" disabled={!puedeIniciar}>
-              Iniciar chat
-            </button>
-            <p className="crit-priv">
-              🔒 Tus datos solo se usan para atender tu consulta.
+        {/* contenido: narrativa (chrome plataforma) + tarjeta de chat */}
+        <section className="crit-wrap">
+          <div className="crit-intro">
+            <span className="lx-etiqueta">[ asistente en vivo ]</span>
+            <h1>Criterio</h1>
+            <p className="crit-tag">
+              El agente que sabe <strong>cuándo responder solo</strong> y cuándo
+              pasarle el caso a una persona.
             </p>
-          </form>
-        ) : (
-          <>
-            <div className="mensajes" role="log" aria-live="polite">
-              {mensajes.map((m, i) =>
-                m.role === "user" ? (
-                  <div key={i} className="burbuja de-usuario">
-                    {m.content}
-                  </div>
-                ) : (
-                  <div key={i} className="fila-silvi">
-                    <span className="avatar-silvi avatar-inicial-chica" aria-hidden="true">
-                      {inicial}
-                    </span>
-                    <div className="burbuja de-silvi">
-                      <div className="etiqueta">{CRITERIO.asistente}</div>
-                      {m.content}
-                      {m.meta && <div className="meta-decision">🔎 {m.meta}</div>}
-                    </div>
-                  </div>
-                )
-              )}
+            <div className="crit-niveles">
+              <div className="crit-nivel">
+                <span className="crit-dot" style={{ background: "#22c55e" }} />
+                <span><b>Responde solo</b> — dudas claras (horarios, pagos, envíos).</span>
+              </div>
+              <div className="crit-nivel">
+                <span className="crit-dot" style={{ background: "#eab308" }} />
+                <span><b>Deja un borrador</b> — casos sensibles que revisa un humano.</span>
+              </div>
+              <div className="crit-nivel">
+                <span className="crit-dot" style={{ background: "#ef4444" }} />
+                <span><b>Escala</b> — decisiones grandes (mayoreo, reclamos): pasa a una persona.</span>
+              </div>
+            </div>
+            <a className="lx-btn-nav crit-cta" href="/crear">↳ Creá un asistente así para tu tienda</a>
+          </div>
 
-              {cargando && (
-                <div className="fila-silvi">
-                  <span className="avatar-silvi avatar-inicial-chica" aria-hidden="true">
-                    {inicial}
-                  </span>
-                  <div className="burbuja de-silvi" aria-label="Criterio está escribiendo">
-                    <div className="etiqueta">{CRITERIO.asistente}</div>
-                    <div className="escribiendo">
-                      <span />
-                      <span />
-                      <span />
+          {/* tarjeta de chat: elemento claro, con su propia paleta de marca */}
+          <div className="crit-card-wrap" style={PALETA_CHAT}>
+            <section className="tarjeta crit-card" aria-label="Chat con Criterio de Aurora Store">
+              <header className="encabezado">
+                <div className="marca-fila">
+                  <div className="avatar" aria-hidden="true">
+                    <span className="avatar-inicial">{inicial}</span>
+                  </div>
+                  <div>
+                    <div className="marca-nombre">{CRITERIO.marca}</div>
+                    <div className="marca-sub">{CRITERIO.asistente} · asistente de e-commerce</div>
+                    <div className="estado">
+                      <span className="punto" aria-hidden="true" />
+                      En línea
                     </div>
                   </div>
                 </div>
-              )}
-              <div ref={finRef} />
-            </div>
+              </header>
 
-            {mostrarChips && (
-              <div className="sugerencias">
-                {CHIPS.map((c) => (
-                  <button key={c} className="chip" onClick={() => enviar(c)}>
-                    {c}
+              {!iniciado ? (
+                <form className="crit-gate" onSubmit={iniciar}>
+                  <h2>Antes de empezar…</h2>
+                  <p className="crit-sub">Dejanos tu nombre y correo para atender tu consulta.</p>
+                  <div className="crit-campo">
+                    <label htmlFor="crit-nombre">Tu nombre</label>
+                    <input
+                      id="crit-nombre"
+                      value={nombre}
+                      onChange={(e) => setNombre(e.target.value)}
+                      placeholder="Ana"
+                      maxLength={60}
+                      autoComplete="name"
+                      required
+                    />
+                  </div>
+                  <div className="crit-campo">
+                    <label htmlFor="crit-email">Tu correo</label>
+                    <input
+                      id="crit-email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="ana@correo.com"
+                      maxLength={120}
+                      autoComplete="email"
+                      required
+                    />
+                  </div>
+                  <button className="crit-iniciar" type="submit" disabled={!puedeIniciar}>
+                    Iniciar chat
                   </button>
-                ))}
-              </div>
-            )}
+                  <p className="crit-priv">🔒 Tus datos solo se usan para atender tu consulta.</p>
+                </form>
+              ) : (
+                <>
+                  <div className="mensajes" role="log" aria-live="polite">
+                    {mensajes.map((m, i) =>
+                      m.role === "user" ? (
+                        <div key={i} className="burbuja de-usuario">{m.content}</div>
+                      ) : (
+                        <div key={i} className="fila-silvi">
+                          <span className="avatar-silvi avatar-inicial-chica" aria-hidden="true">
+                            {inicial}
+                          </span>
+                          <div className="burbuja de-silvi">
+                            <div className="etiqueta">{CRITERIO.asistente}</div>
+                            {m.content}
+                            {m.meta && <div className="meta-decision">🔎 {m.meta}</div>}
+                          </div>
+                        </div>
+                      )
+                    )}
+                    {cargando && (
+                      <div className="fila-silvi">
+                        <span className="avatar-silvi avatar-inicial-chica" aria-hidden="true">
+                          {inicial}
+                        </span>
+                        <div className="burbuja de-silvi" aria-label="Criterio está escribiendo">
+                          <div className="etiqueta">{CRITERIO.asistente}</div>
+                          <div className="escribiendo"><span /><span /><span /></div>
+                        </div>
+                      </div>
+                    )}
+                    <div ref={finRef} />
+                  </div>
 
-            <form className="entrada" onSubmit={onSubmit}>
-              <input
-                type="text"
-                value={texto}
-                onChange={(e) => setTexto(e.target.value)}
-                placeholder="Escribí tu mensaje…"
-                aria-label="Escribí tu mensaje"
-                maxLength={800}
-                disabled={cargando}
-              />
-              <button
-                className="enviar"
-                type="submit"
-                disabled={cargando || !texto.trim()}
-                aria-label="Enviar mensaje"
-              >
-                Enviar
-              </button>
-            </form>
-          </>
-        )}
+                  {mostrarChips && (
+                    <div className="sugerencias">
+                      {CHIPS.map((c) => (
+                        <button key={c} className="chip" onClick={() => enviar(c)}>{c}</button>
+                      ))}
+                    </div>
+                  )}
 
-        <div className="pie">Aurora Store · con criterio, por Silvi Assistants</div>
-      </section>
+                  <form className="entrada" onSubmit={onSubmit}>
+                    <input
+                      type="text"
+                      value={texto}
+                      onChange={(e) => setTexto(e.target.value)}
+                      placeholder="Escribí tu mensaje…"
+                      aria-label="Escribí tu mensaje"
+                      maxLength={800}
+                      disabled={cargando}
+                    />
+                    <button
+                      className="enviar"
+                      type="submit"
+                      disabled={cargando || !texto.trim()}
+                      aria-label="Enviar mensaje"
+                    >
+                      Enviar
+                    </button>
+                  </form>
+                </>
+              )}
+
+              <div className="pie">Aurora Store · con criterio, por Silvi Assistants</div>
+            </section>
+          </div>
+        </section>
+
+        <footer className="lx-pie">
+          <span>SILVI° — asistentes de IA para tiendas</span>
+          <span>
+            Criterio · Aurora Store · <a href="/crear">Creá el tuyo</a>
+          </span>
+        </footer>
+      </div>
     </main>
   );
 }

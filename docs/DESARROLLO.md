@@ -583,3 +583,29 @@ fuente/share_url/duplicate) para el workflow "Silvi Lead Engine"
 local y producción (webhook responde 200, lead lo dispara sin error). Var en
 .env.local y Vercel. Las claves de Telegram/ClickUp/Resend viven solo en n8n y
 en .env.local (gitignored), NO en el bundle ni en Vercel.
+
+## Fase 12 — Página demo "Criterio" (chat ↔ n8n) (2026-07-12)
+
+**Pedido del dueño:** demo público de un asistente Silvi ("Criterio", tienda
+ficticia Aurora Store) que decide autonomía (🟢 responde / 🟡 borrador / 🔴
+escala). La decisión vive en n8n; esta página es SOLO el frontend del chat.
+
+**Implementado:**
+- `app/criterio/page.tsx` (cliente) + `app/criterio/layout.tsx` (metadata).
+  Config en forma `ConfigAsistente` (`CRITERIO`), fácil de re-marcar.
+- Gate (nombre + email validado) → chat bidireccional. POST al Chat Trigger
+  (`NEXT_PUBLIC_CRITERIO_CHAT_URL`) con `{action,sessionId,chatInput,nombre,
+  email}`. Parseo defensivo (`output`/`text`/array); fallback "Recibido ✅…".
+- Meta de decisión: split por `———` → respuesta + nota sutil (`.meta-decision`).
+- 5 chips de sugerencia (rutas 🟢🟡🔴), typing, auto-scroll, error de red,
+  sessionId por sesión. Reusa el design system de chat (`.tarjeta`, `.burbuja`…)
+  con color propio de Aurora Store (indigo #4F46E5).
+- Sin secretos en el cliente; la única env es la URL pública del webhook.
+  `docs/CRITERIO.md` documenta el paso de CORS en n8n.
+
+**QA (local, sin webhook):** gate valida (deshabilitado sin datos / email malo,
+habilitado con válido); inicio muestra saludo con nombre + "Criterio"; 5 chips;
+enviar degrada elegante ("aún no está conectado"). Build limpio (14 rutas,
+`/criterio` estática). **Pendiente del dueño:** setear
+`NEXT_PUBLIC_CRITERIO_CHAT_URL` (local + Vercel), permitir CORS en el Chat
+Trigger, redeploy, y probar el round-trip real.

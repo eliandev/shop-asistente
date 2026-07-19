@@ -187,8 +187,11 @@ Emitir una licencia Pro: `node scripts/generar-licencia.mjs "Marca" dominio.com`
   el tema.
 - [`docs/LICENCIAS.md`](docs/LICENCIAS.md) — el modelo freemium y cómo emitir
   licencias.
+- [`docs/LEADS.md`](docs/LEADS.md) — captura de leads (Firestore + n8n) y correo.
+- [`docs/CRITERIO.md`](docs/CRITERIO.md) — demo `/criterio` conectado a n8n
+  (incluye el paso de **CORS** en el Chat Trigger).
 - [`AGENTS.md`](AGENTS.md) — guía para agentes de código que trabajen aquí.
-- [`PRD.md`](PRD.md) — el documento de producto original (v1).
+- [`PRD.md`](PRD.md) — documento de producto (v2.0, producto completo).
 
 ---
 

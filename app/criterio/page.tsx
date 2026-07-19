@@ -132,7 +132,13 @@ export default function SoporteCriterio() {
       // respuesta válida: lo tratamos como fallo de conexión, no como "recibido".
       if (!res.ok) throw new Error(`webhook ${res.status}`);
       const data = await res.json().catch(() => ({}));
-      const { cuerpo, meta } = separarMeta(extraerOutput(data));
+      let { cuerpo, meta } = separarMeta(extraerOutput(data));
+      // n8n puede mandar la decisión en un campo aparte (más simple que ———)
+      const metaCampo =
+        data && typeof data === "object" ? data.decision ?? data.meta ?? data.nivel : null;
+      if (!meta && typeof metaCampo === "string" && metaCampo.trim()) {
+        meta = metaCampo.trim();
+      }
       const contenido =
         cuerpo || "No pude leer la respuesta del asistente. Probá de nuevo en un momento.";
       setTurnos((prev) => [...prev, { role: "assistant", content: contenido, meta }]);

@@ -208,12 +208,16 @@ posible por el bajo costo variable y CAC≈0 del loop.
 | **Shopify App Store publicado** | Fase C | 2º canal de descubrimiento |
 | **Partners/agencias + NRR ≥ 100%** | Fase C | Expansión |
 
-## 16. Decisiones abiertas (a validar)
+## 16. Decisiones — estado
 
-1. **Precios y topes exactos** por plan (calibrar contra costo real de tokens y benchmarks).
-2. **Prueba gratis** con tarjeta vs sin tarjeta (afecta conversión y calidad de leads).
-3. **DB:** Postgres nuevo (Supabase/Neon) vs seguir en Firestore para todo (estimar esfuerzo).
-4. **Auth:** Auth.js vs Clerk/Supabase Auth (costo, velocidad, control).
-5. **Criterio para el merchant:** ¿incluido en Growth o add-on aparte?
-6. **Nombre/marca comercial** para el mercado global (Silvi Assistants vs otro) y dominio.
-7. **Estrategia de impuestos/venta global** (Stripe Tax, Merchant of Record tipo Paddle/LemonSqueezy).
+**Resueltas ✅ (2026-09-26)**
+- **Datos + Auth:** **Supabase** (Postgres + Auth en un solo servicio).
+- **Billing:** **Stripe** (suscripción self-serve).
+- **Criterio para el merchant:** **incluido en Growth y Scale** (no como add-on).
+- **Modelo / distribución / mercado:** freemium + suscripción por uso · SaaS propio primero (Shopify App después) · global EN+ES (ver §1, §8).
+
+**Pendientes ⏳ (no bloquean el desarrollo de la Fase A)**
+- **Precios y topes exactos** por plan (calibrar contra costo real de tokens y benchmarks).
+- **Prueba gratis** con tarjeta vs sin tarjeta (afecta conversión y calidad de leads).
+- **Nombre/marca comercial** global y dominio definitivo.
+- **Impuestos/venta global** (Stripe Tax vs Merchant of Record tipo Paddle/LemonSqueezy).

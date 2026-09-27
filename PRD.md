@@ -5,6 +5,11 @@
 **Contexto:** Vibecoders League 2.0 — Reto 1 ("El asistente que responde por tu
 negocio") y Reto 3 ("La forma más creativa de capturar leads").
 
+> 📈 **Evolución a producto monetizable (SaaS):** este PRD describe la **v2.0**
+> (build del reto, en producción). Para el producto de pago —cuentas, billing con
+> Stripe, planes por uso, Criterio como feature— y su negocio, ver
+> **[docs/PRD.md](./docs/PRD.md)** (PRD v3.0) y **[docs/BRD.md](./docs/BRD.md)** (BRD).
+
 > **Historial de versiones**
 > - **v1.0** — asistente de chat único para ART-ES (una tienda, Storefront API).
 > - **v2.0** — producto generalizado: cualquier marca crea su asistente; catálogo

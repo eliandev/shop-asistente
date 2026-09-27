@@ -2,6 +2,108 @@
 
 ---
 
+# RETO · Un agente con criterio propio + automatización (Criterio)
+
+## C-1 · Comentario para la clase de Platzi
+
+---
+
+¡Hola, Platzi mates! 👋 Les presento mi creación para este reto: **Criterio**, un
+agente de IA con criterio propio. 🧠
+
+**💡 En qué me inspiré**
+Tengo un emprendimiento salvadoreño real, [ART-ES](https://art-es.shop)
+(artesanía hecha a mano). Cuando le construí un asistente de IA para vender,
+apareció el problema de todo negocio: el soporte. Los bots normales fallan por
+dos lados — o responden TODO (y meten la pata con reembolsos, cobros o temas
+legales), o escalan TODO (y no sirven para nada). Yo quería uno que supiera
+**cuándo hablar y cuándo frenarse y pasarle a un humano**. Eso es Criterio.
+
+**🚦 Cómo funciona (lo interesante)**
+Ante cada consulta, Criterio decide cuánta autonomía tomarse:
+🟢 **Actúa solo** — si la duda está en su base de conocimiento (crear el
+asistente, instalar el widget, conectar el catálogo…), responde al toque.
+🟡 **Deja un borrador** — si el tema es sensible o con riesgo (reembolso, cobro,
+factura, legal), NO responde solo: redacta una respuesta sugerida y me la manda
+para que yo la apruebe.
+🔴 **Escala** — si es urgente o una venta grande, avisa de inmediato para
+intervención humana.
+Y no se queda en el chat: **actúa**. Según su decisión responde al cliente,
+registra el caso en ClickUp, me avisa por Telegram y arma el borrador por correo.
+Humano en el loop donde importa.
+
+**✨ Un detalle de UX que me gustó**
+No te pide datos por adelantado. Preguntás libre; solo cuando hace falta escalar
+te pide nombre y correo —en el momento justo— y arma UNA sola ficha con tu
+consulta + tu contacto. Nada de formularios en la puerta.
+
+**🛠️ Cómo lo hice**
+Next.js para el centro de soporte, la IA de Claude para el "criterio" (devuelve
+la decisión + la respuesta) y **n8n** como cerebro de automatización: un webhook
+recibe la consulta, Claude decide, y según el semáforo rutea a Telegram, ClickUp
+y Resend (correo). Desplegado en Vercel. Y como todo el proyecto: **nunca
+inventa** — responde solo con su base de conocimiento; si no sabe, lo admite. Es
+el soporte de Silvi Assistants, el motor detrás de ART-ES.
+
+**👉 Probalo en vivo:** https://www.silvi-chatbot.online/criterio
+**🎥 O miralo en 2 min:** https://youtu.be/y0YDN_uK18E
+Tirale algo básico (te responde 🟢) y después un "necesito un reembolso" para ver
+cómo se frena y escala 🟡.
+
+Código y bitácora del proceso: https://github.com/eliandev/shop-asistente
+
+Si te gusta, **tu like en este comentario es el voto** 💚 ¡Gracias, mates! Hecho
+con 🤍 desde El Salvador 🇸🇻
+
+---
+
+## C-2 · Post para redes (LinkedIn / X)
+
+---
+
+La mayoría de los bots de soporte tienen dos modos: responder TODO (y meter la
+pata en reembolsos o temas legales) o escalar TODO (y no servir).
+
+Le construí uno con criterio propio. Se llama **Criterio**: ante cada consulta
+decide cuánta autonomía tomarse —🟢 responde solo, 🟡 deja un borrador para que un
+humano apruebe, 🔴 escala si es urgente— y automatiza el ruteo a Telegram, ClickUp
+y correo con n8n. Humano en el loop donde importa, y nunca inventa.
+
+Es el soporte de Silvi Assistants, el motor detrás de mi emprendimiento
+salvadoreño ART-ES 🧶
+
+👉 Probalo: https://www.silvi-chatbot.online/criterio
+🎥 Demo en video (2 min): https://youtu.be/y0YDN_uK18E
+
+Compitiendo en la #VibecodersLeague de @platzi — **el voto es un like a mi
+comentario** 👉 [LINK-AL-COMENTARIO-EN-PLATZI]. Sin suscripción. 🙌
+Hecho en El Salvador 🇸🇻
+
+---
+
+## C-3 · Mensaje para WhatsApp / amigos
+
+---
+
+¡Hola! 👋 Sigo en el reto de IA de Platzi. Ahora hice un agente de soporte con
+"criterio": decide solo si responde, si deja un borrador para que yo lo apruebe,
+o si escala algo urgente — y avisa por Telegram/correo automáticamente.
+
+¿Me ayudás con tu voto? Es un **like a mi comentario** (cuenta gratis de Platzi,
+sin suscripción):
+👉 [LINK-AL-COMENTARIO-EN-PLATZI]
+
+Y si querés verlo: el demo en vivo https://www.silvi-chatbot.online/criterio
+o el video de 2 min https://youtu.be/y0YDN_uK18E
+¡Gracias! 💚
+
+---
+
+> Reemplazá `[LINK-AL-COMENTARIO-EN-PLATZI]` por el link directo a tu comentario
+> (menú ⋮ del comentario → copiar enlace).
+
+---
+
 # RETO 3 · "La forma más creativa de capturar leads"
 
 ## R3-1 · Comentario para la clase de Platzi (Reto 3)

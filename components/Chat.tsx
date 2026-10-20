@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { resolverArtesano, type Artesano } from "@/lib/knowledge-base";
 import {
+  codificarConfig,
   decodificarConfig,
   miembroDeEquipo,
   saludoPorDefecto,
@@ -73,7 +74,11 @@ function aplicarMarca(config: ConfigAsistente | null) {
   }
 }
 
-export default function Chat() {
+export default function Chat({
+  configInicial,
+}: {
+  configInicial?: ConfigAsistente;
+} = {}) {
   // ART-ES: el artesano que atiende la sesión (default del taller principal).
   const [artesano, setArtesano] = useState<Artesano>(() => resolverArtesano());
   // Asistente personalizado (creado en /crear): config del link (?c=).
@@ -103,10 +108,12 @@ export default function Chat() {
     }
     setLic(params.get("lic"));
     const c = params.get("c");
-    const cfg = decodificarConfig(c);
-    if (cfg && c) {
+    // Prioridad: config pasada por prop (ruta /a/:slug desde la DB); si no, ?c=.
+    const cfg = configInicial ?? decodificarConfig(c);
+    const cEnc = configInicial ? codificarConfig(configInicial) : c;
+    if (cfg && cEnc) {
       setConfig(cfg);
-      setCRaw(c);
+      setCRaw(cEnc);
       aplicarMarca(cfg);
       // ¿atiende un miembro del equipo? (vendor del producto → match)
       const vendor = params.get("artesano");

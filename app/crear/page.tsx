@@ -6,9 +6,10 @@
  * sin cuentas ni base de datos (v1). El servidor sanitiza todo.
  */
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   codificarConfig,
+  decodificarConfig,
   sanitizarConfig,
   saludoPorDefecto,
   MAX_EQUIPO,
@@ -24,6 +25,7 @@ import {
   IconoEscudo,
 } from "@/components/Iconos";
 import ReclamarAsistente, { type TipoLead } from "@/components/ReclamarAsistente";
+import { guardarAsistente } from "@/app/dashboard/acciones";
 
 const PRESETS = [
   { nombre: "Gris (neutro)", marca: "#4B5563", fondo: "#F3F4F6" },
@@ -61,9 +63,53 @@ export default function CrearAsistente() {
   const [reclamarAbierto, setReclamarAbierto] = useState(false);
   const [tipoReclamo, setTipoReclamo] = useState<TipoLead>("guardar");
 
+  // Edición desde el panel: ?id= (asistente a actualizar) + ?c= (su config)
+  const [asistenteId, setAsistenteId] = useState<string | null>(null);
+  const [guardando, setGuardando] = useState(false);
+  const [errorGuardar, setErrorGuardar] = useState<string | null>(null);
+
   function abrirReclamo(tipo: TipoLead) {
     setTipoReclamo(tipo);
     setReclamarAbierto(true);
+  }
+
+  // Precarga para editar: lee ?c= (config) y ?id= una sola vez tras montar.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+    if (id) setAsistenteId(id);
+    const cfg = decodificarConfig(params.get("c"));
+    if (cfg) {
+      setMarca(cfg.marca);
+      setAsistente(cfg.asistente);
+      setRubro(cfg.rubro);
+      setSaludo(cfg.saludo);
+      setColor(cfg.color);
+      setFondo(cfg.fondo);
+      setDominio(cfg.dominio);
+      setWhatsapp(cfg.whatsapp);
+      setDatos(cfg.datos);
+      setEquipo(cfg.equipo);
+      setRedes(cfg.redes);
+      setMaxPaso(5); // al editar, permití navegar todos los pasos
+    }
+  }, []);
+
+  async function guardarEnPanel() {
+    if (guardando) return;
+    setGuardando(true);
+    setErrorGuardar(null);
+    const res = await guardarAsistente(config, asistenteId ?? undefined);
+    if (res.ok) {
+      window.location.href = "/dashboard";
+      return;
+    }
+    if (res.error === "no-auth") {
+      window.location.href = "/login?next=/crear";
+      return;
+    }
+    setGuardando(false);
+    setErrorGuardar("No se pudo guardar. Probá de nuevo.");
   }
 
   function actualizarRed(i: number, campo: keyof RedSocial, valor: string) {
@@ -521,6 +567,20 @@ export default function CrearAsistente() {
                 Este link ES tu asistente — compartilo en redes, en tu bio o
                 por WhatsApp. Gratis para siempre.
               </p>
+              <button
+                type="button"
+                className="crd-nav-seguir crd-guardar-panel"
+                onClick={guardarEnPanel}
+                disabled={guardando || !identidadLista}
+              >
+                {guardando
+                  ? "Guardando…"
+                  : asistenteId
+                    ? "Guardar cambios en mi panel"
+                    : "Guardar en mi panel"}
+                <IconoChispas size={16} strokeWidth={2.2} />
+              </button>
+              {errorGuardar && <p className="crd-falta">{errorGuardar}</p>}
               <button
                 type="button"
                 className="crd-nav-seguir crd-reclamar"

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient, supabaseConfigurado } from "@/lib/supabase/server";
 import { LIMITE_MENSAJES, type PlanTier } from "@/lib/supabase/types";
+import ListaAsistentes, { type AsistenteItem } from "@/components/ListaAsistentes";
 
 export const metadata: Metadata = {
   title: { absolute: "Panel · Silvi Assistants" },
@@ -31,18 +32,29 @@ export default async function DashboardPage() {
 
   const { data: membresia } = await supabase
     .from("workspace_members")
-    .select("role, workspaces(name)")
+    .select("workspace_id, workspaces(name)")
     .limit(1)
     .maybeSingle();
+  const m = membresia as { workspace_id?: string; workspaces?: { name?: string } } | null;
+  const workspaceId = m?.workspace_id ?? null;
+  const workspace = m?.workspaces?.name ?? "Mi espacio";
 
   const { data: sub } = await supabase
     .from("subscriptions")
     .select("plan, status")
     .maybeSingle();
-
-  const workspace = (membresia as any)?.workspaces?.name ?? "Mi espacio";
-  const plan = ((sub as any)?.plan ?? "free") as PlanTier;
+  const plan = ((sub as { plan?: PlanTier } | null)?.plan ?? "free") as PlanTier;
   const limite = LIMITE_MENSAJES[plan];
+
+  const { data: filas } = workspaceId
+    ? await supabase
+        .from("assistants")
+        .select("id, slug, status, config")
+        .eq("workspace_id", workspaceId)
+        .neq("status", "archived")
+        .order("updated_at", { ascending: false })
+    : { data: [] };
+  const asistentes = (filas ?? []) as unknown as AsistenteItem[];
 
   return (
     <main className="dash">
@@ -70,18 +82,17 @@ export default async function DashboardPage() {
             <strong>{limite.toLocaleString()}</strong>
           </div>
           <div className="dash-stat">
-            <span>Uso del período</span>
-            <strong>— <small>(pronto)</small></strong>
+            <span>Asistentes</span>
+            <strong>{asistentes.length}</strong>
           </div>
         </div>
 
         <div className="dash-proximo">
-          <h2>Tus asistentes</h2>
-          <p>
-            El dashboard de asistentes (crear, editar, publicar) llega en el
-            próximo paso. Por ahora, tu cuenta y tu espacio ya están listos ✅
-          </p>
-          <a className="dash-btn" href="/crear">Crear un asistente →</a>
+          <div className="dash-asist-top">
+            <h2>Tus asistentes</h2>
+            <a className="dash-btn" href="/crear">+ Crear asistente</a>
+          </div>
+          <ListaAsistentes asistentes={asistentes} />
         </div>
       </div>
     </main>

@@ -20,12 +20,17 @@ export default function FormAuth({ modo }: { modo: Modo }) {
     try {
       const supabase = createClient();
       if (esRegistro) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
           options: { emailRedirectTo: `${location.origin}/auth/callback` },
         });
         if (error) throw error;
+        if (data.session) {
+          // "Confirm email" off: ya hay sesión → directo al panel
+          location.href = "/dashboard";
+          return;
+        }
         setAviso({
           tipo: "ok",
           texto: "Te enviamos un correo para confirmar tu cuenta. Revisá tu bandeja.",

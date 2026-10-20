@@ -20,9 +20,12 @@ supabase db push
 
 ## Variables de entorno (ver `.env.example`)
 
-Project Settings → API:
-- `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` (públicas)
-- `SUPABASE_SERVICE_ROLE_KEY` (**secreta** — solo servidor/Vercel, saltea RLS)
+Project Settings → API Keys ("Publishable and secret"):
+- `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (`sb_publishable_…`, públicas)
+- `SUPABASE_SECRET_KEY` (`sb_secret_…`, **secreta** — solo servidor/Vercel, saltea RLS)
+
+> Las keys legacy JWT (`anon` / `service_role`) siguen aceptándose como fallback,
+> pero las nuevas son las recomendadas.
 
 Cargalas en `.env.local` (local) y en Vercel. **No** commitees valores reales.
 

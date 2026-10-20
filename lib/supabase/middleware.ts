@@ -11,10 +11,12 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   let response = NextResponse.next({ request });
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anon) return response; // sin config: no-op
+  const publishable =
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY; // fallback legacy
+  if (!url || !publishable) return response; // sin config: no-op
 
-  const supabase = createServerClient(url, anon, {
+  const supabase = createServerClient(url, publishable, {
     cookies: {
       getAll() {
         return request.cookies.getAll();
